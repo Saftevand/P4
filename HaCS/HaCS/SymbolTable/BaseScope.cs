@@ -43,8 +43,11 @@ namespace HaCS.SymbolTable
 
         public BaseSymbol Resolve(string name)
         {
-            BaseSymbol sym = _symbols[name];
-            if (sym != null) return sym;
+            if (_symbols.ContainsKey(name))
+            {
+                BaseSymbol sym = _symbols[name];
+                return sym;
+            }
             else if (_enclosingScope != null) return _enclosingScope.Resolve(name);
             else return null;
         }

@@ -13,3 +13,18 @@ c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\H
 c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCS.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
 c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCS.exe
 c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCS.pdb
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\bin\Debug\HaCS.exe.config
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCS.exe
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCS.pdb
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\bin\Debug\HaCS.exe
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\bin\Debug\HaCS.pdb
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\bin\Debug\Antlr4.Runtime.dll
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\bin\Debug\Antlr4.Runtime.xml
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCS.csprojResolveAssemblyReference.cache
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCS.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCSLexer.cs
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCSParser.cs
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCSListener.cs
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCSBaseListener.cs
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCSVisitor.cs
+C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\obj\Debug\HaCSBaseVisitor.cs

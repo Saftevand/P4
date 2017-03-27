@@ -17,7 +17,7 @@ grammar HaCS;
  */
  program: main functionDecl*;
  
- main : 'int' 'main' LPAREN formalParam(DELIMITER formalParam)* RPAREN body;
+ main : 'int' 'main' body;
 
  functionDecl : type IDENTIFIER LPAREN formalParam(DELIMITER formalParam)* RPAREN body
 			  | LPAREN formalParam(DELIMITER formalParam)* RPAREN LAMBDA body;
@@ -42,22 +42,19 @@ grammar HaCS;
 
  returnStmt : 'return' expression;
 
- expression : LPAREN expression RPAREN 
-	|	expression ('++' | '--')
-    |   NEGATE expression
-	|   expression '^'<assoc = right> expression
-    |   expression (MUL|DIV|MOD) expression
-    |   expression (ADD|SUB) expression
-    |   expression (LE | GE | GT | LT) expression
-    |   expression (EQ | NEQ) expression
-    |   expression AND expression
-    |   expression OR expression
-	|	funcCall								
-	|	literal							    
-	|	IDENTIFIER;						
-			  
-
- funcCall : IDENTIFIER LPAREN IDENTIFIER (DELIMITER IDENTIFIER)* RPAREN;
+ expression : LPAREN expression RPAREN										#Parens
+	|	expression ('++' | '--')											#IncDec
+    |   NEGATE expression													#Negate
+	|   expression '^'<assoc = right> expression							#Exponent
+    |   expression (MUL|DIV|MOD) expression									#Arith2
+    |   expression (ADD|SUB) expression										#Arith1
+    |   expression (LE | GE | GT | LT) expression							#Compare
+    |   expression (EQ | NEQ) expression									#Equality
+    |   expression AND expression											#And
+    |   expression OR expression											#Or
+	|	IDENTIFIER LPAREN expression (DELIMITER expression)* RPAREN			#Func							
+	|	literal																#Lit					    
+	|	IDENTIFIER															#Var;						  
 
  type : primitiveType
 	  | listType;
@@ -67,8 +64,6 @@ grammar HaCS;
  listType : 'List' LT type GT;
 
  literal : INT|FLOAT|CHAR|BOOL;
-
-
 
 compileUnit
 	:	EOF

@@ -10,41 +10,51 @@ namespace HaCS.SymbolTable
 {
     public class DefPhase : HaCSBaseListener
     {
-        ParseTreeProperty<IScope> scopes = new ParseTreeProperty<IScope>();
-        GlobalScope global = new GlobalScope(null);
-        IScope currentScope;
+        private ParseTreeProperty<IScope> _scopes = new ParseTreeProperty<IScope>();
+        private GlobalScope _global = new GlobalScope(null);
+        private IScope _currentScope;
+
+        public ParseTreeProperty<IScope> Scopes
+        {
+            get { return _scopes; }
+        }
+
+        public GlobalScope Global
+        {
+            get { return _global; }
+        }
+
         public override void EnterProgram(HaCSParser.ProgramContext context)
         {
-            currentScope = global;
+            _currentScope = _global;
         }
 
         public override void EnterFunctionDecl(HaCSParser.FunctionDeclContext context)
         {
             string name = context.IDENTIFIER().GetText();
-            //int typeToken = context.type().primitiveType().
             int typeTokentype = context.type().Start.Type;
             BaseSymbol.HaCSType type = Toolbox.getType(typeTokentype);
 
-            FunctionSymbol function = new FunctionSymbol(name, type, currentScope);
-            currentScope.Define(function);
-            scopes.Put(context, function);
-            currentScope = function;
+            FunctionSymbol function = new FunctionSymbol(name, type, _currentScope);
+            _currentScope.Define(function);
+            _scopes.Put(context, function);
+            _currentScope = function;
         }
 
         public override void ExitFunctionDecl( HaCSParser.FunctionDeclContext context)
         {
-            currentScope = currentScope.EnclosingScope;
+            _currentScope = _currentScope.EnclosingScope;
         }
 
         public override void EnterBody(HaCSParser.BodyContext context)
         {
-            currentScope = new LocalScope(currentScope);
-            scopes.Put(context, currentScope);
+            _currentScope = new LocalScope(_currentScope);
+            _scopes.Put(context, _currentScope);
         }
 
         public override void ExitBody( HaCSParser.BodyContext context)
         {
-            currentScope = currentScope.EnclosingScope;
+            _currentScope = _currentScope.EnclosingScope;
         }
 
         public override void ExitFormalParam(HaCSParser.FormalParamContext context)
@@ -65,24 +75,24 @@ namespace HaCS.SymbolTable
         {
             int typeTokenType = context.Start.Type;
             BaseSymbol.HaCSType type = Toolbox.getType(typeTokenType);
-            VariableSymbol varSym = new VariableSymbol(name, type, currentScope);
-            currentScope.Define(varSym);
+            VariableSymbol varSym = new VariableSymbol(name, type, _currentScope);
+            _currentScope.Define(varSym);
         }
 
         public void DefineVariable(HaCSParser.PrimitiveTypeContext context, string name)
         {
             int typeTokenType = context.Start.Type;
             BaseSymbol.HaCSType type = Toolbox.getType(typeTokenType);
-            VariableSymbol varSym = new VariableSymbol(name, type, currentScope);
-            currentScope.Define(varSym);
+            VariableSymbol varSym = new VariableSymbol(name, type, _currentScope);
+            _currentScope.Define(varSym);
         }
 
         public void DefineVariable(HaCSParser.ListTypeContext context, string name)
         {
             int typeTokenType = context.Start.Type;
             BaseSymbol.HaCSType type = Toolbox.getType(typeTokenType);
-            VariableSymbol varSym = new VariableSymbol(name, type, currentScope);
-            currentScope.Define(varSym);
+            VariableSymbol varSym = new VariableSymbol(name, type, _currentScope);
+            _currentScope.Define(varSym);
         }
     }
 }

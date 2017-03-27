@@ -65,6 +65,7 @@
     <Compile Include="SymbolTable\GlobalScope.cs" />
     <Compile Include="SymbolTable\IScope.cs" />
     <Compile Include="SymbolTable\LocalScope.cs" />
+    <Compile Include="SymbolTable\RefPhase.cs" />
     <Compile Include="SymbolTable\VariableSymbol.cs" />
     <Compile Include="Toolbox.cs" />
   </ItemGroup>
