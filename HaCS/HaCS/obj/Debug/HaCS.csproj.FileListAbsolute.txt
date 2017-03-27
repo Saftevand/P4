@@ -1,0 +1,15 @@
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\bin\Debug\HaCS.exe.config
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCS.csprojResolveAssemblyReference.cache
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\bin\Debug\HaCS.exe
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\bin\Debug\HaCS.pdb
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\bin\Debug\Antlr4.Runtime.dll
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\bin\Debug\Antlr4.Runtime.xml
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCSLexer.cs
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCSParser.cs
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCSListener.cs
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCSBaseListener.cs
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCSVisitor.cs
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCSBaseVisitor.cs
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCS.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCS.exe
+c:\users\grypetersen\documents\visual studio 2015\Projects\HaCS\HaCS\obj\Debug\HaCS.pdb
