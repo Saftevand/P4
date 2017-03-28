@@ -13,10 +13,11 @@ namespace HaCS
         {
             switch (tokenType)
             {
-                case HaCSParser.INT: return BaseSymbol.HaCSType.tINT;
-                case HaCSParser.FLOAT: return BaseSymbol.HaCSType.tFLOAT;
-                case HaCSParser.CHAR: return BaseSymbol.HaCSType.tCHAR;
-                case HaCSParser.BOOL: return BaseSymbol.HaCSType.tBOOL;
+                case HaCSParser.INT_Type: return BaseSymbol.HaCSType.tINT;
+                case HaCSParser.FLOAT_Type: return BaseSymbol.HaCSType.tFLOAT;
+                case HaCSParser.CHAR_Type: return BaseSymbol.HaCSType.tCHAR;
+                case HaCSParser.BOOL_Type: return BaseSymbol.HaCSType.tBOOL;
+                case HaCSParser.LIST: return BaseSymbol.HaCSType.tLIST;
                 default: return BaseSymbol.HaCSType.tINVALID;
             }
         }

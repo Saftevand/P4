@@ -361,6 +361,19 @@ public partial class HaCSBaseListener : IHaCSListener {
 	public virtual void ExitVarDcl([NotNull] HaCSParser.VarDclContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="HaCSParser.listDcl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterListDcl([NotNull] HaCSParser.ListDclContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="HaCSParser.listDcl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitListDcl([NotNull] HaCSParser.ListDclContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="HaCSParser.returnStmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

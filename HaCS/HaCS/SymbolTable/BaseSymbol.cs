@@ -8,7 +8,7 @@ namespace HaCS.SymbolTable
 {
     public abstract class BaseSymbol
     {
-        public enum HaCSType { tINT, tFLOAT, tCHAR, tINVALID, tBOOL};
+        public enum HaCSType { tINT, tFLOAT, tCHAR, tINVALID, tBOOL, tLIST};
         private string _name;
         private HaCSType _symbolType;
         private List<BaseSymbol> _symbols;

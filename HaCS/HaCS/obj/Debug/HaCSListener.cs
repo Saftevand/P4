@@ -311,6 +311,17 @@ public interface IHaCSListener : IParseTreeListener {
 	void ExitVarDcl([NotNull] HaCSParser.VarDclContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="HaCSParser.listDcl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterListDcl([NotNull] HaCSParser.ListDclContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="HaCSParser.listDcl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitListDcl([NotNull] HaCSParser.ListDclContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="HaCSParser.returnStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

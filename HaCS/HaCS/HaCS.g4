@@ -17,7 +17,7 @@ grammar HaCS;
  */
  program: main functionDecl*;
  
- main : INTType MAIN body;
+ main : INT_Type MAIN body;
 
  functionDecl : type IDENTIFIER LPAREN formalParam(DELIMITER formalParam)* RPAREN body
 			  | LPAREN formalParam(DELIMITER formalParam)* RPAREN LAMBDA body;
@@ -38,7 +38,9 @@ grammar HaCS;
  elseStmt : ELSE body;
 
  varDcl : primitiveType IDENTIFIER ASSIGN expression
-		| listType IDENTIFIER ASSIGN LCURLBRACKET expression (DELIMITER expression)* RCURLBRACKET;
+		| listType IDENTIFIER ASSIGN listDcl;
+listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
+		| expression (DELIMITER expression)*;
 
  returnStmt :  RETURN expression;
 
@@ -59,9 +61,7 @@ grammar HaCS;
  type : primitiveType
 	  | listType;
 
- primitiveType : INTType|CHARType|FLOATType|BOOLType;
-
-
+ primitiveType : INT_Type|CHAR_Type|FLOAT_Type|BOOL_Type;
 
  listType : LIST LT type GT;
 
@@ -78,10 +78,10 @@ INT : '-'?('0'..'9')+;
 FLOAT : '-'?[0-9]+('.'[0-9]+)? ;
 CHAR : [\u0032-\u00126];
 BOOL : ('true'|'false');
-INTType : 'int';
-FLOATType : 'float';
-CHARType : 'char';
-BOOLType : 'bool';
+INT_Type : 'int';
+FLOAT_Type : 'float';
+CHAR_Type : 'char';
+BOOL_Type : 'bool';
 LIST : 'List';
 MAIN : 'main';
 IF : 'if';

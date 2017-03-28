@@ -29,8 +29,8 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 [System.CLSCompliant(false)]
 public partial class HaCSLexer : Lexer {
 	public const int
-		INT=1, FLOAT=2, CHAR=3, BOOL=4, INTType=5, FLOATType=6, CHARType=7, BOOLType=8, 
-		LIST=9, MAIN=10, IF=11, ELSEIF=12, ELSE=13, RETURN=14, IDENTIFIER=15, 
+		INT=1, FLOAT=2, CHAR=3, BOOL=4, INT_Type=5, FLOAT_Type=6, CHAR_Type=7, 
+		BOOL_Type=8, LIST=9, MAIN=10, IF=11, ELSEIF=12, ELSE=13, RETURN=14, IDENTIFIER=15, 
 		EXP=16, INC=17, DEC=18, MUL=19, DIV=20, MOD=21, ADD=22, SUB=23, AND=24, 
 		OR=25, EQ=26, NEQ=27, GT=28, GE=29, LT=30, LE=31, NEGATE=32, ASSIGN=33, 
 		LPAREN=34, RPAREN=35, LBRACKET=36, RBRACKET=37, LCURLBRACKET=38, RCURLBRACKET=39, 
@@ -40,12 +40,12 @@ public partial class HaCSLexer : Lexer {
 	};
 
 	public static readonly string[] ruleNames = {
-		"INT", "FLOAT", "CHAR", "BOOL", "INTType", "FLOATType", "CHARType", "BOOLType", 
-		"LIST", "MAIN", "IF", "ELSEIF", "ELSE", "RETURN", "IDENTIFIER", "EXP", 
-		"INC", "DEC", "MUL", "DIV", "MOD", "ADD", "SUB", "AND", "OR", "EQ", "NEQ", 
-		"GT", "GE", "LT", "LE", "NEGATE", "ASSIGN", "LPAREN", "RPAREN", "LBRACKET", 
-		"RBRACKET", "LCURLBRACKET", "RCURLBRACKET", "DELIMITER", "EOS", "LAMBDA", 
-		"WS", "COMMENT", "LINE_COMMENT"
+		"INT", "FLOAT", "CHAR", "BOOL", "INT_Type", "FLOAT_Type", "CHAR_Type", 
+		"BOOL_Type", "LIST", "MAIN", "IF", "ELSEIF", "ELSE", "RETURN", "IDENTIFIER", 
+		"EXP", "INC", "DEC", "MUL", "DIV", "MOD", "ADD", "SUB", "AND", "OR", "EQ", 
+		"NEQ", "GT", "GE", "LT", "LE", "NEGATE", "ASSIGN", "LPAREN", "RPAREN", 
+		"LBRACKET", "RBRACKET", "LCURLBRACKET", "RCURLBRACKET", "DELIMITER", "EOS", 
+		"LAMBDA", "WS", "COMMENT", "LINE_COMMENT"
 	};
 
 
@@ -63,8 +63,8 @@ public partial class HaCSLexer : Lexer {
 		"']'", "'{'", "'}'", "','", "';'", "'=>'"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, "INT", "FLOAT", "CHAR", "BOOL", "INTType", "FLOATType", "CHARType", 
-		"BOOLType", "LIST", "MAIN", "IF", "ELSEIF", "ELSE", "RETURN", "IDENTIFIER", 
+		null, "INT", "FLOAT", "CHAR", "BOOL", "INT_Type", "FLOAT_Type", "CHAR_Type", 
+		"BOOL_Type", "LIST", "MAIN", "IF", "ELSEIF", "ELSE", "RETURN", "IDENTIFIER", 
 		"EXP", "INC", "DEC", "MUL", "DIV", "MOD", "ADD", "SUB", "AND", "OR", "EQ", 
 		"NEQ", "GT", "GE", "LT", "LE", "NEGATE", "ASSIGN", "LPAREN", "RPAREN", 
 		"LBRACKET", "RBRACKET", "LCURLBRACKET", "RCURLBRACKET", "DELIMITER", "EOS", 

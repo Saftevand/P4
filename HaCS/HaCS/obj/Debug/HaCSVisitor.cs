@@ -207,6 +207,13 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitVarDcl([NotNull] HaCSParser.VarDclContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="HaCSParser.listDcl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitListDcl([NotNull] HaCSParser.ListDclContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="HaCSParser.returnStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

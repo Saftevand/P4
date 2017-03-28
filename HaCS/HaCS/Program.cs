@@ -14,7 +14,7 @@ namespace HaCS
     {
         static void Main(string[] args)
         {
-            StreamReader inputStream = new StreamReader("C:\\Users\\GryPetersen\\Desktop\\testfile.txt");
+            StreamReader inputStream = new StreamReader("C:\\Users\\GryPetersen\\Desktop\\MarkusTest.txt");
             AntlrInputStream input = new AntlrInputStream(inputStream.ReadToEnd());
             HaCSLexer lexer = new HaCSLexer(input);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
