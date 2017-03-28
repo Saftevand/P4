@@ -17,7 +17,7 @@ grammar HaCS;
  */
  program: main functionDecl*;
  
- main : 'int' 'main' body;
+ main : INTType MAIN body;
 
  functionDecl : type IDENTIFIER LPAREN formalParam(DELIMITER formalParam)* RPAREN body
 			  | LPAREN formalParam(DELIMITER formalParam)* RPAREN LAMBDA body;
@@ -30,22 +30,22 @@ grammar HaCS;
 	  | varDcl EOS
 	  | returnStmt EOS;
 
- ifStmt : 'if' LPAREN expression RPAREN body elseifStmt;
+ ifStmt : IF LPAREN expression RPAREN body elseifStmt;
 
- elseifStmt : 'elseif' LPAREN expression RPAREN body elseifStmt
+ elseifStmt : ELSEIF LPAREN expression RPAREN body elseifStmt
 		    | elseStmt?;
 
- elseStmt : 'else' body;
+ elseStmt : ELSE body;
 
  varDcl : primitiveType IDENTIFIER ASSIGN expression
 		| listType IDENTIFIER ASSIGN LCURLBRACKET expression (DELIMITER expression)* RCURLBRACKET;
 
- returnStmt : 'return' expression;
+ returnStmt :  RETURN expression;
 
  expression : LPAREN expression RPAREN										#Parens
-	|	expression ('++' | '--')											#IncDec
+	|	expression ( INC | DEC )											#IncDec
     |   NEGATE expression													#Negate
-	|   expression '^'<assoc = right> expression							#Exponent
+	|   expression EXP <assoc = right> expression							#Exponent
     |   expression (MUL|DIV|MOD) expression									#Arith2
     |   expression (ADD|SUB) expression										#Arith1
     |   expression (LE | GE | GT | LT) expression							#Compare
@@ -59,9 +59,11 @@ grammar HaCS;
  type : primitiveType
 	  | listType;
 
- primitiveType : 'int'|'char'|'float'|'bool';
- 
- listType : 'List' LT type GT;
+ primitiveType : INTType|CHARType|FLOATType|BOOLType;
+
+
+
+ listType : LIST LT type GT;
 
  literal : INT|FLOAT|CHAR|BOOL;
 
@@ -76,7 +78,20 @@ INT : '-'?('0'..'9')+;
 FLOAT : '-'?[0-9]+('.'[0-9]+)? ;
 CHAR : [\u0032-\u00126];
 BOOL : ('true'|'false');
+INTType : 'int';
+FLOATType : 'float';
+CHARType : 'char';
+BOOLType : 'bool';
+LIST : 'List';
+MAIN : 'main';
+IF : 'if';
+ELSEIF : 'elseif';
+ELSE : 'else';
+RETURN : 'return';
 IDENTIFIER : '_'?[a-zA-Z][a-zA-Z0-9]*;
+EXP : '^';
+INC : '++';
+DEC : '--';
 MUL : '*';
 DIV : '/';
 MOD : '%';
