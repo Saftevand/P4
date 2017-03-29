@@ -73,30 +73,6 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitParens([NotNull] HaCSParser.ParensContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by the <c>Var</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVar([NotNull] HaCSParser.VarContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Arith1</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArith1([NotNull] HaCSParser.Arith1Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>IncDec</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitIncDec([NotNull] HaCSParser.IncDecContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by the <c>And</c>
 	/// labeled alternative in <see cref="HaCSParser.expression"/>.
 	/// </summary>
@@ -111,6 +87,22 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitLit([NotNull] HaCSParser.LitContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Var</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitVar([NotNull] HaCSParser.VarContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Arith1</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArith1([NotNull] HaCSParser.Arith1Context context);
 
 	/// <summary>
 	/// Visit a parse tree produced by the <c>Compare</c>

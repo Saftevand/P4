@@ -6,7 +6,7 @@ grammar HaCS;
 	protected const int EOF = Eof;
 }
 
-@lexer::memebers
+@lexer::members
 {
 	protected const int EOF = Eof;
 	protected const int HIDDEN = Hidden;
@@ -45,7 +45,6 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
  returnStmt :  RETURN expression;
 
  expression : LPAREN expression RPAREN										#Parens
-	|	expression ( INC | DEC )											#IncDec
     |   NEGATE expression													#Negate
 	|   expression EXP <assoc = right> expression							#Exponent
     |   expression (MUL|DIV|MOD) expression									#Arith2
@@ -90,8 +89,6 @@ ELSE : 'else';
 RETURN : 'return';
 IDENTIFIER : '_'?[a-zA-Z][a-zA-Z0-9]*;
 EXP : '^';
-INC : '++';
-DEC : '--';
 MUL : '*';
 DIV : '/';
 MOD : '%';
