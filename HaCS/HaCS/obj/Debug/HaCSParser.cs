@@ -736,11 +736,13 @@ public partial class HaCSParser : Parser {
 	}
 
 	public partial class VarDclContext : ParserRuleContext {
+		public PrimitiveTypeContext left;
+		public ExpressionContext right;
+		public ITerminalNode IDENTIFIER() { return GetToken(HaCSParser.IDENTIFIER, 0); }
+		public ITerminalNode ASSIGN() { return GetToken(HaCSParser.ASSIGN, 0); }
 		public PrimitiveTypeContext primitiveType() {
 			return GetRuleContext<PrimitiveTypeContext>(0);
 		}
-		public ITerminalNode IDENTIFIER() { return GetToken(HaCSParser.IDENTIFIER, 0); }
-		public ITerminalNode ASSIGN() { return GetToken(HaCSParser.ASSIGN, 0); }
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
 		}
@@ -783,10 +785,10 @@ public partial class HaCSParser : Parser {
 			case BOOL_Type:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 119; primitiveType();
+				State = 119; _localctx.left = primitiveType();
 				State = 120; Match(IDENTIFIER);
 				State = 121; Match(ASSIGN);
-				State = 122; expression(0);
+				State = 122; _localctx.right = expression(0);
 				}
 				break;
 			case LIST:
@@ -987,13 +989,15 @@ public partial class HaCSParser : Parser {
 		}
 	}
 	public partial class OrContext : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
+		public ITerminalNode OR() { return GetToken(HaCSParser.OR, 0); }
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public ITerminalNode OR() { return GetToken(HaCSParser.OR, 0); }
 		public OrContext(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
@@ -1010,13 +1014,15 @@ public partial class HaCSParser : Parser {
 		}
 	}
 	public partial class ExponentContext : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
+		public ITerminalNode EXP() { return GetToken(HaCSParser.EXP, 0); }
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public ITerminalNode EXP() { return GetToken(HaCSParser.EXP, 0); }
 		public ExponentContext(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
@@ -1033,6 +1039,8 @@ public partial class HaCSParser : Parser {
 		}
 	}
 	public partial class Arith2Context : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
@@ -1128,6 +1136,8 @@ public partial class HaCSParser : Parser {
 		}
 	}
 	public partial class Arith1Context : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
@@ -1152,15 +1162,17 @@ public partial class HaCSParser : Parser {
 		}
 	}
 	public partial class PipeContext : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
+		public ITerminalNode PIPE() { return GetToken(HaCSParser.PIPE, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(HaCSParser.IDENTIFIER, 0); }
+		public ITerminalNode LTMINUS() { return GetToken(HaCSParser.LTMINUS, 0); }
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public ITerminalNode PIPE() { return GetToken(HaCSParser.PIPE, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(HaCSParser.IDENTIFIER, 0); }
-		public ITerminalNode LTMINUS() { return GetToken(HaCSParser.LTMINUS, 0); }
 		public PipeContext(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
@@ -1200,13 +1212,15 @@ public partial class HaCSParser : Parser {
 		}
 	}
 	public partial class AndContext : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
+		public ITerminalNode AND() { return GetToken(HaCSParser.AND, 0); }
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public ITerminalNode AND() { return GetToken(HaCSParser.AND, 0); }
 		public AndContext(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
@@ -1243,6 +1257,8 @@ public partial class HaCSParser : Parser {
 		}
 	}
 	public partial class CompareContext : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
@@ -1289,6 +1305,8 @@ public partial class HaCSParser : Parser {
 		}
 	}
 	public partial class EqualityContext : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
@@ -1442,17 +1460,19 @@ public partial class HaCSParser : Parser {
 					case 1:
 						{
 						_localctx = new ExponentContext(new ExpressionContext(_parentctx, _parentState));
+						((ExponentContext)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expression);
 						State = 186;
 						if (!(Precpred(_ctx, 12))) throw new FailedPredicateException(this, "Precpred(_ctx, 12)");
 						State = 187; Match(EXP);
-						State = 188; expression(13);
+						State = 188; ((ExponentContext)_localctx).right = expression(13);
 						}
 						break;
 
 					case 2:
 						{
 						_localctx = new Arith2Context(new ExpressionContext(_parentctx, _parentState));
+						((Arith2Context)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expression);
 						State = 189;
 						if (!(Precpred(_ctx, 11))) throw new FailedPredicateException(this, "Precpred(_ctx, 11)");
@@ -1463,13 +1483,14 @@ public partial class HaCSParser : Parser {
 						} else {
 							Consume();
 						}
-						State = 191; expression(12);
+						State = 191; ((Arith2Context)_localctx).right = expression(12);
 						}
 						break;
 
 					case 3:
 						{
 						_localctx = new Arith1Context(new ExpressionContext(_parentctx, _parentState));
+						((Arith1Context)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expression);
 						State = 192;
 						if (!(Precpred(_ctx, 10))) throw new FailedPredicateException(this, "Precpred(_ctx, 10)");
@@ -1480,13 +1501,14 @@ public partial class HaCSParser : Parser {
 						} else {
 							Consume();
 						}
-						State = 194; expression(11);
+						State = 194; ((Arith1Context)_localctx).right = expression(11);
 						}
 						break;
 
 					case 4:
 						{
 						_localctx = new CompareContext(new ExpressionContext(_parentctx, _parentState));
+						((CompareContext)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expression);
 						State = 195;
 						if (!(Precpred(_ctx, 9))) throw new FailedPredicateException(this, "Precpred(_ctx, 9)");
@@ -1497,13 +1519,14 @@ public partial class HaCSParser : Parser {
 						} else {
 							Consume();
 						}
-						State = 197; expression(10);
+						State = 197; ((CompareContext)_localctx).right = expression(10);
 						}
 						break;
 
 					case 5:
 						{
 						_localctx = new EqualityContext(new ExpressionContext(_parentctx, _parentState));
+						((EqualityContext)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expression);
 						State = 198;
 						if (!(Precpred(_ctx, 8))) throw new FailedPredicateException(this, "Precpred(_ctx, 8)");
@@ -1514,42 +1537,45 @@ public partial class HaCSParser : Parser {
 						} else {
 							Consume();
 						}
-						State = 200; expression(9);
+						State = 200; ((EqualityContext)_localctx).right = expression(9);
 						}
 						break;
 
 					case 6:
 						{
 						_localctx = new PipeContext(new ExpressionContext(_parentctx, _parentState));
+						((PipeContext)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expression);
 						State = 201;
 						if (!(Precpred(_ctx, 7))) throw new FailedPredicateException(this, "Precpred(_ctx, 7)");
 						State = 202; Match(PIPE);
 						State = 203; Match(IDENTIFIER);
 						State = 204; Match(LTMINUS);
-						State = 205; expression(8);
+						State = 205; ((PipeContext)_localctx).right = expression(8);
 						}
 						break;
 
 					case 7:
 						{
 						_localctx = new AndContext(new ExpressionContext(_parentctx, _parentState));
+						((AndContext)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expression);
 						State = 206;
 						if (!(Precpred(_ctx, 6))) throw new FailedPredicateException(this, "Precpred(_ctx, 6)");
 						State = 207; Match(AND);
-						State = 208; expression(7);
+						State = 208; ((AndContext)_localctx).right = expression(7);
 						}
 						break;
 
 					case 8:
 						{
 						_localctx = new OrContext(new ExpressionContext(_parentctx, _parentState));
+						((OrContext)_localctx).left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expression);
 						State = 209;
 						if (!(Precpred(_ctx, 5))) throw new FailedPredicateException(this, "Precpred(_ctx, 5)");
 						State = 210; Match(OR);
-						State = 211; expression(6);
+						State = 211; ((OrContext)_localctx).right = expression(6);
 						}
 						break;
 					}

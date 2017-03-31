@@ -37,7 +37,7 @@ grammar HaCS;
 
  elseStmt : ELSE body;
 
- varDcl : primitiveType IDENTIFIER ASSIGN expression
+ varDcl : left=primitiveType IDENTIFIER ASSIGN right=expression
 		| listType IDENTIFIER ASSIGN listDcl;
 listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
 		| expression (DELIMITER expression)*;
@@ -46,14 +46,14 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
 
  expression : LPAREN expression RPAREN										#Parens
     |   NEGATE expression													#Negate
-	|   expression EXP <assoc = right> expression							#Exponent
-    |   expression (MUL|DIV|MOD) expression									#Arith2
-    |   expression (ADD|SUB) expression										#Arith1
-    |   expression (LE | GE | GT | LT) expression							#Compare
-    |   expression (EQ | NEQ) expression									#Equality
-    |	expression PIPE IDENTIFIER LTMINUS expression						#Pipe
-	|   expression AND expression											#And
-    |   expression OR expression											#Or
+	|   left=expression EXP <assoc = right> right=expression				#Exponent
+    |   left=expression (MUL|DIV|MOD) right=expression						#Arith2
+    |   left=expression (ADD|SUB) right=expression							#Arith1
+    |   left=expression (LE | GE | GT | LT) right=expression				#Compare
+    |   left=expression (EQ | NEQ) right=expression							#Equality
+    |	left=expression PIPE IDENTIFIER LTMINUS right=expression			#Pipe
+	|   left=expression AND right=expression								#And
+    |   left=expression OR right=expression									#Or
 	|	IDENTIFIER LPAREN expression (DELIMITER expression)* RPAREN			#Func							
 	|	(INT|FLOAT|CHAR|BOOL)												#Lit					    
 	|	IDENTIFIER listOpp?													#Var
@@ -69,8 +69,7 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
  listType : LIST LT type GT;
 
 compileUnit
-	:	EOF
-	;
+	:	EOF;
 
 /*
  * Lexer Rules

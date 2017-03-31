@@ -23,11 +23,10 @@ namespace HaCS
             ParseTreeWalker walker = new ParseTreeWalker();
             HaCS.SymbolTable.DefPhase Def = new SymbolTable.DefPhase();
             walker.Walk(Def, tree);
-            //SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
-            //walker.Walk(Ref, tree);
-            TypeCheck typechecker = new TypeCheck();
-            walker.Walk(typechecker, tree);
-            
+            SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
+            walker.Walk(Ref, tree);
+            TypeCheck typechecker = new TypeCheck(Def.Scopes);
+            typechecker.Visit(tree);
             Console.ReadKey();
         }
     }
