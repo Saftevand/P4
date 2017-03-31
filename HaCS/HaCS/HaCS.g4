@@ -75,7 +75,7 @@ compileUnit
  */
 INT : '-'?('0'..'9')+;
 FLOAT : '-'?[0-9]+('.'[0-9]+)? ;
-CHAR : [\u0032-\u00126];
+CHAR : '''[\u0032-\u00126]''';
 BOOL : ('true'|'false');
 INT_Type : 'int';
 FLOAT_Type : 'float';
