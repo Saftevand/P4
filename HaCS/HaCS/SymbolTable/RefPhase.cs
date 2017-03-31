@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Antlr4.Runtime;
 
 namespace HaCS.SymbolTable
 {
-    public class RefPhase : HaCSBaseListener
+    public class RefPhase : HaCSBaseListener 
     {
         private GlobalScope _global;
         private ParseTreeProperty<IScope> _scopes;
@@ -72,5 +73,7 @@ namespace HaCS.SymbolTable
                 Console.WriteLine(name + " is a variable not a function");
             }
         }
+
+
     }
 }

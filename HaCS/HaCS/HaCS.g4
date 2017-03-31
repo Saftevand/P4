@@ -51,24 +51,22 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
     |   expression (ADD|SUB) expression										#Arith1
     |   expression (LE | GE | GT | LT) expression							#Compare
     |   expression (EQ | NEQ) expression									#Equality
-    |	expression PIPE IDENTIFIER LTMINUS expression
+    |	expression PIPE IDENTIFIER LTMINUS expression						#Pipe
 	|   expression AND expression											#And
     |   expression OR expression											#Or
 	|	IDENTIFIER LPAREN expression (DELIMITER expression)* RPAREN			#Func							
-	|	literal																#Lit					    
-	|	IDENTIFIER listOpp?															#Var;	
-	|	LBRACKET IDENTIFIER DOTDOT IDENTIFIER RBRACKET					  
+	|	(INT|FLOAT|CHAR|BOOL)												#Lit					    
+	|	IDENTIFIER listOpp?													#Var
+	|	LBRACKET IDENTIFIER DOTDOT IDENTIFIER RBRACKET					    #Range;
 
  type : primitiveType
 	  | listType;
 
  primitiveType : INT_Type|CHAR_Type|FLOAT_Type|BOOL_Type;
 
- listOpp  : FIND LPAREN expression? RPAREN
+ listOpp  : FIND LPAREN expression? RPAREN;
 
  listType : LIST LT type GT;
-
- literal : INT|FLOAT|CHAR|BOOL;
 
 compileUnit
 	:	EOF
