@@ -14,7 +14,7 @@ namespace HaCS
     {
         static void Main(string[] args)
         {
-            StreamReader inputStream = new StreamReader("C:\\Users\\GryPetersen\\Desktop\\MarkusTest.txt");
+            StreamReader inputStream = new StreamReader("C:\\Users\\Marku\\Desktop\\MarkusTest.txt");
             AntlrInputStream input = new AntlrInputStream(inputStream.ReadToEnd());
             HaCSLexer lexer = new HaCSLexer(input);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -23,8 +23,10 @@ namespace HaCS
             ParseTreeWalker walker = new ParseTreeWalker();
             HaCS.SymbolTable.DefPhase Def = new SymbolTable.DefPhase();
             walker.Walk(Def, tree);
-            SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
-            walker.Walk(Ref, tree);
+            //SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
+            //walker.Walk(Ref, tree);
+            TypeCheck typechecker = new TypeCheck();
+            walker.Walk(typechecker, tree);
             
             Console.ReadKey();
         }

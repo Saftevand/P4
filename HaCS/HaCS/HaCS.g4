@@ -51,20 +51,22 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
     |   expression (ADD|SUB) expression										#Arith1
     |   expression (LE | GE | GT | LT) expression							#Compare
     |   expression (EQ | NEQ) expression									#Equality
-    |   expression AND expression											#And
+    |	expression PIPE IDENTIFIER LTMINUS expression						#Pipe
+	|   expression AND expression											#And
     |   expression OR expression											#Or
 	|	IDENTIFIER LPAREN expression (DELIMITER expression)* RPAREN			#Func							
-	|	literal																#Lit					    
-	|	IDENTIFIER															#Var;						  
+	|	(INT|FLOAT|CHAR|BOOL)												#Lit					    
+	|	IDENTIFIER listOpp?													#Var
+	|	LBRACKET IDENTIFIER DOTDOT IDENTIFIER RBRACKET					    #Range;
 
  type : primitiveType
 	  | listType;
 
  primitiveType : INT_Type|CHAR_Type|FLOAT_Type|BOOL_Type;
 
- listType : LIST LT type GT;
+ listOpp  : FIND LPAREN expression? RPAREN;
 
- literal : INT|FLOAT|CHAR|BOOL;
+ listType : LIST LT type GT;
 
 compileUnit
 	:	EOF
@@ -96,12 +98,15 @@ ADD : '+';
 SUB : '-';
 AND : '&&';
 OR	: '||';
+PIPE: '|';
 EQ	: '==';
 NEQ	: '!=';
 GT  : '>' ;
 GE  : '>=' ;
 LT  : '<' ;
+DOTDOT: '..';
 LE  : '<=' ;
+LTMINUS: '<-';
 NEGATE: '!';
 ASSIGN : '=';
 LPAREN : '(' ;
@@ -113,6 +118,7 @@ RCURLBRACKET : '}' ;
 DELIMITER : ',';
 EOS : ';';
 LAMBDA : '=>';
+FIND : '.find';
 
 WS  :  [ \t\r\n\u000C]+ -> skip
     ;

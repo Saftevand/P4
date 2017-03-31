@@ -68,6 +68,7 @@
     <Compile Include="SymbolTable\RefPhase.cs" />
     <Compile Include="SymbolTable\VariableSymbol.cs" />
     <Compile Include="Toolbox.cs" />
+    <Compile Include="TypeCheck.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
