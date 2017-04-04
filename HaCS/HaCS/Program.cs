@@ -28,11 +28,18 @@ namespace HaCS
             ParseTreeWalker walker = new ParseTreeWalker();
             HaCS.SymbolTable.DefPhase Def = new SymbolTable.DefPhase();
             walker.Walk(Def, tree);
+<<<<<<< HEAD
             //SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
             //walker.Walk(Ref, tree);
             TypeCheck typechecker = new TypeCheck();
             walker.Walk(typechecker, tree);
             Console.WriteLine("Compile complete");
+=======
+            SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
+            walker.Walk(Ref, tree);
+            TypeCheck typechecker = new TypeCheck(Def.Scopes);
+            typechecker.Visit(tree);
+>>>>>>> 0297522ed76b525806edf67efc0c6eb35df04852
             Console.ReadKey();
         }
 
