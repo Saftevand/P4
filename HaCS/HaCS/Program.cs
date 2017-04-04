@@ -14,7 +14,12 @@ namespace HaCS
     {
         static void Main(string[] args)
         {
-            StreamReader inputStream = new StreamReader("C:\\Users\\Marku\\Desktop\\MarkusTest.txt");
+            StreamReader inputStream;
+            if (args.Count() == 0)
+            {
+                inputStream = promptInputStream();
+            }
+            else inputStream = promptInputStream(args[0]);
             AntlrInputStream input = new AntlrInputStream(inputStream.ReadToEnd());
             HaCSLexer lexer = new HaCSLexer(input);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -27,8 +32,31 @@ namespace HaCS
             //walker.Walk(Ref, tree);
             TypeCheck typechecker = new TypeCheck();
             walker.Walk(typechecker, tree);
-            
+            Console.WriteLine("Compile complete");
             Console.ReadKey();
+        }
+
+        private static StreamReader promptInputStream(string Argument = "")
+        {
+            string file;
+            if (Argument == "")
+            {
+                Console.WriteLine("Specify file to compile:");
+                file = Console.ReadLine();
+            }
+            else file = Argument;
+                
+            try
+            {
+                return new StreamReader(@file);
+            }
+            catch (Exception)
+            {
+                Console.Clear();
+                Console.WriteLine("File not found. Try again.");
+                return promptInputStream();
+            }
+            
         }
     }
 }

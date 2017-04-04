@@ -1,0 +1,25 @@
+int main{
+int a = 4;
+int c = 5;
+int b = addNumbers(a);
+
+int h = func(a);
+
+return 1;
+}
+
+int addNumbers(int x){
+int a = 7;
+return a + x; 
+}
+
+int func(int x){
+int limit = 7;
+if (x > limit) {
+    int b = 5;
+}
+else {
+    int b = 5;
+}
+return b;
+}
