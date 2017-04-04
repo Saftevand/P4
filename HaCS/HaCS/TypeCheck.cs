@@ -34,7 +34,7 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)VisitExpression(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)VisitExpression(context.right);
-            _types.Put(context, _determineType(type1, type2)); //hhahah du troede lige det ville være en god kommentar, men nej.
+            _types.Put(context, _determineType(type1, type2)); //hhahah du troede lige det ville være en god kommentar, men nej. 
             return null;
         }
 
@@ -66,7 +66,28 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)VisitExpression(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)VisitExpression(context.right);
-            _types.Put(context, _determineType(type1, type2));
+            BaseSymbol.HaCSType type3;
+
+            if (type1 != BaseSymbol.HaCSType.tCHAR || type2 != BaseSymbol.HaCSType.tCHAR)
+            {
+                if ((type1 == BaseSymbol.HaCSType.tFLOAT && type2 == BaseSymbol.HaCSType.tFLOAT) || (type1 == BaseSymbol.HaCSType.tINT && type2 == BaseSymbol.HaCSType.tINT))
+                {
+                    type3 = type1;
+                }
+                else if (type1 == BaseSymbol.HaCSType.tFLOAT && type2 == BaseSymbol.HaCSType.tINT)
+                {
+                    type3 = BaseSymbol.HaCSType.tFLOAT;
+                }
+                else
+                {
+                    type3 = BaseSymbol.HaCSType.tFLOAT;
+                }
+            }
+            else
+            {
+                type3 = BaseSymbol.HaCSType.tINVALID;
+            }
+            _types.Put(context, type3);
             return null;
         }
 
@@ -92,16 +113,41 @@ namespace HaCS
         //    IScope currentScope = _scopes.Get(context);
         //    BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)VisitPrimitiveType(context.left);
         //    BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)VisitExpression(context.right);
-
-
         //    return null;
         //}
+
+        public override object VisitVarDcl(HaCSParser.VarDclContext context)
+        {
+            BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)VisitExpression(context.right);
+            BaseSymbol.HaCSType type2 = Toolbox.getType(context.primitiveType().Start.Type); //context.IDENTIFIER().Symbol.Type;
+
+            if (type1 == type2)
+            {
+                _types.Put(context, type1);
+            }
+            else
+            {
+                _types.Put(context, BaseSymbol.HaCSType.tINVALID);
+            }
+            return null;
+        }
+
 
         public override object VisitAnd(HaCSParser.AndContext context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)VisitExpression(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)VisitExpression(context.right);
-            _types.Put(context, _determineType(type1, type2));
+            BaseSymbol.HaCSType type3;
+
+            if (type1 == BaseSymbol.HaCSType.tBOOL && type2 == BaseSymbol.HaCSType.tBOOL)
+            {
+                type3 = BaseSymbol.HaCSType.tBOOL;
+            }
+            else
+            {
+                type3 = BaseSymbol.HaCSType.tINVALID;
+            }
+            _types.Put(context, type3);
             return null;
         }
 
@@ -109,7 +155,17 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)VisitExpression(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)VisitExpression(context.right);
-            _types.Put(context, _determineType(type1, type2));
+            BaseSymbol.HaCSType type3;
+
+            if (type1 == BaseSymbol.HaCSType.tBOOL && type2 == BaseSymbol.HaCSType.tBOOL)
+            {
+                type3 = BaseSymbol.HaCSType.tBOOL;
+            }
+            else
+            {
+                type3 = BaseSymbol.HaCSType.tINVALID;
+            }
+            _types.Put(context, type3);
             return null;
         }
 
