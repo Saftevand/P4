@@ -29,6 +29,21 @@ namespace HaCS.SymbolTable
             _currentScope = _global;
         }
 
+        public override void EnterMain( HaCSParser.MainContext context)
+        {
+            string name = context.MAIN().GetText();
+            BaseSymbol.HaCSType type = Toolbox.getType(5);
+
+            FunctionSymbol function = new FunctionSymbol(name, type, _currentScope);
+            _scopes.Put(context, function);
+            _currentScope = function;
+        }
+
+        public override void ExitMain( HaCSParser.MainContext context)
+        {
+            _currentScope = _currentScope.EnclosingScope;
+        }
+
         public override void EnterFunctionDecl(HaCSParser.FunctionDeclContext context)
         {
             string name = context.IDENTIFIER().GetText();

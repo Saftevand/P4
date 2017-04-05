@@ -46,6 +46,10 @@ namespace HaCS
             IScope currentScope = _scopes.Get(context);
             BaseSymbol.HaCSType type = currentScope.Resolve(name).SymbolType;
 
+            _types.Put(context, type);
+
+            return null;
+
         }
 
         public override Object VisitArith2(HaCSParser.Arith2Context context)

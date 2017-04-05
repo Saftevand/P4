@@ -1,7 +1,5 @@
 int main{
 int a = 4;
-bool h = true;
-int l = 4^5.6;
-int z = true;
+int b = a + 2;
 return 1;
 }
