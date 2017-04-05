@@ -40,6 +40,14 @@ namespace HaCS
 
         }
 
+        public override object VisitVar( HaCSParser.VarContext context)
+        {
+            string name = context.IDENTIFIER().GetText();
+            IScope currentScope = _scopes.Get(context);
+            BaseSymbol.HaCSType type = currentScope.Resolve(name).SymbolType;
+
+        }
+
         public override Object VisitArith2(HaCSParser.Arith2Context context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
@@ -70,23 +78,25 @@ namespace HaCS
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
             BaseSymbol.HaCSType type3;
 
-            if (type1 != BaseSymbol.HaCSType.tCHAR || type2 != BaseSymbol.HaCSType.tCHAR)
+            if (type1 != BaseSymbol.HaCSType.tCHAR && type2 != BaseSymbol.HaCSType.tCHAR)
             {
-                if ((type1 == BaseSymbol.HaCSType.tFLOAT && type2 == BaseSymbol.HaCSType.tFLOAT) || (type1 == BaseSymbol.HaCSType.tINT && type2 == BaseSymbol.HaCSType.tINT))
+                if ((type1 == BaseSymbol.HaCSType.tFLOAT && type2 == BaseSymbol.HaCSType.tFLOAT) || (type1 == BaseSymbol.HaCSType.tINT && type2 == BaseSymbol.HaCSType.tINT) || (type1 == BaseSymbol.HaCSType.tBOOL && type2 == BaseSymbol.HaCSType.tBOOL))
                 {
                     type3 = type1;
                 }
-                else if (type1 == BaseSymbol.HaCSType.tFLOAT && type2 == BaseSymbol.HaCSType.tINT)
+                else if ((type1 == BaseSymbol.HaCSType.tFLOAT && type2 == BaseSymbol.HaCSType.tINT) || (type1 == BaseSymbol.HaCSType.tINT && type2 == BaseSymbol.HaCSType.tFLOAT))
                 {
                     type3 = BaseSymbol.HaCSType.tFLOAT;
                 }
                 else
                 {
-                    type3 = BaseSymbol.HaCSType.tFLOAT;
+                    Console.WriteLine("fejl eq 1 bool");
+                    type3 = BaseSymbol.HaCSType.tINVALID;
                 }
             }
             else
             {
+                Console.WriteLine("fejl eq char");
                 type3 = BaseSymbol.HaCSType.tINVALID;
             }
             _types.Put(context, type3);
@@ -109,19 +119,10 @@ namespace HaCS
             return null;
         }
 
-        //public override object VisitVarDcl(HaCSParser.VarDclContext context)
-        //{
-        //    string name = context.IDENTIFIER().GetText();
-        //    IScope currentScope = _scopes.Get(context);
-        //    BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)VisitPrimitiveType(context.left);
-        //    BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)VisitExpression(context.right);
-        //    return null;
-        //}
-
         public override object VisitVarDcl(HaCSParser.VarDclContext context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.right);
-            BaseSymbol.HaCSType type2 = Toolbox.getType(context.primitiveType().Start.Type); //context.IDENTIFIER().Symbol.Type;
+            BaseSymbol.HaCSType type2 = Toolbox.getType(context.primitiveType().Start.Type); 
 
             if (type1 == type2)
             {
@@ -129,6 +130,7 @@ namespace HaCS
             }
             else
             {
+                Console.WriteLine("fejl vardcl");
                 _types.Put(context, BaseSymbol.HaCSType.tINVALID);
             }
             return null;
@@ -196,7 +198,6 @@ namespace HaCS
                     return BaseSymbol.HaCSType.tFLOAT;
                 }
             }
-            Console.WriteLine("Fejl brah");
             return BaseSymbol.HaCSType.tINVALID;
             
         }
