@@ -152,6 +152,10 @@ namespace HaCS
             {
                 _types.Put(context, type1);
             }
+            else if ((type1 == BaseSymbol.HaCSType.tINT && type2 == BaseSymbol.HaCSType.tFLOAT) || (type2 == BaseSymbol.HaCSType.tINT && type1 == BaseSymbol.HaCSType.tFLOAT))
+            {
+                _types.Put(context, BaseSymbol.HaCSType.tFLOAT);
+            }
             else
             {
                 _types.Put(context, BaseSymbol.HaCSType.tINVALID);

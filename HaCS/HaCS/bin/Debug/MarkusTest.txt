@@ -1,8 +1,12 @@
 int main{
 int a = 4;
 int b = 2;
-bool c = 13;
-int d = 2.3;
-float = true;
+float c = plusser(a);
 return 1;
+}
+
+
+int plusser(int x)
+{
+return x + 2;
 }
