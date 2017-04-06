@@ -94,13 +94,11 @@ namespace HaCS
                 }
                 else
                 {
-                    Console.WriteLine("fejl eq 1 bool");
                     type3 = BaseSymbol.HaCSType.tINVALID;
                 }
             }
             else
             {
-                Console.WriteLine("fejl eq char");
                 type3 = BaseSymbol.HaCSType.tINVALID;
             }
             _types.Put(context, type3);
@@ -134,7 +132,6 @@ namespace HaCS
             }
             else
             {
-                Console.WriteLine("fejl vardcl");
                 _types.Put(context, BaseSymbol.HaCSType.tINVALID);
             }
             return null;

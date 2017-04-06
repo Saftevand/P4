@@ -1,5 +1,8 @@
 int main{
 int a = 4;
-int b = a + 2;
+int b = 2;
+bool c = 13;
+int d = 2.3;
+float = true;
 return 1;
 }

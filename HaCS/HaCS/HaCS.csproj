@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resolver.cs" />
     <Compile Include="SymbolTable\BaseScope.cs" />
     <Compile Include="SymbolTable\BaseSymbol.cs" />
     <Compile Include="SymbolTable\DefPhase.cs" />
