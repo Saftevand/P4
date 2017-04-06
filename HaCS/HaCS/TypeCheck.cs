@@ -12,6 +12,7 @@ namespace HaCS
     {
         private ParseTreeProperty<BaseSymbol.HaCSType> _types = new ParseTreeProperty<BaseSymbol.HaCSType>();
         private ParseTreeProperty<IScope> _scopes;
+        private IScope _currentScope;
 
         public TypeCheck(ParseTreeProperty<IScope> scopes)
         {
@@ -21,6 +22,30 @@ namespace HaCS
         public ParseTreeProperty<BaseSymbol.HaCSType> Types
         {
             get { return _types; }
+        }
+
+        public override object VisitFunctionDecl(HaCSParser.FunctionDeclContext context)
+        {
+            _currentScope = _scopes.Get(context);
+            VisitChildren(context);
+            _currentScope = _currentScope.EnclosingScope;
+            return null;
+        }
+
+        public override object VisitMain( HaCSParser.MainContext context)
+        {
+            _currentScope = _scopes.Get(context);
+            VisitChildren(context);
+            _currentScope = _currentScope.EnclosingScope;
+            return null;
+        }
+
+        public override object VisitBody(HaCSParser.BodyContext context)
+        {
+            _currentScope = _scopes.Get(context);
+            VisitChildren(context);
+            _currentScope = _currentScope.EnclosingScope;
+            return null;
         }
 
         public override Object VisitParens(HaCSParser.ParensContext context)
@@ -33,7 +58,6 @@ namespace HaCS
         public override Object VisitExponent(HaCSParser.ExponentContext context)
         {
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
-
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             _types.Put(context, _determineType(type1, type2)); //hhahah du troede lige det ville være en god kommentar, men nej. 
             return _determineType(type1, type2);
@@ -43,13 +67,11 @@ namespace HaCS
         public override object VisitVar( HaCSParser.VarContext context)
         {
             string name = context.IDENTIFIER().GetText();
-            IScope currentScope = _scopes.Get(context);
-            BaseSymbol.HaCSType type = currentScope.Resolve(name).SymbolType;
+            BaseSymbol.HaCSType type = _currentScope.Resolve(name).SymbolType;
 
             _types.Put(context, type);
 
-            return null;
-
+            return type;
         }
 
         public override Object VisitArith2(HaCSParser.Arith2Context context)
@@ -118,9 +140,9 @@ namespace HaCS
         public override Object VisitFunc(HaCSParser.FuncContext context)
         {
             string name = context.IDENTIFIER().GetText();
-            IScope currentScope = _scopes.Get(context);
-            _types.Put(context,currentScope.Resolve(name).SymbolType);
-            return null;
+            BaseSymbol.HaCSType type = _currentScope.Resolve(name).SymbolType;
+            _types.Put(context,type);
+            return type;
         }
 
         public override object VisitVarDcl(HaCSParser.VarDclContext context)
