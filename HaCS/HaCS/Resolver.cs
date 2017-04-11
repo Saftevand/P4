@@ -149,5 +149,27 @@ namespace HaCS
 
             return null;
         }
+
+        public override object VisitIfStmt(HaCSParser.IfStmtContext context)
+        {
+            int linenumber = context.Start.Line;
+            if (_types.Get(context) == BaseSymbol.HaCSType.tINVALID)
+            {
+                Console.WriteLine("Error at line: " + linenumber + " - Errortype: Wrong type in IF condition");
+            }
+
+            return null;
+        }
+
+        public override object VisitElseifStmt(HaCSParser.ElseifStmtContext context)
+        {
+            int linenumber = context.Start.Line;
+            if (_types.Get(context) == BaseSymbol.HaCSType.tINVALID)
+            {
+                Console.WriteLine("Error at line: " + linenumber + " - Errortype: Wrong type in ELSE IF condition");
+            }
+
+            return null;
+        }
     }
 }

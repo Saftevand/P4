@@ -1,12 +1,12 @@
 int main{
 int a = 4;
 int b = 2;
-float c = plusser(a);
+float c = plusser(a, 7);
 return 1;
 }
 
 
-int plusser(int x)
+int plusser(int x, int y)
 {
 return x + 2;
 }

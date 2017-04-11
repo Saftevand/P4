@@ -29,6 +29,14 @@ namespace HaCS
             _currentScope = _scopes.Get(context);
             VisitChildren(context);
             _currentScope = _currentScope.EnclosingScope;
+
+            string name = context.IDENTIFIER().GetText();
+            BaseSymbol.HaCSType type = _currentScope.Resolve(name).SymbolType;
+            _types.Put(context, type);
+
+            HaCSParser.StmtContext stmntcon = context.body().stmt().Last();
+            BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(stmntcon.returnStmt().expression());
+
             return null;
         }
 
@@ -48,19 +56,19 @@ namespace HaCS
             return null;
         }
 
-        public override Object VisitParens(HaCSParser.ParensContext context)
+        public override object VisitParens(HaCSParser.ParensContext context)
         {
             BaseSymbol.HaCSType type = (BaseSymbol.HaCSType)Visit(context.expression());
             _types.Put(context, type);
-            return type;
+            return null;
         }
 
-        public override Object VisitExponent(HaCSParser.ExponentContext context)
+        public override object VisitExponent(HaCSParser.ExponentContext context)
         {
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             _types.Put(context, _determineType(type1, type2)); //hhahah du troede lige det ville være en god kommentar, men nej. 
-            return _determineType(type1, type2);
+            return null;
 
         }
 
@@ -71,34 +79,34 @@ namespace HaCS
 
             _types.Put(context, type);
 
-            return type;
+            return null;
         }
 
-        public override Object VisitArith2(HaCSParser.Arith2Context context)
+        public override object VisitArith2(HaCSParser.Arith2Context context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
             _types.Put(context, _determineType(type1, type2));
-            return _determineType(type1, type2);
+            return null;
         }
 
-        public override Object VisitArith1(HaCSParser.Arith1Context context)
+        public override object VisitArith1(HaCSParser.Arith1Context context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
             _types.Put(context, _determineType(type1, type2));
-            return _determineType(type1, type2);
+            return null;
         }
 
-        public override Object VisitCompare(HaCSParser.CompareContext context)
+        public override object VisitCompare(HaCSParser.CompareContext context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
             _types.Put(context, _determineType(type1, type2));
-            return _determineType(type1, type2);
+            return null;
         }
 
-        public override Object VisitEquality(HaCSParser.EqualityContext context)
+        public override object VisitEquality(HaCSParser.EqualityContext context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
@@ -124,10 +132,10 @@ namespace HaCS
                 type3 = BaseSymbol.HaCSType.tINVALID;
             }
             _types.Put(context, type3);
-            return type3;
+            return null;
         }
 
-        public override Object VisitPipe(HaCSParser.PipeContext context)
+        public override object VisitPipe(HaCSParser.PipeContext context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
@@ -135,12 +143,26 @@ namespace HaCS
             return _determineType(type1, type2);
         }
 
-        public override Object VisitFunc(HaCSParser.FuncContext context)
+        public override object VisitFunc(HaCSParser.FuncContext context)
         {
+
             string name = context.IDENTIFIER().GetText();
-            BaseSymbol.HaCSType type = _currentScope.Resolve(name).SymbolType;
-            _types.Put(context,type);
-            return type;
+            FunctionSymbol sym = (FunctionSymbol)_currentScope.Resolve(name);
+            int i = 0;
+            foreach (BaseSymbol item in sym.Symbols)
+            {
+                if (item.SymbolType == (BaseSymbol.HaCSType)Visit(context.expression()[i]))
+                {
+                    _types.Put(context, item.SymbolType);
+                }
+                else
+                {
+                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected " + item.SymbolType + ", but got " + (BaseSymbol.HaCSType)Visit(context.expression()[i]));
+                }
+                i++;
+            }
+            
+            return null;
         }
 
         public override object VisitVarDcl(HaCSParser.VarDclContext context)
@@ -163,7 +185,7 @@ namespace HaCS
             return null;
         }
 
-        public override Object VisitAnd(HaCSParser.AndContext context)
+        public override object VisitAnd(HaCSParser.AndContext context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
@@ -181,7 +203,7 @@ namespace HaCS
             return null;
         }
 
-        public override Object VisitOr(HaCSParser.OrContext context)
+        public override object VisitOr(HaCSParser.OrContext context)
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
@@ -199,14 +221,13 @@ namespace HaCS
             return null;
         }
 
-        public override Object VisitLit(HaCSParser.LitContext context)
+        public override object VisitLit(HaCSParser.LitContext context)
         {
             int typeTokenType = context.Start.Type;
             SymbolTable.BaseSymbol.HaCSType type = Toolbox.getType(typeTokenType);
             _types.Put(context, type);
             return type;
         }
-        
    
         private BaseSymbol.HaCSType _determineType(BaseSymbol.HaCSType type1, BaseSymbol.HaCSType type2)
         {
@@ -227,6 +248,44 @@ namespace HaCS
             }
             return BaseSymbol.HaCSType.tINVALID;
             
+        }
+
+        public override object VisitIfStmt(HaCSParser.IfStmtContext context)
+        {
+            BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.exp1);
+
+            if (type1 == BaseSymbol.HaCSType.tBOOL)
+            {
+                _types.Put(context, type1);
+            }
+            else
+            {
+                _types.Put(context, BaseSymbol.HaCSType.tINVALID);
+            }
+            return null;
+        }
+
+        public override object VisitElseifStmt(HaCSParser.ElseifStmtContext context)
+        {
+            BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.exp2);
+
+            if (type1 == BaseSymbol.HaCSType.tBOOL)
+            {
+                _types.Put(context, type1);
+            }
+            else
+            {
+                _types.Put(context, BaseSymbol.HaCSType.tINVALID);
+            }
+            return null;
+        }
+
+        public override object VisitReturnStmt( HaCSParser.ReturnStmtContext context)
+        {
+            BaseSymbol.HaCSType type = Toolbox.getType(context.Start.Type);
+            _types.Put(context, type);
+
+            return null;
         }
 
     }

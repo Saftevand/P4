@@ -30,9 +30,9 @@ grammar HaCS;
 	  | varDcl EOS
 	  | returnStmt EOS;
 
- ifStmt : IF LPAREN expression RPAREN body elseifStmt;
+ ifStmt : IF LPAREN exp1=expression RPAREN body elseifStmt;
 
- elseifStmt : ELSEIF LPAREN expression RPAREN body elseifStmt
+ elseifStmt : ELSEIF LPAREN exp2=expression RPAREN body elseifStmt
 		    | elseStmt?;
 
  elseStmt : ELSE body;
@@ -54,7 +54,7 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
     |	left=expression PIPE IDENTIFIER LTMINUS right=expression			#Pipe
 	|   left=expression AND right=expression								#And
     |   left=expression OR right=expression									#Or
-	|	IDENTIFIER LPAREN expression (DELIMITER expression)* RPAREN			#Func							
+	|	IDENTIFIER LPAREN exp=expression (DELIMITER expList=expression)* RPAREN			#Func							
 	|	(INT|FLOAT|CHAR|BOOL)												#Lit					    
 	|	IDENTIFIER listOpp?													#Var
 	|	LBRACKET IDENTIFIER DOTDOT IDENTIFIER RBRACKET					    #Range;
@@ -64,8 +64,12 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
 
  primitiveType : INT_Type|CHAR_Type|FLOAT_Type|BOOL_Type;
 
- listOpp  : FIND LPAREN expression? RPAREN;
-
+ listOpp  : FIND LPAREN expression? RPAREN
+	|	WHERE LPAREN expression? RPAREN
+	|	FIRST LPAREN RPAREN
+	|	LAST LPAREN RPAREN
+	|	CONTAINS LPAREN IDENTIFIER RPAREN;
+	
  listType : LIST LT type GT;
 
 compileUnit
