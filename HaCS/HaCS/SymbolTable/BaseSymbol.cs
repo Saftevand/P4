@@ -11,7 +11,6 @@ namespace HaCS.SymbolTable
         public enum HaCSType { tINT, tFLOAT, tCHAR, tINVALID, tBOOL, tLIST};
         private string _name;
         private HaCSType _symbolType;
-        private List<BaseSymbol> _symbols;
         private IScope _parentScope;
 
         public BaseSymbol(string name, HaCSType symbolType, IScope parentScope)
@@ -37,12 +36,6 @@ namespace HaCS.SymbolTable
         {
             get { return _name; }
             set { _name = value; }
-        }
-
-        public List<BaseSymbol> Symbols
-        {
-            get { return _symbols; }
-            set { _symbols = value; }
         }
 
     }

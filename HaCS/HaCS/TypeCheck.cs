@@ -28,16 +28,12 @@ namespace HaCS
         {
             _currentScope = _scopes.Get(context);
             VisitChildren(context);
-            _currentScope = _currentScope.EnclosingScope;
-
             string name = context.IDENTIFIER().GetText();
             BaseSymbol.HaCSType type = _currentScope.Resolve(name).SymbolType;
             _types.Put(context, type);
+            _currentScope = _currentScope.EnclosingScope;
 
-            HaCSParser.StmtContext stmntcon = context.body().stmt().Last();
-            BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(stmntcon.returnStmt().expression());
-
-            return null;
+            return type;
         }
 
         public override object VisitMain( HaCSParser.MainContext context)
@@ -79,7 +75,7 @@ namespace HaCS
 
             _types.Put(context, type);
 
-            return null;
+            return type;
         }
 
         public override object VisitArith2(HaCSParser.Arith2Context context)
@@ -149,20 +145,20 @@ namespace HaCS
             string name = context.IDENTIFIER().GetText();
             FunctionSymbol sym = (FunctionSymbol)_currentScope.Resolve(name);
             int i = 0;
-            foreach (BaseSymbol item in sym.Symbols)
+            foreach (var item in sym.Symbols)
             {
-                if (item.SymbolType == (BaseSymbol.HaCSType)Visit(context.expression()[i]))
+                if (item.Value.SymbolType == (BaseSymbol.HaCSType)Visit(context.expression()[i]))
                 {
-                    _types.Put(context, item.SymbolType);
+                    _types.Put(context, item.Value.SymbolType);
                 }
                 else
                 {
-                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected " + item.SymbolType + ", but got " + (BaseSymbol.HaCSType)Visit(context.expression()[i]));
+                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected " + item.Value.SymbolType + ", but got " + (BaseSymbol.HaCSType)Visit(context.expression()[i]));
                 }
                 i++;
             }
             
-            return null;
+            return sym.SymbolType;
         }
 
         public override object VisitVarDcl(HaCSParser.VarDclContext context)

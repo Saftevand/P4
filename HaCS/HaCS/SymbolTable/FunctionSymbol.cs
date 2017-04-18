@@ -41,5 +41,10 @@ namespace HaCS.SymbolTable
             else if (ParentScope != null) return ParentScope.Resolve(name);
             else return null;
         }
+
+        public Dictionary<string, BaseSymbol> Symbols
+        {
+            get { return _symbols; }
+        }
     }
 }

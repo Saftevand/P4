@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\M0107\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
+// Generated from C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -234,9 +234,7 @@ public partial class HaCSParser : Parser {
 	}
 
 	public partial class FunctionDeclContext : ParserRuleContext {
-		public TypeContext type() {
-			return GetRuleContext<TypeContext>(0);
-		}
+		public TypeContext type123;
 		public ITerminalNode IDENTIFIER() { return GetToken(HaCSParser.IDENTIFIER, 0); }
 		public ITerminalNode LPAREN() { return GetToken(HaCSParser.LPAREN, 0); }
 		public FormalParamContext[] formalParam() {
@@ -248,6 +246,9 @@ public partial class HaCSParser : Parser {
 		public ITerminalNode RPAREN() { return GetToken(HaCSParser.RPAREN, 0); }
 		public BodyContext body() {
 			return GetRuleContext<BodyContext>(0);
+		}
+		public TypeContext type() {
+			return GetRuleContext<TypeContext>(0);
 		}
 		public ITerminalNode[] DELIMITER() { return GetTokens(HaCSParser.DELIMITER); }
 		public ITerminalNode DELIMITER(int i) {
@@ -289,7 +290,7 @@ public partial class HaCSParser : Parser {
 			case LIST:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 47; type();
+				State = 47; _localctx.type123 = type();
 				State = 48; Match(IDENTIFIER);
 				State = 49; Match(LPAREN);
 				State = 50; formalParam();

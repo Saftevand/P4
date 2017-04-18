@@ -19,7 +19,7 @@ grammar HaCS;
  
  main : INT_Type MAIN body;
 
- functionDecl : type IDENTIFIER LPAREN formalParam(DELIMITER formalParam)* RPAREN body
+ functionDecl : type123=type IDENTIFIER LPAREN formalParam(DELIMITER formalParam)* RPAREN body
 			  | LPAREN formalParam(DELIMITER formalParam)* RPAREN LAMBDA body;
 
  formalParam : type IDENTIFIER;
