@@ -63,7 +63,15 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
-            _types.Put(context, _determineType(type1, type2)); //hhahah du troede lige det ville være en god kommentar, men nej. 
+            BaseSymbol.HaCSType type3 = _determineType(type1, type2);
+            if (type3 == BaseSymbol.HaCSType.tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
+            }
+            else
+            {
+                _types.Put(context, type3);
+            }//hhahah du troede lige det ville være en god kommentar, men nej. 
             return null;
 
         }
@@ -82,7 +90,15 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
-            _types.Put(context, _determineType(type1, type2));
+            BaseSymbol.HaCSType type3 = _determineType(type1, type2);
+            if (type3 == BaseSymbol.HaCSType.tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
+            }
+            else
+            {
+                _types.Put(context, type3);
+            }
             return null;
         }
 
@@ -90,7 +106,15 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
-            _types.Put(context, _determineType(type1, type2));
+            BaseSymbol.HaCSType type3 = _determineType(type1, type2);
+            if (type3 == BaseSymbol.HaCSType.tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
+            }
+            else
+            {
+                _types.Put(context, type3);
+            }
             return null;
         }
 
@@ -98,7 +122,15 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
-            _types.Put(context, _determineType(type1, type2));
+            BaseSymbol.HaCSType type3 = _determineType(type1, type2);
+            if (type3 == BaseSymbol.HaCSType.tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
+            }
+            else
+            {
+                _types.Put(context, type3);
+            }
             return null;
         }
 
@@ -106,28 +138,26 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
-            BaseSymbol.HaCSType type3;
 
             if (type1 != BaseSymbol.HaCSType.tCHAR && type2 != BaseSymbol.HaCSType.tCHAR)
             {
                 if ((type1 == BaseSymbol.HaCSType.tFLOAT && type2 == BaseSymbol.HaCSType.tFLOAT) || (type1 == BaseSymbol.HaCSType.tINT && type2 == BaseSymbol.HaCSType.tINT) || (type1 == BaseSymbol.HaCSType.tBOOL && type2 == BaseSymbol.HaCSType.tBOOL))
                 {
-                    type3 = type1;
+                    _types.Put(context, type1);
                 }
                 else if ((type1 == BaseSymbol.HaCSType.tFLOAT && type2 == BaseSymbol.HaCSType.tINT) || (type1 == BaseSymbol.HaCSType.tINT && type2 == BaseSymbol.HaCSType.tFLOAT))
                 {
-                    type3 = BaseSymbol.HaCSType.tFLOAT;
+                    _types.Put(context, BaseSymbol.HaCSType.tFLOAT);
                 }
                 else
                 {
-                    type3 = BaseSymbol.HaCSType.tINVALID;
+                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected similar types on each side of equality sign, but got " + type1 + " and " + type2);
                 }
             }
             else
             {
-                type3 = BaseSymbol.HaCSType.tINVALID;
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected types int, float or bool, but got char");
             }
-            _types.Put(context, type3);
             return null;
         }
 
@@ -135,7 +165,15 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
-            _types.Put(context, _determineType(type1, type2));
+            BaseSymbol.HaCSType type3 = _determineType(type1, type2);
+            if (type3 == BaseSymbol.HaCSType.tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
+            }
+            else
+            {
+                _types.Put(context, type3);
+            }
             return _determineType(type1, type2);
         }
 
@@ -176,7 +214,7 @@ namespace HaCS
             }
             else
             {
-                _types.Put(context, BaseSymbol.HaCSType.tINVALID);
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type1 + " and " + type2);
             }
             return null;
         }
@@ -189,13 +227,12 @@ namespace HaCS
 
             if (type1 == BaseSymbol.HaCSType.tBOOL && type2 == BaseSymbol.HaCSType.tBOOL)
             {
-                type3 = BaseSymbol.HaCSType.tBOOL;
+                _types.Put(context, type1);
             }
             else
             {
-                type3 = BaseSymbol.HaCSType.tINVALID;
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1 + " and " + type2);
             }
-            _types.Put(context, type3);
             return null;
         }
 
@@ -203,17 +240,16 @@ namespace HaCS
         {
             BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.left);
             BaseSymbol.HaCSType type2 = (BaseSymbol.HaCSType)Visit(context.right);
-            BaseSymbol.HaCSType type3;
 
             if (type1 == BaseSymbol.HaCSType.tBOOL && type2 == BaseSymbol.HaCSType.tBOOL)
             {
-                type3 = BaseSymbol.HaCSType.tBOOL;
+                _types.Put(context, type1);
             }
             else
             {
-                type3 = BaseSymbol.HaCSType.tINVALID;
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1 + " and " + type2);
             }
-            _types.Put(context, type3);
+            
             return null;
         }
 
@@ -255,8 +291,8 @@ namespace HaCS
                 _types.Put(context, type1);
             }
             else
-            {
-                _types.Put(context, BaseSymbol.HaCSType.tINVALID);
+            {                
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1);
             }
             return null;
         }
@@ -271,7 +307,7 @@ namespace HaCS
             }
             else
             {
-                _types.Put(context, BaseSymbol.HaCSType.tINVALID);
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1);
             }
             return null;
         }

@@ -32,8 +32,6 @@ namespace HaCS
             walker.Walk(Ref, tree);
             TypeCheck typechecker = new TypeCheck(Def.Scopes);
             typechecker.Visit(tree);
-            Resolver resolve = new Resolver(Def.Scopes, typechecker.Types);
-            resolve.Visit(tree);
             Console.WriteLine("Compile complete");
             Console.ReadKey();
         }

@@ -44,20 +44,20 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
 
  returnStmt :  RETURN expression;
 
- expression : LPAREN expression RPAREN										#Parens
-    |   NEGATE expression													#Negate
-	|   left=expression EXP <assoc = right> right=expression				#Exponent
-    |   left=expression (MUL|DIV|MOD) right=expression						#Arith2
-    |   left=expression (ADD|SUB) right=expression							#Arith1
-    |   left=expression (LE | GE | GT | LT) right=expression				#Compare
-    |   left=expression (EQ | NEQ) right=expression							#Equality
-    |	left=expression PIPE IDENTIFIER LTMINUS right=expression			#Pipe
-	|   left=expression AND right=expression								#And
-    |   left=expression OR right=expression									#Or
-	|	IDENTIFIER LPAREN exp=expression (DELIMITER expList=expression)* RPAREN			#Func							
-	|	(INT|FLOAT|CHAR|BOOL)												#Lit					    
-	|	IDENTIFIER listOpp?													#Var
-	|	LBRACKET IDENTIFIER DOTDOT IDENTIFIER RBRACKET					    #Range;
+ expression : LPAREN expression RPAREN											#Parens
+    |   NEGATE expression														#Negate
+	|   left=expression EXP <assoc = right> right=expression					#Exponent
+    |   left=expression (MUL|DIV|MOD) right=expression							#Arith2
+    |   left=expression (ADD|SUB) right=expression								#Arith1
+    |   left=expression (LE | GE | GT | LT) right=expression					#Compare
+    |   left=expression (EQ | NEQ) right=expression								#Equality
+    |	left=expression PIPE IDENTIFIER LTMINUS right=expression				#Pipe
+	|   left=expression AND right=expression									#And
+    |   left=expression OR right=expression										#Or
+	|	IDENTIFIER LPAREN exp=expression (DELIMITER expList=expression)* RPAREN	#Func							
+	|	(INT|FLOAT|CHAR|BOOL)													#Lit					    
+	|	IDENTIFIER listOpp?														#Var
+	|	LBRACKET IDENTIFIER DOTDOT IDENTIFIER RBRACKET							#Range;
 
  type : primitiveType
 	  | listType;
