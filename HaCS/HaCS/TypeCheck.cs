@@ -41,6 +41,7 @@ namespace HaCS
             _currentScope = _scopes.Get(context);
             VisitChildren(context);
             _currentScope = _currentScope.EnclosingScope;
+            //return base.VisitMain(context);
             return null;
         }
 
@@ -71,7 +72,7 @@ namespace HaCS
             else
             {
                 _types.Put(context, type3);
-            }//hhahah du troede lige det ville være en god kommentar, men nej. 
+            }
             return null;
 
         }

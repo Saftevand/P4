@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGen.cs" />
     <Compile Include="HaCS.g4.lexer.cs">
       <DependentUpon>HaCS.g4</DependentUpon>
     </Compile>

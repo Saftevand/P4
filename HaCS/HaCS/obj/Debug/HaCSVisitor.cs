@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\marku\OneDrive\Documents\p4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
+// Generated from C:\Users\Dank\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -33,36 +33,12 @@ using IToken = Antlr4.Runtime.IToken;
 [System.CLSCompliant(false)]
 public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
-	/// Visit a parse tree produced by the <c>Or</c>
+	/// Visit a parse tree produced by the <c>Range</c>
 	/// labeled alternative in <see cref="HaCSParser.expression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitOr([NotNull] HaCSParser.OrContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Exponent</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitExponent([NotNull] HaCSParser.ExponentContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Arith2</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArith2([NotNull] HaCSParser.Arith2Context context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Func</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFunc([NotNull] HaCSParser.FuncContext context);
+	Result VisitRange([NotNull] HaCSParser.RangeContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by the <c>Parens</c>
@@ -73,52 +49,12 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitParens([NotNull] HaCSParser.ParensContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by the <c>Var</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVar([NotNull] HaCSParser.VarContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Arith1</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArith1([NotNull] HaCSParser.Arith1Context context);
-
-	/// <summary>
 	/// Visit a parse tree produced by the <c>Pipe</c>
 	/// labeled alternative in <see cref="HaCSParser.expression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitPipe([NotNull] HaCSParser.PipeContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Range</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitRange([NotNull] HaCSParser.RangeContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>And</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitAnd([NotNull] HaCSParser.AndContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Lit</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitLit([NotNull] HaCSParser.LitContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by the <c>Compare</c>
@@ -129,12 +65,76 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitCompare([NotNull] HaCSParser.CompareContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by the <c>Exponent</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExponent([NotNull] HaCSParser.ExponentContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Or</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitOr([NotNull] HaCSParser.OrContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Lit</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLit([NotNull] HaCSParser.LitContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Func</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFunc([NotNull] HaCSParser.FuncContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by the <c>Negate</c>
 	/// labeled alternative in <see cref="HaCSParser.expression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitNegate([NotNull] HaCSParser.NegateContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Var</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitVar([NotNull] HaCSParser.VarContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Arith2</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArith2([NotNull] HaCSParser.Arith2Context context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>And</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAnd([NotNull] HaCSParser.AndContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Arith1</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArith1([NotNull] HaCSParser.Arith1Context context);
 
 	/// <summary>
 	/// Visit a parse tree produced by the <c>Equality</c>

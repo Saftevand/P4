@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\marku\OneDrive\Documents\p4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
+// Generated from C:\Users\Dank\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -992,28 +992,102 @@ public partial class HaCSParser : Parser {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class OrContext : ExpressionContext {
+	public partial class RangeContext : ExpressionContext {
+		public ITerminalNode LBRACKET() { return GetToken(HaCSParser.LBRACKET, 0); }
+		public ITerminalNode[] IDENTIFIER() { return GetTokens(HaCSParser.IDENTIFIER); }
+		public ITerminalNode IDENTIFIER(int i) {
+			return GetToken(HaCSParser.IDENTIFIER, i);
+		}
+		public ITerminalNode DOTDOT() { return GetToken(HaCSParser.DOTDOT, 0); }
+		public ITerminalNode RBRACKET() { return GetToken(HaCSParser.RBRACKET, 0); }
+		public RangeContext(ExpressionContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IHaCSListener typedListener = listener as IHaCSListener;
+			if (typedListener != null) typedListener.EnterRange(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IHaCSListener typedListener = listener as IHaCSListener;
+			if (typedListener != null) typedListener.ExitRange(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitRange(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ParensContext : ExpressionContext {
+		public ITerminalNode LPAREN() { return GetToken(HaCSParser.LPAREN, 0); }
+		public ExpressionContext expression() {
+			return GetRuleContext<ExpressionContext>(0);
+		}
+		public ITerminalNode RPAREN() { return GetToken(HaCSParser.RPAREN, 0); }
+		public ParensContext(ExpressionContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IHaCSListener typedListener = listener as IHaCSListener;
+			if (typedListener != null) typedListener.EnterParens(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IHaCSListener typedListener = listener as IHaCSListener;
+			if (typedListener != null) typedListener.ExitParens(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitParens(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class PipeContext : ExpressionContext {
 		public ExpressionContext left;
 		public ExpressionContext right;
-		public ITerminalNode OR() { return GetToken(HaCSParser.OR, 0); }
+		public ITerminalNode PIPE() { return GetToken(HaCSParser.PIPE, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(HaCSParser.IDENTIFIER, 0); }
+		public ITerminalNode LTMINUS() { return GetToken(HaCSParser.LTMINUS, 0); }
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public OrContext(ExpressionContext context) { CopyFrom(context); }
+		public PipeContext(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterOr(this);
+			if (typedListener != null) typedListener.EnterPipe(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitOr(this);
+			if (typedListener != null) typedListener.ExitPipe(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitOr(this);
+			if (typedVisitor != null) return typedVisitor.VisitPipe(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class CompareContext : ExpressionContext {
+		public ExpressionContext left;
+		public ExpressionContext right;
+		public ExpressionContext[] expression() {
+			return GetRuleContexts<ExpressionContext>();
+		}
+		public ExpressionContext expression(int i) {
+			return GetRuleContext<ExpressionContext>(i);
+		}
+		public ITerminalNode LE() { return GetToken(HaCSParser.LE, 0); }
+		public ITerminalNode GE() { return GetToken(HaCSParser.GE, 0); }
+		public ITerminalNode GT() { return GetToken(HaCSParser.GT, 0); }
+		public ITerminalNode LT() { return GetToken(HaCSParser.LT, 0); }
+		public CompareContext(ExpressionContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IHaCSListener typedListener = listener as IHaCSListener;
+			if (typedListener != null) typedListener.EnterCompare(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IHaCSListener typedListener = listener as IHaCSListener;
+			if (typedListener != null) typedListener.ExitCompare(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitCompare(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -1042,30 +1116,48 @@ public partial class HaCSParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class Arith2Context : ExpressionContext {
+	public partial class OrContext : ExpressionContext {
 		public ExpressionContext left;
 		public ExpressionContext right;
+		public ITerminalNode OR() { return GetToken(HaCSParser.OR, 0); }
 		public ExpressionContext[] expression() {
 			return GetRuleContexts<ExpressionContext>();
 		}
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public ITerminalNode MUL() { return GetToken(HaCSParser.MUL, 0); }
-		public ITerminalNode DIV() { return GetToken(HaCSParser.DIV, 0); }
-		public ITerminalNode MOD() { return GetToken(HaCSParser.MOD, 0); }
-		public Arith2Context(ExpressionContext context) { CopyFrom(context); }
+		public OrContext(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterArith2(this);
+			if (typedListener != null) typedListener.EnterOr(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitArith2(this);
+			if (typedListener != null) typedListener.ExitOr(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitArith2(this);
+			if (typedVisitor != null) return typedVisitor.VisitOr(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class LitContext : ExpressionContext {
+		public ITerminalNode INT() { return GetToken(HaCSParser.INT, 0); }
+		public ITerminalNode FLOAT() { return GetToken(HaCSParser.FLOAT, 0); }
+		public ITerminalNode CHAR() { return GetToken(HaCSParser.CHAR, 0); }
+		public ITerminalNode BOOL() { return GetToken(HaCSParser.BOOL, 0); }
+		public LitContext(ExpressionContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IHaCSListener typedListener = listener as IHaCSListener;
+			if (typedListener != null) typedListener.EnterLit(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IHaCSListener typedListener = listener as IHaCSListener;
+			if (typedListener != null) typedListener.ExitLit(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitLit(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -1100,24 +1192,23 @@ public partial class HaCSParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class ParensContext : ExpressionContext {
-		public ITerminalNode LPAREN() { return GetToken(HaCSParser.LPAREN, 0); }
+	public partial class NegateContext : ExpressionContext {
+		public ITerminalNode NEGATE() { return GetToken(HaCSParser.NEGATE, 0); }
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
 		}
-		public ITerminalNode RPAREN() { return GetToken(HaCSParser.RPAREN, 0); }
-		public ParensContext(ExpressionContext context) { CopyFrom(context); }
+		public NegateContext(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterParens(this);
+			if (typedListener != null) typedListener.EnterNegate(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitParens(this);
+			if (typedListener != null) typedListener.ExitNegate(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitParens(this);
+			if (typedVisitor != null) return typedVisitor.VisitNegate(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -1141,7 +1232,7 @@ public partial class HaCSParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class Arith1Context : ExpressionContext {
+	public partial class Arith2Context : ExpressionContext {
 		public ExpressionContext left;
 		public ExpressionContext right;
 		public ExpressionContext[] expression() {
@@ -1150,70 +1241,21 @@ public partial class HaCSParser : Parser {
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public ITerminalNode ADD() { return GetToken(HaCSParser.ADD, 0); }
-		public ITerminalNode SUB() { return GetToken(HaCSParser.SUB, 0); }
-		public Arith1Context(ExpressionContext context) { CopyFrom(context); }
+		public ITerminalNode MUL() { return GetToken(HaCSParser.MUL, 0); }
+		public ITerminalNode DIV() { return GetToken(HaCSParser.DIV, 0); }
+		public ITerminalNode MOD() { return GetToken(HaCSParser.MOD, 0); }
+		public Arith2Context(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterArith1(this);
+			if (typedListener != null) typedListener.EnterArith2(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitArith1(this);
+			if (typedListener != null) typedListener.ExitArith2(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitArith1(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class PipeContext : ExpressionContext {
-		public ExpressionContext left;
-		public ExpressionContext right;
-		public ITerminalNode PIPE() { return GetToken(HaCSParser.PIPE, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(HaCSParser.IDENTIFIER, 0); }
-		public ITerminalNode LTMINUS() { return GetToken(HaCSParser.LTMINUS, 0); }
-		public ExpressionContext[] expression() {
-			return GetRuleContexts<ExpressionContext>();
-		}
-		public ExpressionContext expression(int i) {
-			return GetRuleContext<ExpressionContext>(i);
-		}
-		public PipeContext(ExpressionContext context) { CopyFrom(context); }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterPipe(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitPipe(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitPipe(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class RangeContext : ExpressionContext {
-		public ITerminalNode LBRACKET() { return GetToken(HaCSParser.LBRACKET, 0); }
-		public ITerminalNode[] IDENTIFIER() { return GetTokens(HaCSParser.IDENTIFIER); }
-		public ITerminalNode IDENTIFIER(int i) {
-			return GetToken(HaCSParser.IDENTIFIER, i);
-		}
-		public ITerminalNode DOTDOT() { return GetToken(HaCSParser.DOTDOT, 0); }
-		public ITerminalNode RBRACKET() { return GetToken(HaCSParser.RBRACKET, 0); }
-		public RangeContext(ExpressionContext context) { CopyFrom(context); }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterRange(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitRange(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitRange(this);
+			if (typedVisitor != null) return typedVisitor.VisitArith2(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -1242,27 +1284,7 @@ public partial class HaCSParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class LitContext : ExpressionContext {
-		public ITerminalNode INT() { return GetToken(HaCSParser.INT, 0); }
-		public ITerminalNode FLOAT() { return GetToken(HaCSParser.FLOAT, 0); }
-		public ITerminalNode CHAR() { return GetToken(HaCSParser.CHAR, 0); }
-		public ITerminalNode BOOL() { return GetToken(HaCSParser.BOOL, 0); }
-		public LitContext(ExpressionContext context) { CopyFrom(context); }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterLit(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitLit(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitLit(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class CompareContext : ExpressionContext {
+	public partial class Arith1Context : ExpressionContext {
 		public ExpressionContext left;
 		public ExpressionContext right;
 		public ExpressionContext[] expression() {
@@ -1271,42 +1293,20 @@ public partial class HaCSParser : Parser {
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public ITerminalNode LE() { return GetToken(HaCSParser.LE, 0); }
-		public ITerminalNode GE() { return GetToken(HaCSParser.GE, 0); }
-		public ITerminalNode GT() { return GetToken(HaCSParser.GT, 0); }
-		public ITerminalNode LT() { return GetToken(HaCSParser.LT, 0); }
-		public CompareContext(ExpressionContext context) { CopyFrom(context); }
+		public ITerminalNode ADD() { return GetToken(HaCSParser.ADD, 0); }
+		public ITerminalNode SUB() { return GetToken(HaCSParser.SUB, 0); }
+		public Arith1Context(ExpressionContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterCompare(this);
+			if (typedListener != null) typedListener.EnterArith1(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitCompare(this);
+			if (typedListener != null) typedListener.ExitArith1(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitCompare(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class NegateContext : ExpressionContext {
-		public ITerminalNode NEGATE() { return GetToken(HaCSParser.NEGATE, 0); }
-		public ExpressionContext expression() {
-			return GetRuleContext<ExpressionContext>(0);
-		}
-		public NegateContext(ExpressionContext context) { CopyFrom(context); }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.EnterNegate(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHaCSListener typedListener = listener as IHaCSListener;
-			if (typedListener != null) typedListener.ExitNegate(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHaCSVisitor<TResult> typedVisitor = visitor as IHaCSVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitNegate(this);
+			if (typedVisitor != null) return typedVisitor.VisitArith1(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
