@@ -1,11 +1,22 @@
 int main{
-int a = 4;
-int b = 2;
-float c = plusser(a, 7);
-return 1;
+List<int> h = {1,2,3,5};
+List<int> a = Combine{h,4};
+List<int> b = Exclude{a,2};
+List<int> c = ExcludeAt
+int z = h.find(x => x < 4);
+return 2;
 }
 
-int plusser(int x, int y)
-{
-return x + 2;
-}
+lambda(int x){return x<4;}
+
+(int x).{return x<4;}
+
+
+(int x) => {return a < 4;}
+
+
+
+
+
+
+

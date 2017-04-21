@@ -116,7 +116,7 @@ namespace HaCS
             {
                 _types.Put(context, type3);
             }
-            return null;
+            return type3;
         }
 
         public override object VisitCompare(HaCSParser.CompareContext context)

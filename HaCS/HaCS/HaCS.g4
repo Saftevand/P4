@@ -19,8 +19,7 @@ grammar HaCS;
  
  main : INT_Type MAIN body;
 
- functionDecl : type123=type IDENTIFIER LPAREN formalParam(DELIMITER formalParam)* RPAREN body
-			  | LPAREN formalParam(DELIMITER formalParam)* RPAREN LAMBDA body;
+ functionDecl : type IDENTIFIER LPAREN formalParam(DELIMITER formalParam)* RPAREN body;
 
  formalParam : type IDENTIFIER;
  
@@ -28,7 +27,10 @@ grammar HaCS;
 
  stmt : ifStmt
 	  | varDcl EOS
+	  | printStmt EOS
 	  | returnStmt EOS;
+
+ printStmt : WRITELINE LPAREN expression (DELIMITER expression)* RPAREN; 
 
  ifStmt : IF LPAREN exp1=expression RPAREN body elseifStmt;
 
@@ -38,9 +40,12 @@ grammar HaCS;
  elseStmt : ELSE body;
 
  varDcl : left=primitiveType IDENTIFIER ASSIGN right=expression
-		| listType IDENTIFIER ASSIGN listDcl;
-listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
-		| expression (DELIMITER expression)*;
+		| listType IDENTIFIER ASSIGN listDcl ;
+
+listDcl : LCURLBRACKET listDcls RCURLBRACKET;
+		
+listDcls : expression (DELIMITER expression)*
+		 | LCURLBRACKET listDcls RCURLBRACKET (DELIMITER listDcls)* ;
 
  returnStmt :  RETURN expression;
 
@@ -56,19 +61,22 @@ listDcl : LCURLBRACKET listDcl (DELIMITER listDcl)* RCURLBRACKET
     |   left=expression OR right=expression										#Or
 	|	IDENTIFIER LPAREN exp=expression (DELIMITER expList=expression)* RPAREN	#Func							
 	|	(INT|FLOAT|CHAR|BOOL)													#Lit					    
-	|	IDENTIFIER listOpp?														#Var
-	|	LBRACKET IDENTIFIER DOTDOT IDENTIFIER RBRACKET							#Range;
+	|	IDENTIFIER (DOT listOpp)?												#Var
+	|	expression DOT DOT expression											#Range;
 
  type : primitiveType
 	  | listType;
 
  primitiveType : INT_Type|CHAR_Type|FLOAT_Type|BOOL_Type;
 
- listOpp  : FIND LPAREN expression? RPAREN
-	|	WHERE LPAREN expression? RPAREN
-	|	FIRST LPAREN RPAREN
-	|	LAST LPAREN RPAREN
-	|	CONTAINS LPAREN IDENTIFIER RPAREN;
+ listOpp : FIND LPAREN expression RPAREN	#Find
+	|	WHERE LPAREN expression RPAREN		#Where
+	|	FIRST LPAREN RPAREN					#First
+	|	LAST LPAREN RPAREN					#Last
+	|	MAP LPAREN Func RPAREN				#Map
+	|	REDUCE LPAREN Func RPAREN			#Reduce
+	|	CONTAINS LPAREN expression RPAREN	#Contains
+	|	FOLD LPAREN (ADD|SUB) RPAREN		#Fold;
 	
  listType : LIST LT type GT;
 
@@ -92,6 +100,14 @@ IF : 'if';
 ELSEIF : 'elseif';
 ELSE : 'else';
 RETURN : 'return';
+FIND : 'find';
+WHERE : 'where';
+FIRST : 'first';
+LAST : 'last';
+MAP : 'map';
+REDUCE : 'reduce';
+Fold : 'fold';
+WRITELINE : 'WriteLine';
 IDENTIFIER : '_'?[a-zA-Z][a-zA-Z0-9]*;
 EXP : '^';
 MUL : '*';
@@ -107,7 +123,7 @@ NEQ	: '!=';
 GT  : '>' ;
 GE  : '>=' ;
 LT  : '<' ;
-DOTDOT: '..';
+DOT: '.';
 LE  : '<=' ;
 LTMINUS: '<-';
 NEGATE: '!';
@@ -121,7 +137,7 @@ RCURLBRACKET : '}' ;
 DELIMITER : ',';
 EOS : ';';
 LAMBDA : '=>';
-FIND : '.find';
+
 
 WS  :  [ \t\r\n\u000C]+ -> skip
     ;
