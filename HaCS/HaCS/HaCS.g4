@@ -40,7 +40,7 @@ grammar HaCS;
  elseStmt : ELSE body;
 
  varDcl : left=primitiveType IDENTIFIER ASSIGN right=expression
-		| listType IDENTIFIER ASSIGN listDcl ;
+		| listType IDENTIFIER ASSIGN listDcl;
 
 listDcl : LCURLBRACKET listDcls RCURLBRACKET;
 		
@@ -62,22 +62,31 @@ listDcls : expression (DELIMITER expression)*
 	|	IDENTIFIER LPAREN exp=expression (DELIMITER expList=expression)* RPAREN	#Func							
 	|	(INT|FLOAT|CHAR|BOOL)													#Lit					    
 	|	IDENTIFIER (DOT listOpp)?												#Var
+	|	lambdaExp																#Lambda 
 	|	expression DOT DOT expression											#Range;
 
- type : primitiveType
-	  | listType;
+ lambdaExp : LPAREN type IDENTIFIER (DELIMITER type IDENTIFIER)* RPAREN LAMBDA lambdaBody;
 
- primitiveType : INT_Type|CHAR_Type|FLOAT_Type|BOOL_Type;
+ lambdaBody : expression
+			| body;
 
  listOpp : FIND LPAREN expression RPAREN	#Find
 	|	WHERE LPAREN expression RPAREN		#Where
 	|	FIRST LPAREN RPAREN					#First
 	|	LAST LPAREN RPAREN					#Last
-	|	MAP LPAREN Func RPAREN				#Map
-	|	REDUCE LPAREN Func RPAREN			#Reduce
+	|	MAP LPAREN lambdaExp RPAREN			#Map
+	|	REDUCE LPAREN lambdaExp RPAREN		#Reduce
 	|	CONTAINS LPAREN expression RPAREN	#Contains
-	|	FOLD LPAREN (ADD|SUB) RPAREN		#Fold;
-	
+	|	INCLUDE LPAREN expression RPAREN	#Include
+	|	EXCLUDE LPAREN expression RPAREN	#Exclude
+	|	EXCLUDEAT LPAREN expression RPAREN	#ExcludeAt
+	|	LENGTH LPAREN RPAREN				#Length
+	|	FOLD LPAREN (ADD|SUB|MUL) RPAREN	#Fold;
+
+ type : primitiveType
+	  | listType;
+
+ primitiveType : INT_Type|CHAR_Type|FLOAT_Type|BOOL_Type;
  listType : LIST LT type GT;
 
 compileUnit
@@ -106,8 +115,11 @@ FIRST : 'first';
 LAST : 'last';
 MAP : 'map';
 REDUCE : 'reduce';
-Fold : 'fold';
+FOLD : 'fold';
 WRITELINE : 'WriteLine';
+INCLUDE : 'include';
+EXCLUDE : 'exclude';
+EXCLUDEAT : 'excludeAt';
 IDENTIFIER : '_'?[a-zA-Z][a-zA-Z0-9]*;
 EXP : '^';
 MUL : '*';

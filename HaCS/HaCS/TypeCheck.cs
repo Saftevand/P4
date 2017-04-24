@@ -200,10 +200,17 @@ namespace HaCS
             return sym.SymbolType;
         }
 
+
         public override object VisitVarDcl(HaCSParser.VarDclContext context)
         {
-            BaseSymbol.HaCSType type1 = (BaseSymbol.HaCSType)Visit(context.right);
-            BaseSymbol.HaCSType type2 = Toolbox.getType(context.primitiveType().Start.Type); 
+            BaseSymbol.HaCSType type1, type2;
+            if(context.right == null)
+            {
+                type1 = (BaseSymbol.HaCSType)Visit(context.listDcl());
+                type2 = Toolbox.getType(context.listType().Start.Type);
+            }
+            type1 = (BaseSymbol.HaCSType)Visit(context.right);
+            type2 = Toolbox.getType(context.primitiveType().Start.Type); 
 
             if (type1 == type2)
             {

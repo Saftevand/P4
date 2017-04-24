@@ -1,18 +1,13 @@
 int main{
-List<int> h = {1,2,3,5};
-List<int> a = Combine{h,4};
-List<int> b = Exclude{a,2};
-List<int> c = ExcludeAt
-int z = h.find(x => x < 4);
+List<int> h = {1,4,3,2};
+List<int> c = {h.map((int x) => x+2)};
 return 2;
 }
 
-lambda(int x){return x<4;}
 
-(int x).{return x<4;}
-
-
-(int x) => {return a < 4;}
+int plus(int x, int y){
+return x + y;
+}
 
 
 
