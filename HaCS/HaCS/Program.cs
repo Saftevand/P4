@@ -31,13 +31,15 @@ namespace HaCS
             SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
             walker.Walk(Ref, tree);
             TypeCheck typechecker = new TypeCheck(Def.Scopes);
-            typechecker.Visit(tree);
+            //typechecker.Visit(tree);
             CodeGen codeGen = new CodeGen();
             codeGen.Visit(tree);
             Console.WriteLine("Compile complete");
 
 
-            Console.WriteLine("Test"+Environment.NewLine+codeGen.cCode);
+            Console.WriteLine("Test"+Environment.NewLine + codeGen.cFunctionCode + Environment.NewLine + codeGen.cCode);
+            File.WriteAllText(@"C:\Users\Dank\Google Drev\P4\GOLD\GOLDParser\ccode.c", codeGen.cFunctionCode.ToString() + codeGen.cCode.ToString());
+
             Console.ReadKey();
         }
 
