@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using HaCS.Types;
 
 namespace HaCS.SymbolTable
 {
@@ -32,7 +33,7 @@ namespace HaCS.SymbolTable
         public override void EnterMain( HaCSParser.MainContext context)
         {
             string name = context.MAIN().GetText();
-            BaseSymbol.HaCSType type = Toolbox.getType(5);
+            HaCSType type = Toolbox.getType(5);
 
             FunctionSymbol function = new FunctionSymbol(name, type, _currentScope);
             _scopes.Put(context, function);
@@ -48,7 +49,7 @@ namespace HaCS.SymbolTable
         {
             string name = context.IDENTIFIER().GetText();
             int typeTokentype = context.type().Start.Type;
-            BaseSymbol.HaCSType type = Toolbox.getType(typeTokentype);
+            HaCSType type = Toolbox.getType(typeTokentype);
 
             FunctionSymbol function = new FunctionSymbol(name, type, _currentScope);
             _currentScope.Define(function);
@@ -81,7 +82,7 @@ namespace HaCS.SymbolTable
         {
             if (context.Start.Text.Contains("List"))
             {
-                DefineVariable(context.listType(), context.IDENTIFIER().Symbol.Text);
+                DefineVariable(context.listDcl());
             }
             else DefineVariable(context.primitiveType(), context.IDENTIFIER().Symbol.Text);
         }
@@ -99,7 +100,7 @@ namespace HaCS.SymbolTable
         public void DefineVariable(HaCSParser.TypeContext context, string name)
         {
             int typeTokenType = context.Start.Type;
-            BaseSymbol.HaCSType type = Toolbox.getType(typeTokenType);
+            HaCSType type = Toolbox.getType(typeTokenType);
             VariableSymbol varSym = new VariableSymbol(name, type, _currentScope);
             _currentScope.Define(varSym);
         }
@@ -107,16 +108,16 @@ namespace HaCS.SymbolTable
         public void DefineVariable(HaCSParser.PrimitiveTypeContext context, string name)
         {
             int typeTokenType = context.Start.Type;
-            BaseSymbol.HaCSType type = Toolbox.getType(typeTokenType);
+            HaCSType type = Toolbox.getType(typeTokenType);
             VariableSymbol varSym = new VariableSymbol(name, type, _currentScope);
             _currentScope.Define(varSym);
         }
 
-        public void DefineVariable(HaCSParser.ListTypeContext context, string name)
+        public void DefineVariable(HaCSParser.ListDclContext context)
         {
-            int typeTokenType = context.Start.Type;
-            BaseSymbol.HaCSType type = Toolbox.getType(typeTokenType);
-            VariableSymbol varSym = new VariableSymbol(name, type, _currentScope);
+            int typeTokenType = context.listType().Start.Type;
+            HaCSType type = Toolbox.getType(typeTokenType);
+            VariableSymbol varSym = new VariableSymbol(context.IDENTIFIER().GetText(), type, _currentScope);
             _currentScope.Define(varSym);
         }
     }

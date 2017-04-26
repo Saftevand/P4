@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HaCS.Types;
 
 namespace HaCS.SymbolTable
 {
     public abstract class BaseSymbol
     {
-        public enum HaCSType { tINT, tFLOAT, tCHAR, tINVALID, tBOOL, tLIST};
         private string _name;
         private HaCSType _symbolType;
         private IScope _parentScope;

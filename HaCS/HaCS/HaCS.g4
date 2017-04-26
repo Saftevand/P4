@@ -40,12 +40,12 @@ grammar HaCS;
  elseStmt : ELSE body;
 
  varDcl : left=primitiveType IDENTIFIER ASSIGN right=expression
-		| listType IDENTIFIER ASSIGN listDcl;
+		| listDcl;
 
-listDcl : LCURLBRACKET listDcls RCURLBRACKET;
+listDcl : listType IDENTIFIER ASSIGN LCURLBRACKET listDcls RCURLBRACKET;
 		
-listDcls : expression (DELIMITER expression)*
-		 | LCURLBRACKET listDcls RCURLBRACKET (DELIMITER listDcls)* ;
+listDcls :  expression (DELIMITER expression)*
+		 | LCURLBRACKET listDcls RCURLBRACKET (DELIMITER LCURLBRACKET listDcls RCURLBRACKET)* ;
 
  returnStmt :  RETURN expression;
 
