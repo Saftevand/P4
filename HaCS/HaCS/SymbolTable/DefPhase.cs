@@ -13,6 +13,7 @@ namespace HaCS.SymbolTable
     {
         private ParseTreeProperty<IScope> _scopes = new ParseTreeProperty<IScope>();
         private GlobalScope _global = new GlobalScope(null);
+        private tLIST _listType = null;
         private IScope _currentScope;
 
         public ParseTreeProperty<IScope> Scopes
@@ -77,6 +78,10 @@ namespace HaCS.SymbolTable
         {
             DefineVariable(context.type(), context.IDENTIFIER().Symbol.Text);
         }
+        public override void EnterVarDcl(HaCSParser.VarDclContext context)
+        {
+            if(context.right == null) _listType = new tLIST();
+        }
 
         public override void ExitVarDcl( HaCSParser.VarDclContext context)
         {
@@ -97,6 +102,10 @@ namespace HaCS.SymbolTable
             }
         }
 
+        public override void EnterListDcl(HaCSParser.ListDclContext context)
+        {
+            CreateListType(_listType,context.listType());
+        }
         public void DefineVariable(HaCSParser.TypeContext context, string name)
         {
             int typeTokenType = context.Start.Type;
@@ -115,10 +124,20 @@ namespace HaCS.SymbolTable
 
         public void DefineVariable(HaCSParser.ListDclContext context)
         {
-            int typeTokenType = context.listType().Start.Type;
-            HaCSType type = Toolbox.getType(typeTokenType);
-            VariableSymbol varSym = new VariableSymbol(context.IDENTIFIER().GetText(), type, _currentScope);
+            VariableSymbol varSym = new VariableSymbol(context.IDENTIFIER().GetText(), _listType, _currentScope);
             _currentScope.Define(varSym);
         }
+
+        private void CreateListType(tLIST listType, HaCSParser.ListTypeContext context)
+        {
+            listType.InnerType = Toolbox.getType(context.type().start.Type);
+
+            if (listType.InnerType is tLIST)
+            {
+                CreateListType(listType.InnerType as tLIST, context.type().listType());
+            }
+        }
+
+
     }
 }

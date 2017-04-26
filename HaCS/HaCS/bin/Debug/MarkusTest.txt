@@ -1,6 +1,7 @@
 int main{
-List<List<List<int>>> h = {{1,4},{3,true}};
-List<int> c = {h.map((int x) => x+2)};
+bool a = false;
+List<List<int>> h = {{1,2,3},{4,5,6}};
+List<int> c = {h.find(2)};
 return 2;
 }
 
