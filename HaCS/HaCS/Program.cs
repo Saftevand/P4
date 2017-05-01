@@ -36,7 +36,6 @@ namespace HaCS
             //codeGen.Visit(tree);
             Console.WriteLine("Compile complete");
 
-
             //Console.WriteLine("Test"+Environment.NewLine + codeGen.cFunctionCode + Environment.NewLine + codeGen.cCode);
             //File.WriteAllText(@"C:\Users\Dank\Google Drev\P4\GOLD\GOLDParser\ccode.c", codeGen.cFunctionCode.ToString() + codeGen.cCode.ToString());
 

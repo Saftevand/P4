@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\Patrick\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
+// Generated from C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -436,6 +436,17 @@ public interface IHaCSListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitBody([NotNull] HaCSParser.BodyContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="HaCSParser.ifbody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterIfbody([NotNull] HaCSParser.IfbodyContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="HaCSParser.ifbody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitIfbody([NotNull] HaCSParser.IfbodyContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="HaCSParser.stmt"/>.

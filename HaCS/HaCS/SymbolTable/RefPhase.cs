@@ -45,6 +45,15 @@ namespace HaCS.SymbolTable
         {
             _currentScope = _currentScope.EnclosingScope;
         }
+        public override void EnterLambdaExp(HaCSParser.LambdaExpContext context)
+        {
+            _currentScope = _scopes.Get(context);
+        }
+
+        public override void ExitLambdaExp(HaCSParser.LambdaExpContext context)
+        {
+            _currentScope = _currentScope.EnclosingScope;
+        }
 
         public override void ExitVar(HaCSParser.VarContext context)
         {

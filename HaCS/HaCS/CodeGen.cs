@@ -256,7 +256,7 @@ namespace HaCS
 
         public override object VisitIfStmt([NotNull] HaCSParser.IfStmtContext context)
         {
-            string code = "if (" + Visit(context.expression()) + ")" + Visit(context.body());
+            string code = "if (" + Visit(context.expression()) + ")" + Visit(context.ifbody());
 
             if (context.elseifStmt() != null)
             {
@@ -314,7 +314,7 @@ namespace HaCS
 
         public override object VisitElseStmt([NotNull] HaCSParser.ElseStmtContext context)
         {
-            return "else" + Visit(context.body());
+            return "else" + Visit(context.ifbody());
         }
 
         public override object VisitFirst([NotNull] HaCSParser.FirstContext context)
@@ -326,8 +326,8 @@ namespace HaCS
         {
             string code = null;
             string size = 100.ToString();
-            string exp = Visit(context.expression()).ToString();
-            exp = exp.Replace(context.expression().GetChild(0).GetChild(2).GetText(), context.Parent.GetChild(0) + "[i]");
+            string exp = Visit(context.lambdaExp()).ToString();
+            exp = exp.Replace(context.lambdaExp().GetChild(0).GetChild(2).GetText(), context.Parent.GetChild(0) + "[i]");
 
             code += "int i; for(i=0;i<" + size + ";i++) { if(" +  exp + "){" + context.Parent.GetChild(0) + "[i] = " + context.Parent.Parent.Parent.Parent.GetChild(1) + "[i];" + "} }";
             

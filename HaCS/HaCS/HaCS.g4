@@ -23,7 +23,9 @@ grammar HaCS;
 
  formalParam : type IDENTIFIER;
  
- body : LCURLBRACKET stmt* RCURLBRACKET;
+ body : LCURLBRACKET stmt* returnStmt RCURLBRACKET;
+
+ ifbody : LCURLBRACKET stmt* RCURLBRACKET;
 
  stmt : ifStmt
 	  | varDcl EOS
@@ -32,12 +34,12 @@ grammar HaCS;
 
  printStmt : WRITELINE LPAREN expression (DELIMITER expression)* RPAREN; 
 
- ifStmt : IF LPAREN exp1=expression RPAREN body elseifStmt;
+ ifStmt : IF LPAREN exp1=expression RPAREN ifbody elseifStmt;
 
- elseifStmt : ELSEIF LPAREN exp2=expression RPAREN body elseifStmt
+ elseifStmt : ELSEIF LPAREN exp2=expression RPAREN ifbody elseifStmt
 		    | elseStmt?;
 
- elseStmt : ELSE body;
+ elseStmt : ELSE ifbody;
 
  varDcl : left=primitiveType IDENTIFIER ASSIGN right=expression
 		| listDcl;
@@ -70,8 +72,8 @@ listDcls :  expression (DELIMITER expression)*
  lambdaBody : expression
 			| body;
 
- listOpp : FIND LPAREN expression RPAREN	#Find
-	|	WHERE LPAREN expression RPAREN		#Where
+ listOpp : FIND LPAREN lambdaExp RPAREN		#Find
+	|	WHERE LPAREN lambdaExp RPAREN		#Where
 	|	FIRST LPAREN RPAREN					#First
 	|	LAST LPAREN RPAREN					#Last
 	|	MAP LPAREN lambdaExp RPAREN			#Map

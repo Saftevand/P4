@@ -24,6 +24,6 @@ namespace HaCS.Types
                 return (_innerType as tLIST).LastType();
             }
             else return _innerType;
-        } 
+        }
     }
 }

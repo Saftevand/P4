@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\Patrick\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
+// Generated from C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -504,6 +504,19 @@ public partial class HaCSBaseListener : IHaCSListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitBody([NotNull] HaCSParser.BodyContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="HaCSParser.ifbody"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterIfbody([NotNull] HaCSParser.IfbodyContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="HaCSParser.ifbody"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitIfbody([NotNull] HaCSParser.IfbodyContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="HaCSParser.stmt"/>.

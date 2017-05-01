@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\Patrick\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
+// Generated from C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -282,6 +282,13 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitBody([NotNull] HaCSParser.BodyContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="HaCSParser.ifbody"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIfbody([NotNull] HaCSParser.IfbodyContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="HaCSParser.stmt"/>.

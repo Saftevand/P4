@@ -7,6 +7,7 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using HaCS.SymbolTable;
 using HaCS.Types;
+using Antlr4.Runtime;
 namespace HaCS
 {
     public class TypeCheck : HaCSBaseVisitor<Object>
@@ -256,6 +257,151 @@ namespace HaCS
             return type;
         }
 
+        public override object VisitLambdaExp(HaCSParser.LambdaExpContext context)
+        {
+            _currentScope = _scopes.Get(context);
+            bool terminalChecker = true;
+            if(context.lambdaBody().expression() != null)
+            {
+                foreach (ITerminalNode terminal in context.IDENTIFIER())
+                {
+                    List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().expression());
+                    if (tokenList.Find(x => x.Symbol.Text == terminal.Symbol.Text) == null)
+                    {
+                        terminalChecker = false;
+                    }
+                }
+            }
+            else
+            {
+                foreach (ITerminalNode terminal in context.IDENTIFIER())
+                {
+                    List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().expression());
+                    if (tokenList.Find(x => x.Symbol.Text == terminal.Symbol.Text) == null)
+                    {
+                        terminalChecker = false;
+                    }
+                }
+            }
+            if(terminalChecker == false)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: missing identifier(s) in lambda expression");
+                _types.Put(context, new tINVALID());
+                _currentScope = _currentScope.EnclosingScope;
+                return new tINVALID();
+            }
+            
+            return Visit(context.lambdaBody());
+        }
+
+        private HaCSType IsBoolLambda(HaCSType type, HaCSParser.LambdaBodyContext context)
+        {
+            if (type is tBOOL)
+            {
+                HaCSParser.VarContext grandGrandGrandParent = (HaCSParser.VarContext)context.parent.parent.parent.parent;
+                tLIST listType = (tLIST)_currentScope.Resolve(grandGrandGrandParent.IDENTIFIER().GetText()).SymbolType;
+                _types.Put(context, listType.InnerType);
+                return listType.InnerType;
+            }
+            else
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected " + new tBOOL() + " but got " + type);
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
+            }
+        }
+
+        private HaCSType IsBoolLambda(List<HaCSType> types, HaCSParser.LambdaBodyContext context)
+        {
+            foreach (HaCSType type in types)
+            {
+                if(!(type is tBOOL))
+                {
+                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected " + new tBOOL() + " but got " + type);
+                    _types.Put(context, new tINVALID());
+                    return new tINVALID();
+                }
+            }
+            HaCSParser.VarContext grandGrandGrandParent = (HaCSParser.VarContext)context.parent.parent.parent.parent;
+            tLIST listType = (tLIST)_currentScope.Resolve(grandGrandGrandParent.IDENTIFIER().GetText()).SymbolType;
+            _types.Put(context, listType.InnerType);
+            return listType.InnerType;
+        }
+
+        public override object VisitLambdaBody(HaCSParser.LambdaBodyContext context)
+        {
+            if (context.parent.parent is HaCSParser.WhereContext || context.parent.parent is HaCSParser.FindContext)
+            {
+                if(context.expression() != null)
+                {
+                    HaCSType expType = (HaCSType)Visit(context.expression());
+                    _currentScope = _currentScope.EnclosingScope;
+                    return IsBoolLambda(expType,context);
+                }
+                else
+                {
+                    List<HaCSType> returnTypes = new List<HaCSType>();
+                    foreach (HaCSParser.StmtContext stmt in context.body().stmt())
+                    {
+                        returnTypes.Add((HaCSType)Visit(stmt.returnStmt()));
+                    }
+                    
+                    returnTypes.Add((HaCSType)Visit(context.body().returnStmt()));
+                    _currentScope = _currentScope.EnclosingScope;
+                    return IsBoolLambda(returnTypes, context);
+                }
+            }
+            else
+            {
+                if (context.expression() != null)
+                {
+                    HaCSType expType = (HaCSType)Visit(context.expression());
+                    HaCSParser.VarContext varParent = FindLastVarContext(context);
+                    tLIST listType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType;
+                    HaCSType result = _determineType(listType.InnerType, expType);
+                    _types.Put(context, result);
+                    _currentScope = _currentScope.EnclosingScope;
+                    return result;
+                }
+                else
+                {
+                    List<HaCSType> returnTypes = new List<HaCSType>();
+                    foreach (HaCSParser.StmtContext stmt in context.body().stmt())
+                    {
+                        returnTypes.Add((HaCSType)Visit(stmt.returnStmt()));
+                    }
+
+                    returnTypes.Add((HaCSType)Visit(context.body().returnStmt()));
+                    HaCSType bodyType = (HaCSType)Visit(context.body().returnStmt());
+                    HaCSParser.VarContext varParent = FindLastVarContext(context);
+                    tLIST listType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType;
+                    HaCSType result = null;
+                    foreach (HaCSType type in returnTypes)
+                    {
+                        result = _determineType(listType.InnerType, type);
+                        if (result is tINVALID)
+                        {
+                            _types.Put(context, result);
+                            _currentScope = _currentScope.EnclosingScope;
+                            return result;
+                        }
+                    }
+                    _types.Put(context, result);
+                    _currentScope = _currentScope.EnclosingScope;
+                    return result;
+                }
+            }
+        }
+
+        private HaCSParser.VarContext FindLastVarContext(RuleContext context)
+        {
+            if (context is HaCSParser.VarContext)
+            {
+                return (HaCSParser.VarContext)context;
+            }
+            else return FindLastVarContext(context.parent);
+        }
+
         #region List and Var dcl
 
         public override object VisitListDcls(HaCSParser.ListDclsContext context)
@@ -348,7 +494,7 @@ namespace HaCS
             
             tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
             HaCSType innerType = type.LastType();
-            HaCSType expType = (HaCSType)Visit(context.expression());
+            HaCSType expType = (HaCSType)Visit(context.lambdaExp());
 
             if(innerType.GetType() == expType.GetType())
             {
@@ -371,7 +517,17 @@ namespace HaCS
 
         public override object VisitWhere(HaCSParser.WhereContext context)
         {
-            return base.VisitWhere(context);
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            HaCSType innerType = type.LastType();
+            HaCSType expType = (HaCSType)Visit(context.lambdaExp());
+
+            if(innerType.GetType() == expType.GetType())
+            {
+                _types.Put(context, type);
+                return type;
+            }
+            return null;
         }
         #endregion
         #endregion
@@ -417,26 +573,17 @@ namespace HaCS
             return result;
         }
 
-        private HaCSType _determineType(HaCSType type1, HaCSType type2)
+        private HaCSType _determineType(HaCSType dclType, HaCSType valueType)
         {
-            if (type1 is tBOOL || type1 is tCHAR || type2 is tBOOL || type2 is tCHAR)
+            if (dclType.Equals(valueType))
             {
-                return new tINVALID();
+                return dclType;
             }
-            else
+            else if (dclType is tINT && valueType is tFLOAT || valueType is tINT && dclType is tFLOAT)
             {
-                if ((type1 is tFLOAT && type2 is tFLOAT) || (type1 is tINT && type2 is tINT))
-                {
-                    return type1;
-                }
-                else
-                {
-                    return new tFLOAT();
-                }
+                return new tFLOAT();
             }
-                
-            
-            
+            else return new tINVALID();            
         }
 
         public override object VisitIfStmt(HaCSParser.IfStmtContext context)

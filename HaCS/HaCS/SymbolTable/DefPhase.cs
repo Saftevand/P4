@@ -94,18 +94,22 @@ namespace HaCS.SymbolTable
 
         public override void ExitLambdaExp(HaCSParser.LambdaExpContext context)
         {
+            _currentScope = new LocalScope(_currentScope);
+            _scopes.Put(context, _currentScope);
             int i = 0;
             foreach (HaCSParser.TypeContext type in context.type())
             {
                 DefineVariable(type, context.IDENTIFIER(i).Symbol.Text);
                 i++;
             }
+            _currentScope = _currentScope.EnclosingScope;
         }
 
         public override void EnterListDcl(HaCSParser.ListDclContext context)
         {
             CreateListType(_listType,context.listType());
         }
+
         public void DefineVariable(HaCSParser.TypeContext context, string name)
         {
             int typeTokenType = context.Start.Type;
