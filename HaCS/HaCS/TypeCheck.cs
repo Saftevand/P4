@@ -529,6 +529,71 @@ namespace HaCS
             }
             return null;
         }
+
+        public override object VisitFirst( HaCSParser.FirstContext context)
+        {
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            _types.Put(context, type.InnerType);
+            return type.InnerType;
+        }
+
+        public override object VisitLast( HaCSParser.LastContext context)
+        {
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            _types.Put(context, type.InnerType);
+            return type.InnerType;
+        }
+
+        public override object VisitMap(HaCSParser.MapContext context)
+        {
+            return Visit(context.lambdaExp());
+        }
+
+        public override object VisitReduce(HaCSParser.ReduceContext context)
+        {
+            return base.VisitReduce(context);
+        }
+
+        public override object VisitContains( HaCSParser.ContainsContext context)
+        {
+            return base.VisitContains(context);
+        }
+
+        public override object VisitInclude( HaCSParser.IncludeContext context)
+        {
+            return base.VisitInclude(context);
+        }
+
+        public override object VisitExclude( HaCSParser.ExcludeContext context)
+        {
+            return base.VisitExclude(context);
+        }
+
+        public override object VisitExcludeAt( HaCSParser.ExcludeAtContext context)
+        {
+            return base.VisitExcludeAt(context);
+        }
+
+        public override object VisitLength( HaCSParser.LengthContext context)
+        {
+            return new tINT();
+        }
+
+        public override object VisitFold( HaCSParser.FoldContext context)
+        {
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            if(type.InnerType is tLIST)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + ": unable to use 'fold' on nested lists");
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
+            }
+            _types.Put(context, type.InnerType);
+            return type.InnerType;
+        }
         #endregion
         #endregion
 
