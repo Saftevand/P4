@@ -298,8 +298,8 @@ namespace HaCS
         {
             if (type is tBOOL)
             {
-                HaCSParser.VarContext grandGrandGrandParent = (HaCSParser.VarContext)context.parent.parent.parent.parent;
-                tLIST listType = (tLIST)_currentScope.Resolve(grandGrandGrandParent.IDENTIFIER().GetText()).SymbolType;
+                HaCSParser.VarContext VarParent = FindLastVarContext(context);
+                tLIST listType = (tLIST)_currentScope.Resolve(VarParent.IDENTIFIER().GetText()).SymbolType;
                 _types.Put(context, listType.InnerType);
                 return listType.InnerType;
             }
@@ -407,7 +407,8 @@ namespace HaCS
         public override object VisitListDcls(HaCSParser.ListDclsContext context)
         {
             _typeListValue.Add(new tLIST());
-            HaCSType dclType = _typeListDcl.Last();
+            HaCSType dclType = _typeListDcl.First();
+            bool correctListDcl = true;
             HaCSType valueType;
             if (context.expression().Count() != 0)
             {
@@ -415,14 +416,33 @@ namespace HaCS
                 {
                     valueType = (HaCSType)Visit(exp);
                     _typeListValue.Add(valueType);
-                    if (dclType.GetType() != valueType.GetType())
+                    if (_typeListDcl.Where(x => x is tLIST).Count() > _typeListValue.Where(y => y is tLIST).Count() || !_typeListDcl.Last().Equals(_typeListValue.Last()))
                     {
                         Console.WriteLine("Error at line: " + context.Start.Line + ": conflicting types, expected " + dclType + ", but got " + valueType);
+                        correctListDcl = false;
                     }
                 }
             }
-            VisitChildren(context);
-            return new tLIST();
+            else
+            {
+                foreach (HaCSParser.ListDclsContext listdcl in context.listDcls())
+                {
+                    if (Visit(listdcl) is tINVALID)
+                    {
+                        correctListDcl = false;
+                    }
+                }
+            }
+            if(correctListDcl == false)
+            {
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
+            }
+            else
+            {
+                _types.Put(context, dclType);
+                return dclType;
+            }
         }
 
         public override object VisitListType(HaCSParser.ListTypeContext context)
@@ -493,41 +513,40 @@ namespace HaCS
             HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
             
             tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
-            HaCSType innerType = type.LastType();
             HaCSType expType = (HaCSType)Visit(context.lambdaExp());
+            HaCSType resultingType = _determineType(type.InnerType, expType);
 
-            if(innerType.GetType() == expType.GetType())
+            if(resultingType is tINVALID)
             {
-                _types.Put(context, innerType);
-                return innerType;
-            }
-            else if(innerType is tFLOAT && expType is tINT || innerType is tINT && expType is tFLOAT)
-            {
-                _types.Put(context, new tFLOAT());
-                return new tFLOAT();
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type.InnerType + " and " + expType);
+                _types.Put(context, resultingType);
+                return resultingType;
             }
             else
             {
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + innerType + " and " + expType);
-                _types.Put(context, new tINVALID());
-                return new tINVALID();
-            }
-            
+                _types.Put(context, resultingType);
+                return resultingType;
+            } 
         }
 
         public override object VisitWhere(HaCSParser.WhereContext context)
         {
             HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
             tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
-            HaCSType innerType = type.LastType();
             HaCSType expType = (HaCSType)Visit(context.lambdaExp());
+            HaCSType resultingType = _determineType(type.InnerType, expType);
 
-            if(innerType.GetType() == expType.GetType())
+            if (resultingType is tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type.InnerType + " and " + expType);
+                _types.Put(context, resultingType);
+                return resultingType;
+            }
+            else
             {
                 _types.Put(context, type);
                 return type;
             }
-            return null;
         }
 
         public override object VisitFirst( HaCSParser.FirstContext context)
@@ -548,7 +567,21 @@ namespace HaCS
 
         public override object VisitMap(HaCSParser.MapContext context)
         {
-            return Visit(context.lambdaExp());
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            HaCSType lambdaExp = (HaCSType)Visit(context.lambdaExp());
+            if(lambdaExp is tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Map is done on type: " +  lambdaExp + ", expected type: " + type.InnerType);
+                _types.Put(context, lambdaExp);
+                return lambdaExp;
+            }
+            else
+            {
+                
+                _types.Put(context, type);
+                return type;
+            }
         }
 
         public override object VisitReduce(HaCSParser.ReduceContext context)

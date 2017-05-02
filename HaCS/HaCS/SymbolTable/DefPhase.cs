@@ -112,10 +112,17 @@ namespace HaCS.SymbolTable
 
         public void DefineVariable(HaCSParser.TypeContext context, string name)
         {
-            int typeTokenType = context.Start.Type;
-            HaCSType type = Toolbox.getType(typeTokenType);
-            VariableSymbol varSym = new VariableSymbol(name, type, _currentScope);
-            _currentScope.Define(varSym);
+            if(context.primitiveType() != null)
+            {
+                DefineVariable(context.primitiveType(), name);
+            }
+            else
+            {
+                _listType = new tLIST();
+                CreateListType(_listType, context.listType());
+                VariableSymbol varSym = new VariableSymbol(name, _listType, _currentScope);
+                _currentScope.Define(varSym);
+            }       
         }
 
         public void DefineVariable(HaCSParser.PrimitiveTypeContext context, string name)
