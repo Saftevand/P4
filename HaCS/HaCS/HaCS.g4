@@ -25,21 +25,18 @@ grammar HaCS;
  
  body : LCURLBRACKET stmt* returnStmt RCURLBRACKET;
 
- ifbody : LCURLBRACKET stmt* RCURLBRACKET;
-
  stmt : ifStmt
 	  | varDcl EOS
-	  | printStmt EOS
-	  | returnStmt EOS;
+	  | printStmt EOS;
 
  printStmt : WRITELINE LPAREN expression (DELIMITER expression)* RPAREN; 
 
- ifStmt : IF LPAREN exp1=expression RPAREN ifbody elseifStmt;
+ ifStmt : IF LPAREN exp1=expression RPAREN body elseifStmt;
 
- elseifStmt : ELSEIF LPAREN exp2=expression RPAREN ifbody elseifStmt
+ elseifStmt : ELSEIF LPAREN exp2=expression RPAREN body elseifStmt
 		    | elseStmt?;
 
- elseStmt : ELSE ifbody;
+ elseStmt : ELSE body;
 
  varDcl : left=primitiveType IDENTIFIER ASSIGN right=expression
 		| listDcl;
@@ -49,7 +46,7 @@ listDcl : listType IDENTIFIER ASSIGN LCURLBRACKET listDcls RCURLBRACKET;
 listDcls :  expression (DELIMITER expression)*
 		 | LCURLBRACKET listDcls RCURLBRACKET (DELIMITER LCURLBRACKET listDcls RCURLBRACKET)* ;
 
- returnStmt :  RETURN expression;
+ returnStmt :  RETURN expression EOS;
 
  expression : LPAREN expression RPAREN											#Parens
     |   NEGATE expression														#Negate

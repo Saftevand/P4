@@ -256,7 +256,7 @@ namespace HaCS
 
         public override object VisitIfStmt([NotNull] HaCSParser.IfStmtContext context)
         {
-            string code = "if (" + Visit(context.expression()) + ")" + Visit(context.ifbody());
+            string code = "if (" + Visit(context.expression()) + ")" + Visit(context.body());
 
             if (context.elseifStmt() != null)
             {
@@ -314,7 +314,7 @@ namespace HaCS
 
         public override object VisitElseStmt([NotNull] HaCSParser.ElseStmtContext context)
         {
-            return "else" + Visit(context.ifbody());
+            return "else" + Visit(context.body());
         }
 
         public override object VisitFirst([NotNull] HaCSParser.FirstContext context)

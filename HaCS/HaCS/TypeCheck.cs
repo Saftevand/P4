@@ -341,9 +341,9 @@ namespace HaCS
                 else
                 {
                     List<HaCSType> returnTypes = new List<HaCSType>();
-                    foreach (HaCSParser.StmtContext stmt in context.body().stmt())
+                    foreach (HaCSParser.StmtContext stmt in context.body().stmt().Where(x => x.ifStmt() != null))
                     {
-                        returnTypes.Add((HaCSType)Visit(stmt.returnStmt()));
+                            returnTypes.Add((HaCSType)Visit(stmt.ifStmt().body().returnStmt()));
                     }
                     
                     returnTypes.Add((HaCSType)Visit(context.body().returnStmt()));
@@ -366,11 +366,10 @@ namespace HaCS
                 else
                 {
                     List<HaCSType> returnTypes = new List<HaCSType>();
-                    foreach (HaCSParser.StmtContext stmt in context.body().stmt())
+                    foreach (HaCSParser.StmtContext stmt in context.body().stmt().Where(x => x.ifStmt() != null))
                     {
-                        returnTypes.Add((HaCSType)Visit(stmt.returnStmt()));
+                        returnTypes.Add((HaCSType)Visit(stmt.ifStmt().body().returnStmt()));
                     }
-
                     returnTypes.Add((HaCSType)Visit(context.body().returnStmt()));
                     HaCSType bodyType = (HaCSType)Visit(context.body().returnStmt());
                     HaCSParser.VarContext varParent = FindLastVarContext(context);
@@ -407,7 +406,7 @@ namespace HaCS
         public override object VisitListDcls(HaCSParser.ListDclsContext context)
         {
             _typeListValue.Add(new tLIST());
-            HaCSType dclType = _typeListDcl.First();
+            tLIST dclType = (tLIST)_typeListDcl.First();
             bool correctListDcl = true;
             HaCSType valueType;
             if (context.expression().Count() != 0)
@@ -416,7 +415,7 @@ namespace HaCS
                 {
                     valueType = (HaCSType)Visit(exp);
                     _typeListValue.Add(valueType);
-                    if (_typeListDcl.Where(x => x is tLIST).Count() > _typeListValue.Where(y => y is tLIST).Count() || !_typeListDcl.Last().Equals(_typeListValue.Last()))
+                    if (!dclType.Equals(valueType) && !dclType.InnerType.Equals(valueType))
                     {
                         Console.WriteLine("Error at line: " + context.Start.Line + ": conflicting types, expected " + dclType + ", but got " + valueType);
                         correctListDcl = false;
