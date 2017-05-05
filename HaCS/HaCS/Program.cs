@@ -26,7 +26,7 @@ namespace HaCS
             HaCSParser parser = new HaCSParser(tokens);
             IParseTree tree = parser.program();
             ParseTreeWalker walker = new ParseTreeWalker();
-            HaCS.SymbolTable.DefPhase Def = new SymbolTable.DefPhase();
+            SymbolTable.DefPhase Def = new SymbolTable.DefPhase();
             walker.Walk(Def, tree);
             SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
             walker.Walk(Ref, tree);

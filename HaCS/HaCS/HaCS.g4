@@ -123,6 +123,7 @@ WRITELINE : 'WriteLine';
 INCLUDE : 'include';
 EXCLUDE : 'exclude';
 EXCLUDEAT : 'excludeAt';
+LENGTH : 'length';
 IDENTIFIER : '_'?[a-zA-Z][a-zA-Z0-9]*;
 EXP : '^';
 MUL : '*';

@@ -16,7 +16,6 @@ namespace HaCS.Types
             set { _innerType = value; }
         }
 
-
         public HaCSType LastType()
         {
             if(_innerType is tLIST)
@@ -24,6 +23,11 @@ namespace HaCS.Types
                 return (_innerType as tLIST).LastType();
             }
             else return _innerType;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + "<" + InnerType.ToString() + ">";
         }
     }
 }

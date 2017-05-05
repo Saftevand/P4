@@ -1,45 +1,21 @@
 int main
 {
-List<char> inputString = {'h','e','l','l','o',' ','w','o','r','l','d','!'};
-WriteLine(ToUpper(inputString));
-WriteLine(ToUpper(ToConsonants(inputString)));
-WriteLine(ToUpper(ToVowels(inputString)));
-WriteLine(ToUpperVowels(inputString));
-return 1;
-}
- 
-List<char> ToVowels(List<char> input)
-{
-    List<char> vowels = {'a','e','i','o','u','y'
-                        ,'A','E','I','O','U','Y'};
-    List<char> inputToVowels = {input.where((char x) => vowels.contains(x))};
-    return inputToVowels;
-}
- 
-List<char>ToUpperVowels(List<char> input)
-{
-    return ToUpper(ToVowels(input));
-}
- 
-List<char> ToConsonants(List<char> input)
-{
-    List<char> consonants = {'b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','y','z'
-                            ,'B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','V','W','X','Y','Z'};
-    List<char> inputToConsonants = {input.where((char x) => consonants.contains(x))};
-    return inputToConsonants;
-}
- 
-List<char> ToUpper(List<char> input)
-{
-    List<char> lowerCaseAlphabet = {'a'..'z'};
-    List<char> upperCaseAlphabet = {'A'..'Z'};
-    List<char> upperCase = {input.map((char x) => 
-    { 
-    	if (lowerCaseAlphabet.contains(x))
-        {
-                return  upperCaseAlphabet[lowerCaseAlphabet.indexOf((char h) => h==x)];
-        }
-        return x;
-})};                
-    return upperCase;
+
+    List<List<char>> nestedCharList = {{'a','b','c','a','b','c','a','b','c'},{'d','e','f','d','e'},{'g','h','i','g','h','i'}};
+    
+    List<List<List<char>>> nestedCharList2 = {{{'l','m','n'},{'d','u'},{'f','m'}}};
+    
+    List<List<char>> nestedCharList3 = {nestedCharList.where((List<char> x) => x.length() >= 6)};
+    
+    List<int> numbers = {1,2,3,4,5,6,7,8,9,1,2,2,3,20,55,27,12};
+    
+    int average = numbers.reduce((int x) => (x+x)/numbers.length());
+    List<char> string = {nestedCharList[1]};  //Det her virker nok ikke, skal man kunne?  
+
+    WriteLine(nestedCharList2); 
+    WriteLine(average);
+    WriteLine(nestedCharList3);
+    
+    return 1;
+
 }

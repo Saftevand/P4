@@ -143,12 +143,13 @@ namespace HaCS
             {
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
                 _types.Put(context, type3);
+                return type3;
             }
             else
             {
-                _types.Put(context, type3);
+                _types.Put(context, new tBOOL());
+                return new tBOOL();
             }
-            return type3;
         }
 
         public override object VisitEquality(HaCSParser.EqualityContext context)
@@ -425,6 +426,16 @@ namespace HaCS
             else return FindLastFuncDclContext(context.parent);
         }
 
+        private HaCSParser.LambdaExpContext FindLastLambdaContext(RuleContext context)
+        {
+            if (context is HaCSParser.LambdaExpContext)
+            {
+                return context as HaCSParser.LambdaExpContext;
+            }
+            if (context.parent != null) return FindLastLambdaContext(context.parent);
+            else return null;
+        }
+
         #region List and Var dcl
 
         public override object VisitListDcls(HaCSParser.ListDclsContext context)
@@ -439,7 +450,7 @@ namespace HaCS
                 {
                     valueType = (HaCSType)Visit(exp);
                     _typeListValue.Add(valueType);
-                    if (!dclType.Equals(valueType) && !dclType.InnerType.Equals(valueType))
+                    if (!dclType.Equals(valueType) && !dclType.InnerType.Equals(valueType) && _typeListValue[_typeListDcl.Count-1] is tLIST)
                     {
                         Console.WriteLine("Error at line: " + context.Start.Line + ": conflicting types, expected " + dclType + ", but got " + valueType);
                         correctListDcl = false;
@@ -534,14 +545,13 @@ namespace HaCS
         public override object VisitFind(HaCSParser.FindContext context)
         {
             HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
-            
             tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
             HaCSType expType = (HaCSType)Visit(context.lambdaExp());
             HaCSType resultingType = _determineType(type.InnerType, expType);
 
             if(resultingType is tINVALID)
             {
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type.InnerType + " and " + expType);
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + " ,but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
             }
@@ -561,7 +571,7 @@ namespace HaCS
 
             if (resultingType is tINVALID)
             {
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type.InnerType + " and " + expType);
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + ", but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
             }
@@ -733,7 +743,7 @@ namespace HaCS
 
             if (resultingType is tINVALID)
             {
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type.InnerType + " and " + expType);
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + ", but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
             }
@@ -849,18 +859,30 @@ namespace HaCS
 
         public override object VisitReturnStmt( HaCSParser.ReturnStmtContext context)
         {
-            HaCSType type = (HaCSType)Visit(context.expression());
-            HaCSType funcType = null;
-            RuleContext parentContext = FindLastFuncDclContext(context);
-            if (parentContext is HaCSParser.FunctionDeclContext)
+            HaCSParser.LambdaExpContext lambdaContext = FindLastLambdaContext(context);
+            HaCSType returnType = null;
+            HaCSType Exptype = (HaCSType)Visit(context.expression());
+            HaCSType resultingType = null;
+            if (lambdaContext != null)
             {
-                funcType = _currentScope.Resolve((parentContext as HaCSParser.FunctionDeclContext).IDENTIFIER().GetText()).SymbolType;
+                HaCSParser.VarContext parent = FindLastVarContext(context);
+                tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+                returnType = type.InnerType;
+                resultingType = _determineType(returnType, Exptype);
             }
-            else funcType = new tINT();
-            HaCSType resultingType = _determineType(funcType, type);
+            else
+            {
+                RuleContext parentContext = FindLastFuncDclContext(context);
+                if (parentContext is HaCSParser.FunctionDeclContext)
+                {
+                    returnType = _currentScope.Resolve((parentContext as HaCSParser.FunctionDeclContext).IDENTIFIER().GetText()).SymbolType;
+                }
+                else returnType = new tINT();
+                resultingType = _determineType(returnType, Exptype);
+            } 
             if(resultingType is tINVALID)
             {
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Incorrect Return type: " + type + ", expected: " + funcType);
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Incorrect Return type: " + Exptype + ", expected: " + returnType);
                 _types.Put(context, resultingType);
                 return resultingType;
             }

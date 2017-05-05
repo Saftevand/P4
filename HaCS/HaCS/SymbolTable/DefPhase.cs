@@ -110,6 +110,7 @@ namespace HaCS.SymbolTable
 
         public override void EnterListDcl(HaCSParser.ListDclContext context)
         {
+            _listType = new tLIST();
             _listType = CreateListType(_listType,context.listType());
         }
 
@@ -143,12 +144,11 @@ namespace HaCS.SymbolTable
 
         private tLIST CreateListType(tLIST listType, HaCSParser.ListTypeContext context)
         {
-            listType = new tLIST();
             listType.InnerType = Toolbox.getType(context.type().start.Type);
 
             if (listType.InnerType is tLIST)
             {
-               return CreateListType(listType.InnerType as tLIST, context.type().listType());
+               CreateListType(listType.InnerType as tLIST, context.type().listType());
             }
             return listType;
         }
