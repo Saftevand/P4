@@ -89,6 +89,14 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitArith1([NotNull] HaCSParser.Arith1Context context);
 
 	/// <summary>
+	/// Visit a parse tree produced by the <c>Element</c>
+	/// labeled alternative in <see cref="HaCSParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitElement([NotNull] HaCSParser.ElementContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by the <c>Pipe</c>
 	/// labeled alternative in <see cref="HaCSParser.expression"/>.
 	/// </summary>
@@ -161,20 +169,44 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitFold([NotNull] HaCSParser.FoldContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by the <c>Last</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitLast([NotNull] HaCSParser.LastContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by the <c>Exclude</c>
 	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitExclude([NotNull] HaCSParser.ExcludeContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>IndexOf</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIndexOf([NotNull] HaCSParser.IndexOfContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Include</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitInclude([NotNull] HaCSParser.IncludeContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Reduce</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitReduce([NotNull] HaCSParser.ReduceContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by the <c>Last</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLast([NotNull] HaCSParser.LastContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by the <c>Length</c>
@@ -201,14 +233,6 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitContains([NotNull] HaCSParser.ContainsContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by the <c>Include</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitInclude([NotNull] HaCSParser.IncludeContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by the <c>First</c>
 	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
 	/// </summary>
@@ -231,14 +255,6 @@ public interface IHaCSVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitMap([NotNull] HaCSParser.MapContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by the <c>Reduce</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitReduce([NotNull] HaCSParser.ReduceContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by the <c>ExcludeAt</c>

@@ -51,7 +51,10 @@ namespace HaCS.SymbolTable
             string name = context.IDENTIFIER().GetText();
             int typeTokentype = context.type().Start.Type;
             HaCSType type = Toolbox.getType(typeTokentype);
-
+            if(type is tLIST)
+            {
+                type = CreateListType(_listType, context.type().listType());
+            }
             FunctionSymbol function = new FunctionSymbol(name, type, _currentScope);
             _currentScope.Define(function);
             _scopes.Put(context, function);
@@ -78,10 +81,6 @@ namespace HaCS.SymbolTable
         {
             DefineVariable(context.type(), context.IDENTIFIER().Symbol.Text);
         }
-        public override void EnterVarDcl(HaCSParser.VarDclContext context)
-        {
-            if(context.right == null) _listType = new tLIST();
-        }
 
         public override void ExitVarDcl( HaCSParser.VarDclContext context)
         {
@@ -92,7 +91,7 @@ namespace HaCS.SymbolTable
             else DefineVariable(context.primitiveType(), context.IDENTIFIER().Symbol.Text);
         }
 
-        public override void ExitLambdaExp(HaCSParser.LambdaExpContext context)
+        public override void EnterLambdaExp(HaCSParser.LambdaExpContext context)
         {
             _currentScope = new LocalScope(_currentScope);
             _scopes.Put(context, _currentScope);
@@ -102,12 +101,16 @@ namespace HaCS.SymbolTable
                 DefineVariable(type, context.IDENTIFIER(i).Symbol.Text);
                 i++;
             }
+        }
+
+        public override void ExitLambdaExp(HaCSParser.LambdaExpContext context)
+        {
             _currentScope = _currentScope.EnclosingScope;
         }
 
         public override void EnterListDcl(HaCSParser.ListDclContext context)
         {
-            CreateListType(_listType,context.listType());
+            _listType = CreateListType(_listType,context.listType());
         }
 
         public void DefineVariable(HaCSParser.TypeContext context, string name)
@@ -118,8 +121,7 @@ namespace HaCS.SymbolTable
             }
             else
             {
-                _listType = new tLIST();
-                CreateListType(_listType, context.listType());
+                _listType = CreateListType(_listType, context.listType());
                 VariableSymbol varSym = new VariableSymbol(name, _listType, _currentScope);
                 _currentScope.Define(varSym);
             }       
@@ -139,14 +141,16 @@ namespace HaCS.SymbolTable
             _currentScope.Define(varSym);
         }
 
-        private void CreateListType(tLIST listType, HaCSParser.ListTypeContext context)
+        private tLIST CreateListType(tLIST listType, HaCSParser.ListTypeContext context)
         {
+            listType = new tLIST();
             listType.InnerType = Toolbox.getType(context.type().start.Type);
 
             if (listType.InnerType is tLIST)
             {
-                CreateListType(listType.InnerType as tLIST, context.type().listType());
+               return CreateListType(listType.InnerType as tLIST, context.type().listType());
             }
+            return listType;
         }
 
 

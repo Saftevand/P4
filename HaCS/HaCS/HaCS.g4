@@ -62,25 +62,27 @@ listDcls :  expression (DELIMITER expression)*
 	|	(INT|FLOAT|CHAR|BOOL)													#Lit					    
 	|	IDENTIFIER (DOT listOpp)?												#Var
 	|	lambdaExp																#Lambda 
-	|	expression DOT DOT expression											#Range;
+	|	left=expression DOT DOT right=expression								#Range
+	|	IDENTIFIER LBRACKET expression RBRACKET									#Element;
 
  lambdaExp : LPAREN type IDENTIFIER (DELIMITER type IDENTIFIER)* RPAREN LAMBDA lambdaBody;
 
  lambdaBody : expression
 			| body;
 
- listOpp : FIND LPAREN lambdaExp RPAREN		#Find
-	|	WHERE LPAREN lambdaExp RPAREN		#Where
-	|	FIRST LPAREN RPAREN					#First
-	|	LAST LPAREN RPAREN					#Last
-	|	MAP LPAREN lambdaExp RPAREN			#Map
-	|	REDUCE LPAREN lambdaExp RPAREN		#Reduce
-	|	CONTAINS LPAREN expression RPAREN	#Contains
-	|	INCLUDE LPAREN expression RPAREN	#Include
-	|	EXCLUDE LPAREN expression RPAREN	#Exclude
-	|	EXCLUDEAT LPAREN expression RPAREN	#ExcludeAt
-	|	LENGTH LPAREN RPAREN				#Length
-	|	FOLD LPAREN (ADD|SUB|MUL) RPAREN	#Fold;
+ listOpp : FIND LPAREN lambdaExp RPAREN								#Find
+	|	WHERE LPAREN lambdaExp RPAREN								#Where
+	|	FIRST LPAREN RPAREN											#First
+	|	LAST LPAREN RPAREN											#Last
+	|	MAP LPAREN lambdaExp RPAREN									#Map
+	|	REDUCE LPAREN lambdaExp RPAREN								#Reduce
+	|	CONTAINS LPAREN expression RPAREN							#Contains
+	|	INCLUDE LPAREN expression (DELIMITER expression)* RPAREN	#Include
+	|	EXCLUDE LPAREN expression (DELIMITER expression)* RPAREN	#Exclude
+	|	EXCLUDEAT LPAREN expression (DELIMITER expression)* RPAREN	#ExcludeAt
+	|	LENGTH LPAREN RPAREN										#Length
+	|	FOLD LPAREN (ADD|SUB|MUL) RPAREN							#Fold
+	|	INDEXOF LPAREN lambdaExp RPAREN								#IndexOf;
 
  type : primitiveType
 	  | listType;
@@ -96,7 +98,7 @@ compileUnit
  */
 INT : '-'?('0'..'9')+;
 FLOAT : '-'?[0-9]+('.'[0-9]+)? ;
-CHAR : [\u0032-\u00126];
+CHAR : '\'' ('\u0020'..'\u024F') '\'';
 BOOL : ('true'|'false');
 INT_Type : 'int';
 FLOAT_Type : 'float';
@@ -115,6 +117,8 @@ LAST : 'last';
 MAP : 'map';
 REDUCE : 'reduce';
 FOLD : 'fold';
+INDEXOF : 'indexOf';
+CONTAINS: 'contains';
 WRITELINE : 'WriteLine';
 INCLUDE : 'include';
 EXCLUDE : 'exclude';

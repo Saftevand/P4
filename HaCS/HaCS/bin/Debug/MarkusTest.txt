@@ -1,13 +1,45 @@
-int  main
+int main
 {
-List<char> firstName = {'J','o','h','n'};
-List<char> lastName = {'S','c','h','m','i','d','t'};
-WriteLine(GetFullName(firstname,lastname));
+List<char> inputString = {'h','e','l','l','o',' ','w','o','r','l','d','!'};
+WriteLine(ToUpper(inputString));
+WriteLine(ToUpper(ToConsonants(inputString)));
+WriteLine(ToUpper(ToVowels(inputString)));
+WriteLine(ToUpperVowels(inputString));
 return 1;
 }
  
-List<char> GetFullName(List<char> firstName, List<char> lastName)
+List<char> ToVowels(List<char> input)
 {
-List<char> fullName = {firstName.include(' ', lastname)};
-return  fullName;
+    List<char> vowels = {'a','e','i','o','u','y'
+                        ,'A','E','I','O','U','Y'};
+    List<char> inputToVowels = {input.where((char x) => vowels.contains(x))};
+    return inputToVowels;
+}
+ 
+List<char>ToUpperVowels(List<char> input)
+{
+    return ToUpper(ToVowels(input));
+}
+ 
+List<char> ToConsonants(List<char> input)
+{
+    List<char> consonants = {'b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','y','z'
+                            ,'B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','V','W','X','Y','Z'};
+    List<char> inputToConsonants = {input.where((char x) => consonants.contains(x))};
+    return inputToConsonants;
+}
+ 
+List<char> ToUpper(List<char> input)
+{
+    List<char> lowerCaseAlphabet = {'a'..'z'};
+    List<char> upperCaseAlphabet = {'A'..'Z'};
+    List<char> upperCase = {input.map((char x) => 
+    { 
+    	if (lowerCaseAlphabet.contains(x))
+        {
+                return  upperCaseAlphabet[lowerCaseAlphabet.indexOf((char h) => h==x)];
+        }
+        return x;
+})};                
+    return upperCase;
 }

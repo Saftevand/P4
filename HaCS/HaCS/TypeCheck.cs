@@ -31,12 +31,11 @@ namespace HaCS
         public override object VisitFunctionDecl(HaCSParser.FunctionDeclContext context)
         {
             _currentScope = _scopes.Get(context);
-            VisitChildren(context);
             string name = context.IDENTIFIER().GetText();
             HaCSType type = _currentScope.Resolve(name).SymbolType;
             _types.Put(context, type);
             _currentScope = _currentScope.EnclosingScope;
-
+            Visit(context.body());
             return type;
         }
 
@@ -156,24 +155,15 @@ namespace HaCS
         {
             HaCSType type1 = (HaCSType)Visit(context.left);
             HaCSType type2 = (HaCSType)Visit(context.right);
-
-            if(type1 == type2)
-            {
-                HaCSType result = new tBOOL();
-                _types.Put(context, result);
-                return result;
-            }
-            else if((type1 is tFLOAT && type2 is tINT) || (type1 is tINT && type2 is tFLOAT))
-            {
-                HaCSType result = new tBOOL();
-                _types.Put(context, result);
-                return result;
-            }
-            else
+            HaCSType resultingType = _determineType(type1, type2);
+            if(resultingType is tINVALID)
             {
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected similar types on each side of equality sign, but got " + type1 + " and " + type2);
+                _types.Put(context, new tINVALID());
                 return new tINVALID();
             }
+            _types.Put(context, new tBOOL());
+            return new tBOOL();
         }
 
         public override object VisitPipe(HaCSParser.PipeContext context)
@@ -195,13 +185,12 @@ namespace HaCS
 
         public override object VisitFunc(HaCSParser.FuncContext context)
         {
-
             string name = context.IDENTIFIER().GetText();
             FunctionSymbol sym = (FunctionSymbol)_currentScope.Resolve(name);
             int i = 0;
             foreach (var item in sym.Symbols)
             {
-                if (item.Value.SymbolType == (HaCSType)Visit(context.expression()[i]))
+                if (item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i])))
                 {
                     _types.Put(context, item.Value.SymbolType);
                 }
@@ -276,7 +265,7 @@ namespace HaCS
             {
                 foreach (ITerminalNode terminal in context.IDENTIFIER())
                 {
-                    List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().expression());
+                    List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().body());
                     if (tokenList.Find(x => x.Symbol.Text == terminal.Symbol.Text) == null)
                     {
                         terminalChecker = false;
@@ -292,6 +281,32 @@ namespace HaCS
             }
             
             return Visit(context.lambdaBody());
+        }
+
+        public override object VisitElement(HaCSParser.ElementContext context)
+        {
+            HaCSType type1 = (HaCSType)Visit(context.expression());
+            HaCSType type2 = _currentScope.Resolve(context.IDENTIFIER().GetText()).SymbolType;
+            if (type2 is tLIST && type1 is tINT)
+            {
+                _types.Put(context, (type2 as tLIST).InnerType);
+                return (type2 as tLIST).InnerType;
+            }
+            else
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected tINT as index of tLIST, but got " + type1 + " as index of " + type2);
+                _types.Put(context,new tINVALID());
+                return new tINVALID();
+            }
+        }
+
+        public override object VisitRange(HaCSParser.RangeContext context)
+        {
+            HaCSType type1 = (HaCSType)Visit(context.left);
+            HaCSType type2 = (HaCSType)Visit(context.right);
+            HaCSType resultingType = _determineType(type1, type2);
+            _types.Put(context, resultingType);
+            return resultingType;
         }
 
         private HaCSType IsBoolLambda(HaCSType type, HaCSParser.LambdaBodyContext context)
@@ -330,7 +345,7 @@ namespace HaCS
 
         public override object VisitLambdaBody(HaCSParser.LambdaBodyContext context)
         {
-            if (context.parent.parent is HaCSParser.WhereContext || context.parent.parent is HaCSParser.FindContext)
+            if (context.parent.parent is HaCSParser.WhereContext || context.parent.parent is HaCSParser.FindContext || context.parent.parent is HaCSParser.IndexOfContext)
             {
                 if(context.expression() != null)
                 {
@@ -399,6 +414,15 @@ namespace HaCS
                 return (HaCSParser.VarContext)context;
             }
             else return FindLastVarContext(context.parent);
+        }
+
+        private RuleContext FindLastFuncDclContext(RuleContext context)
+        {
+            if (context is HaCSParser.FunctionDeclContext || context is HaCSParser.MainContext)
+            {
+                return context;
+            }
+            else return FindLastFuncDclContext(context.parent);
         }
 
         #region List and Var dcl
@@ -577,7 +601,6 @@ namespace HaCS
             }
             else
             {
-                
                 _types.Put(context, type);
                 return type;
             }
@@ -585,47 +608,155 @@ namespace HaCS
 
         public override object VisitReduce(HaCSParser.ReduceContext context)
         {
-            return base.VisitReduce(context);
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            HaCSType lambdaExp = (HaCSType)Visit(context.lambdaExp());
+            if (lambdaExp is tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Map is done on type: " + lambdaExp + ", expected type: " + type.InnerType);
+                _types.Put(context, lambdaExp);
+                return lambdaExp;
+            }
+            else
+            {
+                _types.Put(context, type.InnerType);
+                return type.InnerType;
+            }
         }
 
         public override object VisitContains( HaCSParser.ContainsContext context)
         {
-            return base.VisitContains(context);
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            HaCSType expType = (HaCSType)Visit(context.expression());
+            if (!type.InnerType.Equals(expType))
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error:" + type + ",cannot Contain type: " + type.InnerType);
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
+            }
+            else
+            {
+                _types.Put(context, new tBOOL());
+                return new tBOOL();
+            }
         }
 
         public override object VisitInclude( HaCSParser.IncludeContext context)
         {
-            return base.VisitInclude(context);
+            List<HaCSType> expressionTypes = new List<HaCSType>();
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            foreach (HaCSParser.ExpressionContext exp in context.expression())
+            {
+                expressionTypes.Add((HaCSType)Visit(exp));
+            }
+            List<HaCSType> invalidTypes = expressionTypes.Where(x => x.Equals(type.InnerType) == false && x.Equals(type) == false).ToList();
+            if (invalidTypes.Count == 0)
+            {
+                _types.Put(context, expressionTypes[0]);
+                return type;
+            }
+            else
+            {
+                foreach (HaCSType invalidType in invalidTypes)
+                {
+                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Unable to Include type: " + invalidType + ", in type: " + type.InnerType);
+                }
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
+            }
         }
 
         public override object VisitExclude( HaCSParser.ExcludeContext context)
         {
-            return base.VisitExclude(context);
+            List<HaCSType> expressionTypes = new List<HaCSType>();
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            foreach (HaCSParser.ExpressionContext exp in context.expression())
+            {
+                expressionTypes.Add((HaCSType)Visit(exp));
+            }
+            List<HaCSType> invalidTypes = expressionTypes.Where(x => x.Equals(type.InnerType) == false && x.Equals(type) == false).ToList();
+            if (invalidTypes.Count == 0)
+            {
+                _types.Put(context, expressionTypes[0]);
+                return type;
+            }
+            else
+            {
+                foreach (HaCSType invalidType in invalidTypes)
+                {
+                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Unable to Exclude type: " + invalidType + ", in type: " + type.InnerType);
+                }
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
+            }
         }
 
         public override object VisitExcludeAt( HaCSParser.ExcludeAtContext context)
         {
-            return base.VisitExcludeAt(context);
+            List<HaCSType> expressionTypes = new List<HaCSType>();
+            HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+            tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+            foreach (HaCSParser.ExpressionContext exp in context.expression())
+            {
+                expressionTypes.Add((HaCSType)Visit(exp));
+            }
+            List<HaCSType> invalidTypes = expressionTypes.Where(x => x is tINT).ToList();
+            if (expressionTypes.Count == invalidTypes.Count)
+            {
+                _types.Put(context, expressionTypes[0]);
+                return type;
+            }
+            else
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Must provide ExcludeAt with type: tINT, ONLY");
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
+            }
         }
 
         public override object VisitLength( HaCSParser.LengthContext context)
         {
-            return new tINT();
+            HaCSType intType = new tINT();
+            _types.Put(context, intType);
+            return intType;
         }
 
-        public override object VisitFold( HaCSParser.FoldContext context)
+        public override object VisitIndexOf(HaCSParser.IndexOfContext context)
         {
             HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
             tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
-            if(type.InnerType is tLIST)
+            HaCSType expType = (HaCSType)Visit(context.lambdaExp());
+            HaCSType resultingType = _determineType(type.InnerType, expType);
+
+            if (resultingType is tINVALID)
             {
-                Console.WriteLine("Error at line: " + context.Start.Line + ": unable to use 'fold' on nested lists");
-                _types.Put(context, new tINVALID());
-                return new tINVALID();
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type.InnerType + " and " + expType);
+                _types.Put(context, resultingType);
+                return resultingType;
             }
-            _types.Put(context, type.InnerType);
-            return type.InnerType;
+            else
+            {
+                _types.Put(context, new tINT());
+                return new tINT();
+            }
         }
+
+        //public override object VisitFold( HaCSParser.FoldContext context)
+        //{
+        //    HaCSParser.VarContext parent = (HaCSParser.VarContext)context.Parent;
+        //    tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
+        //    if(type.InnerType is tLIST)
+        //    {
+        //        Console.WriteLine("Error at line: " + context.Start.Line + ": unable to use 'fold' on nested lists");
+        //        _types.Put(context, new tINVALID());
+        //        return new tINVALID();
+        //    }
+        //    _types.Put(context, type.InnerType);
+        //    return type.InnerType;
+        //}
         #endregion
         #endregion
 
@@ -718,10 +849,23 @@ namespace HaCS
 
         public override object VisitReturnStmt( HaCSParser.ReturnStmtContext context)
         {
-            HaCSType type = Toolbox.getType(context.Start.Type);
-            _types.Put(context, type);
-
-            return null;
+            HaCSType type = (HaCSType)Visit(context.expression());
+            HaCSType funcType = null;
+            RuleContext parentContext = FindLastFuncDclContext(context);
+            if (parentContext is HaCSParser.FunctionDeclContext)
+            {
+                funcType = _currentScope.Resolve((parentContext as HaCSParser.FunctionDeclContext).IDENTIFIER().GetText()).SymbolType;
+            }
+            else funcType = new tINT();
+            HaCSType resultingType = _determineType(funcType, type);
+            if(resultingType is tINVALID)
+            {
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Incorrect Return type: " + type + ", expected: " + funcType);
+                _types.Put(context, resultingType);
+                return resultingType;
+            }
+            _types.Put(context, resultingType);
+            return resultingType;
         }
 
     }
