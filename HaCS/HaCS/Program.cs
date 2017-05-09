@@ -20,16 +20,16 @@ namespace HaCS
                 inputStream = promptInputStream();
             }
             else inputStream = promptInputStream(args[0]);
-            AntlrInputStream input = new AntlrInputStream(inputStream.ReadToEnd());
-            HaCSLexer lexer = new HaCSLexer(input);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            HaCSParser parser = new HaCSParser(tokens);
-            IParseTree tree = parser.program();
-            ParseTreeWalker walker = new ParseTreeWalker();
-            SymbolTable.DefPhase Def = new SymbolTable.DefPhase();
-            walker.Walk(Def, tree);
-            SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
-            walker.Walk(Ref, tree);
+            AntlrInputStream input = new AntlrInputStream(inputStream.ReadToEnd());         //Creates a CharStream that reads from the given input.
+            HaCSLexer lexer = new HaCSLexer(input);                                         //The lexer is created and takes the AntlrInputStream as an input.
+            CommonTokenStream tokens = new CommonTokenStream(lexer);                        //CommoTokenStream is a buffer between the lexer and parser containing tokens.
+            HaCSParser parser = new HaCSParser(tokens);                                     //The tokens are used for creating the parser.
+            IParseTree tree = parser.program();                                             //The input is parsed from the program rule making a parsetree.
+            ParseTreeWalker walker = new ParseTreeWalker();                                 //A walker is initialised which can walk/traverse in a was specified by its input.
+            SymbolTable.DefPhase Def = new SymbolTable.DefPhase();                          //The DefPhase which contains methods for declaring scopes and variables
+            walker.Walk(Def, tree);                                                         //The walker traverses the parsetree using the methods from the defPhase and annotates the parsetree through the use of parsetreeproperties.
+            SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);    //The refPhase uses the parsetreeproperties and checks whether symbols are available from where they are tried to be used . 
+            walker.Walk(Ref, tree);                                                         //The walker traverses the parsetree using the methods from the refPhase and reports errors if any.
             TypeCheck typechecker = new TypeCheck(Def.Scopes);
             typechecker.Visit(tree);
             //CodeGen codeGen = new CodeGen();
