@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using HaCS.SymbolTable;
+using HaCS.Types;
 
 namespace HaCS
 {
@@ -14,11 +15,14 @@ namespace HaCS
         public StringBuilder cCode = new StringBuilder();
         public StringBuilder cFunctionCode = new StringBuilder();
         public StringBuilder cList = new StringBuilder();
+        Dictionary<string, string> Identifier = new Dictionary<string, string>();
+        Dictionary<string, string> TypeIdentifier = new Dictionary<string, string>();
+        private ParseTreeProperty<HaCSType> _typeProperty;
         private int varCount;
         private int funcCount;
-        public CodeGen()
+        public CodeGen(ParseTreeProperty<HaCSType> typeProperty)
         {
-
+            _typeProperty = typeProperty;
         }
 
         public override object VisitTerminal(ITerminalNode node)
@@ -29,7 +33,7 @@ namespace HaCS
 
         public override object VisitProgram([NotNull] HaCSParser.ProgramContext context)
         {
-            cFunctionCode.AppendLine("#include <stdio.h>" + Environment.NewLine + "#include <stdlib.h>");
+            cFunctionCode.AppendLine("#include <stdio.h>" + Environment.NewLine + "#include <stdlib.h>" + Environment.NewLine + "#include <string.h>");
             StringBuilder Code = new StringBuilder();
             Code.Append(Visit(context.main()));
             foreach (var item in context.functionDecl())
@@ -47,7 +51,7 @@ namespace HaCS
         public override object VisitFunctionDecl([NotNull] HaCSParser.FunctionDeclContext context)
         {
             StringBuilder Code = new StringBuilder();
-
+   
             foreach (var item in context.formalParam())
             {
                 Code.Append(Visit(item));
@@ -56,8 +60,15 @@ namespace HaCS
                     Code.Append(", ");
                 }
             }
-
-            cFunctionCode.Append(Visit(context.type()) + " " + context.IDENTIFIER().GetText() + context.LPAREN().GetText() + Code + context.RPAREN().GetText() + Visit(context.body()));
+            string type = Visit(context.type()).ToString();
+            if (type.Contains("List") || type.Contains("*"))
+            {
+                string name = context.GetChild(1).GetText();
+                string typpe = context.GetChild(0).GetChild(0).GetChild(2).GetText();
+                TypeIdentifier.Add(name, typpe);
+            }
+            cFunctionCode.Append(type);
+            cFunctionCode.Append(" " + context.IDENTIFIER().GetText() + context.LPAREN().GetText() + Code + context.RPAREN().GetText() + Visit(context.body()));
             return null;
         }
 
@@ -84,6 +95,7 @@ namespace HaCS
 
         public override object VisitFormalParam([NotNull] HaCSParser.FormalParamContext context)
         {
+
             return Visit(context.type()) + " " + context.IDENTIFIER().GetText();
         }
 
@@ -114,69 +126,77 @@ namespace HaCS
             {
                 code.Append(base.Visit(item));
             }
-
-            return "{ " + code + " }";
+            if (context.returnStmt() != null)
+            {
+                code.Append(base.Visit(context.returnStmt()));
+            }
+          
+            return "{ int i;" + code + " }";
         }
 
         public override object VisitMap([NotNull] HaCSParser.MapContext context)
         {
+            string code = null;
+
+            string size = null;
+            string identifier = context.Parent.GetChild(0).GetText();
+            string opeIden = context.Parent.Parent.Parent.GetChild(1).GetText();
+
+            size = Identifier[identifier];
+
             string localFunc = "Func" + funcCount++;
-            string type = context.children.GetType().ToString();
-            string variable = "Var" + varCount++;
-            string size = context.ChildCount.ToString();
 
-            cFunctionCode.AppendLine(type + "*" + localFunc + "()");
-            cFunctionCode.AppendLine("{");
-            cFunctionCode.AppendLine("static " + type + variable + "[" + size + "];");
+            string exp = Visit(context.lambdaExp()).ToString();
+            exp = exp.Replace(context.lambdaExp().GetChild(2).GetText(), identifier + "[i]");
 
-            cFunctionCode.AppendLine("int i;" + Environment.NewLine + "for(i = 0; i < " + size + "; i++)");
-            cFunctionCode.AppendLine("{" + Environment.NewLine + variable + "[i] = " + context.MAP().ToString() + Environment.NewLine + ("}"));
+            code += "[" + size + "]; " + Environment.NewLine + "for(i=0;i<" + size + ";i++) { " + opeIden + "[i] = " + exp + "; }";
 
-            cFunctionCode.AppendLine("return " + variable + ";");
-            cFunctionCode.AppendLine("}");
-            return type + "*" + variable + " = " + localFunc + "();";
+            return code;
         }
 
         public override object VisitListDcl([NotNull] HaCSParser.ListDclContext context)
         {
             cList.Clear();
-            string type = context.Parent.GetChild(0).GetChild(2).GetText();
-            string variable = context.Parent.GetChild(1).GetText();
+            string type = context.GetChild(0).GetChild(2).GetChild(0).GetText();
+            string variable = context.GetChild(1).GetText();
 
             //return "static " + type + " " + variable + "[" + size + "] = " + cList;
 
-            return "static " + type + " " + variable + Visit(context.listDcls()); 
+            //return "static " + type + " " + Visit(context.listDcls());
+            return type + " " + Visit(context.listDcls());
+
         }
 
         public override object VisitListDcls([NotNull] HaCSParser.ListDclsContext context)
         {
             string code = null;
+            string variable = context.Parent.GetChild(1).GetText();
+            string size = null;
+            string type = context.Parent.GetChild(0).GetChild(2).GetChild(0).GetText();
+            TypeIdentifier.Add(variable, type);
 
-            if (context.expression(0).GetText().Contains(".."))
+            if (context.GetText().Contains(".."))
             {
+                code += variable;
                 code += " [";
-                foreach (var item in context.expression())
-                {
-                    code += Visit(item);
-                }
+                size = Visit(context.expression(0)).ToString();
+                Identifier.Add(variable, size);
+                code += size;
                 code += "] = ";
 
                 code += cList;
-                return code;
+                return code + ";";
                 //return context.expression(0).GetChild(3).GetChild(0).GetText();
             }
 
-            else if (context.expression(0).GetText().Contains("where"))
-            {
-                code += "[ 100 ];" + Environment.NewLine;
-                code += Visit(context.expression(0));
-                return code;
-            }
-            else
+            else if (context.GetChild(1) != null)
             {
                 int i;
-
-                code += "[" + (context.ChildCount - 2).ToString() + "] = ";
+                int sizy = context.expression().Count() + 1;
+                size = sizy.ToString();
+                Identifier.Add(variable, size);
+                code += variable;
+                code += "[" + size + "] = ";
                 code += "{";
 
                 for (i = 0; i < context.ChildCount - 1; i = i + 2)
@@ -185,10 +205,39 @@ namespace HaCS
                 }
 
                 code += context.GetChild(i).GetText() + " }";
-
-
-                return code;
+                return code + ";";
             }
+            else
+            {
+                string idenSize = context.GetChild(0).GetChild(0).GetText();
+                Identifier.Add(variable, Identifier[idenSize]);
+                return Visit(context.expression(0));
+            }
+        }
+
+        public override object VisitInclude([NotNull] HaCSParser.IncludeContext context)
+        {
+            string code = null;
+            string str = null;
+            string name = null;
+            string identifier = context.Parent.GetChild(0).GetText();
+            string assigner = context.Parent.Parent.Parent.GetChild(1).GetText();
+            code = " *" + assigner + " = malloc(strlen(" + identifier + ")"; 
+            str = "strcpy(" + assigner + ", " + identifier +");" + Environment.NewLine;
+            string test = null;
+            foreach (var item in context.expression())
+            {
+                name = item.GetChild(0).GetText();
+                if (name.Contains("'"))
+                {
+                    name = name.Replace('\'', '"');
+                }
+                code += " + strlen( " + name + ")";
+                str += "strcat(" + assigner + ", " + name + ");";
+            }
+            code += "+2);";
+
+            return code + str;
         }
 
         public override object VisitListType([NotNull] HaCSParser.ListTypeContext context)
@@ -200,9 +249,9 @@ namespace HaCS
         {
             if (context.GetChild(0).GetText().Contains("List"))
             {
-                return base.VisitVarDcl(context) + ";";
+                return base.VisitVarDcl(context);
             }
-            return context.GetChild(0).GetText() + " " + context.IDENTIFIER().GetText() + " = " + Visit(context.expression()) + ";";
+            return context.GetChild(0).GetText() + " " + context.IDENTIFIER().GetText() + " = " + Visit(context.expression());
         }
 
         public override object VisitPrimitiveType([NotNull] HaCSParser.PrimitiveTypeContext context)
@@ -212,17 +261,19 @@ namespace HaCS
 
         public override object VisitExpression([NotNull] HaCSParser.ExpressionContext context)
         {
+
             return context.GetChild(0).GetText();
         }
 
         public override object VisitType([NotNull] HaCSParser.TypeContext context)
         {
-            string type = context.children[0].GetText();
-            if (type != "List")
+            string type = context.GetChild(0).GetText();
+            if (!type.Contains("List"))
             {
                 return type;
             }
-            return base.VisitType(context);
+            return context.GetChild(0).GetChild(2).GetChild(0).GetText() + " *";
+            //return base.VisitType(context);
         }
 
         public override object VisitCompileUnit([NotNull] HaCSParser.CompileUnitContext context)
@@ -319,7 +370,15 @@ namespace HaCS
 
         public override object VisitFirst([NotNull] HaCSParser.FirstContext context)
         {
-            return context.Parent.GetChild(0) + "[0]";
+            return context.Parent.GetChild(0) + "[0];";
+        }
+
+        public override object VisitLast([NotNull] HaCSParser.LastContext context)
+        {
+            string name = context.Parent.GetChild(0).GetText();
+            name += "[" + Identifier[name] + "];";
+
+            return name;
         }
 
         public override object VisitWhere([NotNull] HaCSParser.WhereContext context)
@@ -327,9 +386,9 @@ namespace HaCS
             string code = null;
             string size = 100.ToString();
             string exp = Visit(context.lambdaExp()).ToString();
-            exp = exp.Replace(context.lambdaExp().GetChild(0).GetChild(2).GetText(), context.Parent.GetChild(0) + "[i]");
+            exp = exp.Replace(context.lambdaExp().GetChild(2).GetText(), context.Parent.GetChild(0) + "[i]");
 
-            code += "int i; for(i=0;i<" + size + ";i++) { if(" +  exp + "){" + context.Parent.GetChild(0) + "[i] = " + context.Parent.Parent.Parent.Parent.GetChild(1) + "[i];" + "} }";
+            code += "int i; for(i=0;i<" + size + ";i++) { if(" +  exp + "){" + context.Parent.GetChild(0) + "[i] = " + context.Parent.Parent.Parent.GetChild(1) + "[i];" + "} }";
             
             return code;
         }
@@ -341,9 +400,42 @@ namespace HaCS
 
         public override object VisitPrintStmt([NotNull] HaCSParser.PrintStmtContext context)
         {
+            string code = null;
             string type = null;
-            type = "d";
-            return "printf(" + '"' + "%" + type + "\\n" + '"' + "," + Visit(context.expression(0)) + ");";
+            string name = null;
+            if (_typeProperty.Get(context.expression(0)) is tLIST)
+            {
+                type = (_typeProperty.Get(context.expression(0)) as tLIST).InnerType.ToString();
+            }
+            else
+                type = _typeProperty.Get(context.expression(0)).ToString();
+
+            switch (type)
+            {
+                case "INT":
+                    type = "d";
+                    break;
+                case "STRING":
+                    type = "s";
+                    break;
+                case "CHAR":
+                    type = "s";
+                    break;
+                default:
+                    break;
+            }
+            name = context.expression(0).GetChild(0).GetText();
+            if (TypeIdentifier.ContainsKey(name))
+            {
+                code = "for(i=0; i < " + Identifier[name] + "; i++)" + Environment.NewLine;
+                code += "{ printf(" + '"' + "%" + type + " \\n" + '"' + "," + name + "[i] ); }";
+            }
+            else
+            {
+                code = "printf(" + '"' + "%" + type + "\\n" + '"' + "," + Visit(context.expression(0)) + ");";
+            }
+
+            return code;
         }
 
         private void printList(List<string> list)
