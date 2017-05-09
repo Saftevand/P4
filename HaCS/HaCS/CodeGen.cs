@@ -14,9 +14,12 @@ namespace HaCS
     {
         public StringBuilder cCode = new StringBuilder();
         public StringBuilder cFunctionCode = new StringBuilder();
-        public StringBuilder cList = new StringBuilder();
+        public StringBuilder cPrototype = new StringBuilder();
+        //public StringBuilder cList = new StringBuilder();
+        List<string> cList = new List<string>();
         Dictionary<string, string> Identifier = new Dictionary<string, string>();
         Dictionary<string, string> TypeIdentifier = new Dictionary<string, string>();
+        Dictionary<string, List<string>> IdentifierValue = new Dictionary<string, List<string>>();
         private ParseTreeProperty<HaCSType> _typeProperty;
         private int varCount;
         private int funcCount;
@@ -33,7 +36,7 @@ namespace HaCS
 
         public override object VisitProgram([NotNull] HaCSParser.ProgramContext context)
         {
-            cFunctionCode.AppendLine("#include <stdio.h>" + Environment.NewLine + "#include <stdlib.h>" + Environment.NewLine + "#include <string.h>");
+            cPrototype.AppendLine("#include <stdio.h>" + Environment.NewLine + "#include <stdlib.h>" + Environment.NewLine + "#include <string.h>");
             StringBuilder Code = new StringBuilder();
             Code.Append(Visit(context.main()));
             foreach (var item in context.functionDecl())
@@ -67,8 +70,9 @@ namespace HaCS
                 string typpe = context.GetChild(0).GetChild(0).GetChild(2).GetText();
                 TypeIdentifier.Add(name, typpe);
             }
-            cFunctionCode.Append(type);
-            cFunctionCode.Append(" " + context.IDENTIFIER().GetText() + context.LPAREN().GetText() + Code + context.RPAREN().GetText() + Visit(context.body()));
+            cFunctionCode.Append(type + " " + context.IDENTIFIER().GetText() + context.LPAREN().GetText() + Code + context.RPAREN().GetText() + Visit(context.body()));
+
+            cPrototype.Append(type + " " + context.IDENTIFIER().GetText() + context.LPAREN().GetText() + Code + context.RPAREN().GetText() + ";");
             return null;
         }
 
@@ -144,8 +148,6 @@ namespace HaCS
 
             size = Identifier[identifier];
 
-            string localFunc = "Func" + funcCount++;
-
             string exp = Visit(context.lambdaExp()).ToString();
             exp = exp.Replace(context.lambdaExp().GetChild(2).GetText(), identifier + "[i]");
 
@@ -184,7 +186,12 @@ namespace HaCS
                 code += size;
                 code += "] = ";
 
-                code += cList;
+                foreach (var item in cList)
+                {
+                    code += item.ToString();
+                }
+
+                IdentifierValue.Add(variable, cList);
                 return code + ";";
                 //return context.expression(0).GetChild(3).GetChild(0).GetText();
             }
@@ -192,25 +199,26 @@ namespace HaCS
             else if (context.GetChild(1) != null)
             {
                 int i;
-                int sizy = context.expression().Count() + 1;
+                List<string> value = new List<string>();
+                int sizy = context.expression().Count() - 1;
                 size = sizy.ToString();
                 Identifier.Add(variable, size);
                 code += variable;
-                code += "[" + size + "] = ";
+                code += "[] = ";
                 code += "{";
 
                 for (i = 0; i < context.ChildCount - 1; i = i + 2)
                 {
+                    value.Add(context.GetChild(i).GetText() + ", ");
                     code += context.GetChild(i).GetText() + ", ";
                 }
-
+                value.Add(context.GetChild(i).GetText());
+                IdentifierValue.Add(variable, value);
                 code += context.GetChild(i).GetText() + " }";
                 return code + ";";
             }
             else
             {
-                string idenSize = context.GetChild(0).GetChild(0).GetText();
-                Identifier.Add(variable, Identifier[idenSize]);
                 return Visit(context.expression(0));
             }
         }
@@ -272,14 +280,17 @@ namespace HaCS
             {
                 return type;
             }
+            if (type == "BOOL")
+            {
+                type = "int";
+                return type;
+            }
             return context.GetChild(0).GetChild(2).GetChild(0).GetText() + " *";
             //return base.VisitType(context);
         }
 
         public override object VisitCompileUnit([NotNull] HaCSParser.CompileUnitContext context)
         {
-            Console.WriteLine(cFunctionCode);
-            Console.WriteLine(cCode);
             return base.VisitCompileUnit(context);
         }
 
@@ -293,15 +304,32 @@ namespace HaCS
             cList.Clear();
             string range_from = context.expression(0).GetChild(0).GetText();
             string range_to = context.expression(1).GetChild(0).GetText();
-            int iRange_to = Convert.ToInt32(range_to);
+            int iRange_to = 0;
 
-            cList.Append("{ ");
-            for (int i = Convert.ToInt32(range_from); i < iRange_to; i++)
+            cList.Add("{ ");
+            if (_typeProperty.Get(context.expression(0)) is tINT)
             {
-                cList.Append(i + ", ");
+                iRange_to = Convert.ToInt32(range_to);
+                for (int i = Convert.ToInt32(range_from); i < iRange_to; i++)
+                {
+                    cList.Add(i + ", ");
+                }
+                cList.Add(range_to);
+                iRange_to = Convert.ToInt32(range_to);
             }
-            cList.Append(iRange_to + " }");
-
+            else if (_typeProperty.Get(context.expression(0)) is tCHAR)
+            {
+                char[] from = range_from.ToCharArray();
+                char[] to = range_to.ToCharArray();
+                for (char c = from[1]; c < to[1]; c++)
+                {
+                    cList.Add("'" + c + "', ");
+                    iRange_to++;
+                }
+                cList.Add(range_to);
+                iRange_to++;
+            }
+            cList.Add("}");
             return iRange_to;
         }
 
@@ -381,15 +409,106 @@ namespace HaCS
             return name;
         }
 
+        public override object VisitExclude([NotNull] HaCSParser.ExcludeContext context)
+        {
+            string name = context.Parent.GetChild(0).GetText();
+            string code = context.Parent.Parent.Parent.GetChild(1).GetText();
+            string valueCode = null;
+            int size = 0;
+            List<string> value = IdentifierValue[name].ToList();
+            foreach (var item in context.expression())
+            {
+                value.Remove(item.GetText() + ", ");
+            }
+            size = value.Count();
+            foreach (var item in value)
+            {
+                valueCode += item;
+            }
+            if (value.Last().Contains(","))
+            {
+                valueCode.Remove(valueCode.Length - 2);
+            }
+            Identifier.Add(code, size.ToString());
+
+            return code + "[" + size + "] = {" + valueCode + "};";
+        }
+
+        public override object VisitExcludeAt([NotNull] HaCSParser.ExcludeAtContext context)
+        {
+            string name = context.Parent.GetChild(0).GetText();
+            string code = context.Parent.Parent.Parent.GetChild(1).GetText();
+            string valueCode = null;
+            int size = 0;
+            int index;
+            int offset = 0;
+            List<string> value = IdentifierValue[name].ToList();
+            foreach (var item in context.expression())
+            {
+                index = Convert.ToInt32(item.GetText());
+                value.RemoveAt(index-(++offset));
+            }
+            foreach (var item in value)
+            {
+                valueCode += item;
+            }
+            if (value.Last().Contains(","))
+            {
+                valueCode.Remove(valueCode.Length - 2);
+            }
+            size = value.Count();
+            Identifier.Add(code, size.ToString());
+            return code + "[" + size + "] = {" + valueCode + "};";
+        }
+
         public override object VisitWhere([NotNull] HaCSParser.WhereContext context)
         {
             string code = null;
-            string size = 100.ToString();
+            
+            string name = context.Parent.Parent.Parent.GetChild(1).GetText();
+            string Pname = context.Parent.GetChild(0).GetText();
+            string size = null;
+
             string exp = Visit(context.lambdaExp()).ToString();
             exp = exp.Replace(context.lambdaExp().GetChild(2).GetText(), context.Parent.GetChild(0) + "[i]");
+            if (Identifier.ContainsKey(Pname))
+            {
+                size = Identifier[Pname];
+                code += " " + name + "[" + size + "];" + Environment.NewLine;
+            }
+            else
+            {
+                code += " *" + name + ";" + Environment.NewLine;
+                size = "sizeof(" + Pname + ")";
+            }
+                
+            code += "int j = 0; for(i=0;i<" + size + ";i++) { if(" +  exp + "){" + name + "[j++] = " + Pname + "[i];" + "} }";
+            Identifier.Add(name,"j");
+            return code;
+        }
 
-            code += "int i; for(i=0;i<" + size + ";i++) { if(" +  exp + "){" + context.Parent.GetChild(0) + "[i] = " + context.Parent.Parent.Parent.GetChild(1) + "[i];" + "} }";
-            
+        public override object VisitReduce([NotNull] HaCSParser.ReduceContext context)
+        {
+
+            return base.VisitReduce(context);
+        }
+
+        public override object VisitContains([NotNull] HaCSParser.ContainsContext context)
+        {
+            string exp = Visit(context.expression()).ToString();
+            string expType = findType(_typeProperty.Get(context.expression()).ToString());
+
+            string pName = context.Parent.Parent.Parent.Parent.Parent.GetChild(0).GetText();
+            string name = context.Parent.GetChild(0).GetText();
+            string nameType = findType(_typeProperty.Get(context).ToString());   
+            cFunctionCode.Append("int func" + ++funcCount + "(" + nameType + " *" + name + ", " + expType + " x)" + Environment.NewLine);
+            cFunctionCode.Append("{ int i;");
+            cFunctionCode.Append("for(i=0;i < " + "sizeof(x)" + "; i++)" + Environment.NewLine);
+            cFunctionCode.Append("{if(" + name + "[i] == " + exp + "){ return 1;}" + "}");
+            cFunctionCode.Append("return 0;}");
+            string code = "func" + funcCount + "(" + name + ", " + exp + ")";
+
+            cPrototype.AppendLine("int func" + funcCount + "(" + nameType + " *" + name + ", " + expType + " x);");
             return code;
         }
 
@@ -449,5 +568,29 @@ namespace HaCS
                 }
             }
         }
+
+        private string findType(string type)
+        {
+            switch (type)
+            {
+                case "INT":
+                    type = "int";
+                    break;
+                case "CHAR":
+                    type = "char";
+                    break;
+                case "BOOL":
+                    type = "int";
+                    break;
+                case "STRING":
+                    type = "* char";
+                    break;
+
+                default:
+                    break;
+            }
+            return type;
+        }
+
     }
 }
