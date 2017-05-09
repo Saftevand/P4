@@ -35,6 +35,10 @@ namespace HaCS.Types
             {
                 return (this as tLIST).InnerType.Equals((type as tLIST).InnerType);
             }
+            else if(type is tINVALID && this is tINVALID)
+            {
+                return true;
+            }
             else return false;
         }
 

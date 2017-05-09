@@ -1,0 +1,11 @@
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\bin\Debug\HaCSTests.dll
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\bin\Debug\HaCSTests.pdb
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\bin\Debug\HaCS.exe
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\bin\Debug\nunit.framework.dll
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\bin\Debug\Antlr4.Runtime.dll
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\bin\Debug\HaCS.pdb
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\bin\Debug\nunit.framework.xml
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\bin\Debug\Antlr4.Runtime.xml
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\obj\Debug\HaCSTests.csprojResolveAssemblyReference.cache
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\obj\Debug\HaCSTests.dll
+C:\Users\M0107\Documents\P4\HaCS\HaCSTests\obj\Debug\HaCSTests.pdb

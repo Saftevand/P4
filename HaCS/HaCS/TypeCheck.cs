@@ -27,6 +27,13 @@ namespace HaCS
         {
             get { return _types; }
         }
+
+        public ParseTreeProperty<IScope> Scopes
+        {
+            get { return _scopes; }
+        }
+
+
         #region Scope handling
         public override object VisitFunctionDecl(HaCSParser.FunctionDeclContext context)
         {

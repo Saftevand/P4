@@ -21,6 +21,11 @@ namespace HaCS.SymbolTable
             get { return _scopes; }
         }
 
+        public IScope CurrentScope
+        {
+            get { return _currentScope; }
+        }
+
         public GlobalScope Global
         {
             get { return _global; }
