@@ -17,10 +17,16 @@ namespace HaCS
         private List<HaCSType> _typeListValue = new List<HaCSType>();
         private ParseTreeProperty<IScope> _scopes;
         private IScope _currentScope;
+        private int _errorCounter = 0;
 
         public TypeCheck(ParseTreeProperty<IScope> scopes)
         {
             _scopes = scopes;
+        }
+
+        public int ErrorCounter
+        {
+            get { return _errorCounter; }
         }
 
         public ParseTreeProperty<HaCSType> Types
@@ -69,10 +75,11 @@ namespace HaCS
             HaCSType type2 = (HaCSType)Visit(context.right);
             HaCSType type1 = (HaCSType)Visit(context.left);
             HaCSType type3 = _determineType(type1, type2);
-            if (type3 is tINVALID)
+            if (type3 is tINVALID || type3 is tCHAR || type3 is tBOOL || type3 is tLIST)
             {
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
-                _types.Put(context, type3);
+                _errorCounter++;
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected INT or FLOAT, but got " + type1 + " and " + type2);
+                _types.Put(context, new tINVALID());                
             }
             else
             {
@@ -92,6 +99,7 @@ namespace HaCS
             }
             else if(context.listOpp() != null)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + ": Use of list operator on " + type + ", expected type: " + new tLIST());
                 type = new tINVALID();
             }
@@ -105,10 +113,11 @@ namespace HaCS
             HaCSType type1 = (HaCSType)Visit(context.left);
             HaCSType type2 = (HaCSType)Visit(context.right);
             HaCSType type3 = _determineType(type1, type2);
-            if (type3 is tINVALID)
+            if (type3 is tINVALID || type3 is tCHAR || type3 is tBOOL || type3 is tLIST)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
-                _types.Put(context, type3);
+                _types.Put(context, new tINVALID());
             }
             else
             {
@@ -122,10 +131,11 @@ namespace HaCS
             HaCSType type1 = (HaCSType)Visit(context.left);
             HaCSType type2 = (HaCSType)Visit(context.right);
             HaCSType type3 = _determineType(type1, type2);
-            if (type3 is tINVALID)
+            if (type3 is tINVALID || type3 is tCHAR || type3 is tBOOL || type3 is tLIST)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
-                _types.Put(context, type3);
+                _types.Put(context, new tINVALID());
             }
             else
             {
@@ -139,11 +149,12 @@ namespace HaCS
             HaCSType type1 = (HaCSType)Visit(context.left);
             HaCSType type2 = (HaCSType)Visit(context.right);
             HaCSType type3 = _determineType(type1, type2);
-            if (type3 is tINVALID)
+            if (type3 is tINVALID || type3 is tLIST)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
-                _types.Put(context, type3);
-                return type3;
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
             }
             else
             {
@@ -159,6 +170,7 @@ namespace HaCS
             HaCSType resultingType = _determineType(type1, type2);
             if(resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected similar types on each side of equality sign, but got " + type1 + " and " + type2);
                 _types.Put(context, new tINVALID());
                 return new tINVALID();
@@ -174,6 +186,7 @@ namespace HaCS
             HaCSType type3 = _determineType(type1, type2);
             if (type3 is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
                 return type3;
             }
@@ -197,6 +210,7 @@ namespace HaCS
                 }
                 else
                 {
+                    _errorCounter++;
                     Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected " + item.Value.SymbolType + ", but got " + (HaCSType)Visit(context.expression()[i]));
                 }
                 i++;
@@ -217,6 +231,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1 + " and " + type2);
                 return new tINVALID();
             }
@@ -234,6 +249,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1 + " and " + type2);
                 return new tINVALID();
             }
@@ -253,9 +269,9 @@ namespace HaCS
             bool terminalChecker = true;
             if(context.lambdaBody().expression() != null)
             {
+                List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().expression());
                 foreach (ITerminalNode terminal in context.IDENTIFIER())
                 {
-                    List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().expression());
                     if (tokenList.Find(x => x.Symbol.Text == terminal.Symbol.Text) == null)
                     {
                         terminalChecker = false;
@@ -275,12 +291,10 @@ namespace HaCS
             }
             if(terminalChecker == false)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: missing identifier(s) in lambda expression");
                 _types.Put(context, new tINVALID());
-                _currentScope = _currentScope.EnclosingScope;
-                return new tINVALID();
             }
-            
             return Visit(context.lambdaBody());
         }
 
@@ -295,7 +309,8 @@ namespace HaCS
             }
             else
             {
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected tINT as index of tLIST, but got " + type1 + " as index of " + type2);
+                _errorCounter++;
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected INT as index of LIST, but got " + type1 + " as index of " + type2);
                 _types.Put(context,new tINVALID());
                 return new tINVALID();
             }
@@ -321,6 +336,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected " + new tBOOL() + " but got " + type);
                 _types.Put(context, new tINVALID());
                 return new tINVALID();
@@ -333,6 +349,7 @@ namespace HaCS
             {
                 if(!(type is tBOOL))
                 {
+                    _errorCounter++;
                     Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected " + new tBOOL() + " but got " + type);
                     _types.Put(context, new tINVALID());
                     return new tINVALID();
@@ -452,6 +469,7 @@ namespace HaCS
                     _typeListValue.Add(valueType);
                     if (!dclType.Equals(valueType) && !dclType.InnerType.Equals(valueType) && _typeListValue[_typeListDcl.Count-1] is tLIST)
                     {
+                        _errorCounter++;
                         Console.WriteLine("Error at line: " + context.Start.Line + ": conflicting types, expected " + dclType + ", but got " + valueType);
                         correctListDcl = false;
                     }
@@ -551,6 +569,7 @@ namespace HaCS
 
             if(resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + " ,but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
@@ -571,6 +590,7 @@ namespace HaCS
 
             if (resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + ", but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
@@ -605,6 +625,7 @@ namespace HaCS
             HaCSType lambdaExp = (HaCSType)Visit(context.lambdaExp());
             if(lambdaExp is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Map is done on type: " +  lambdaExp + ", expected type: " + type.InnerType);
                 _types.Put(context, lambdaExp);
                 return lambdaExp;
@@ -623,6 +644,7 @@ namespace HaCS
             HaCSType lambdaExp = (HaCSType)Visit(context.lambdaExp());
             if (lambdaExp is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Map is done on type: " + lambdaExp + ", expected type: " + type.InnerType);
                 _types.Put(context, lambdaExp);
                 return lambdaExp;
@@ -641,6 +663,7 @@ namespace HaCS
             HaCSType expType = (HaCSType)Visit(context.expression());
             if (!type.InnerType.Equals(expType))
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error:" + type + ",cannot Contain type: " + type.InnerType);
                 _types.Put(context, new tINVALID());
                 return new tINVALID();
@@ -671,6 +694,7 @@ namespace HaCS
             {
                 foreach (HaCSType invalidType in invalidTypes)
                 {
+                    _errorCounter++;
                     Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Unable to Include type: " + invalidType + ", in type: " + type.InnerType);
                 }
                 _types.Put(context, new tINVALID());
@@ -697,6 +721,7 @@ namespace HaCS
             {
                 foreach (HaCSType invalidType in invalidTypes)
                 {
+                    _errorCounter++;
                     Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Unable to Exclude type: " + invalidType + ", in type: " + type.InnerType);
                 }
                 _types.Put(context, new tINVALID());
@@ -721,6 +746,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Must provide ExcludeAt with type: tINT, ONLY");
                 _types.Put(context, new tINVALID());
                 return new tINVALID();
@@ -743,6 +769,7 @@ namespace HaCS
 
             if (resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + ", but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
@@ -786,6 +813,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type1 + " and " + type2);
                 return new tINVALID();
             }
@@ -806,6 +834,7 @@ namespace HaCS
             }
             if (typeError)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + ": Inconsistent list declaration, value does not match declaration");
             }
             return result;
@@ -834,7 +863,8 @@ namespace HaCS
                 return type1;
             }
             else
-            {                
+            {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1);
                 return new tINVALID();
             }
@@ -851,6 +881,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1);
                 return new tINVALID();
             }
@@ -882,6 +913,7 @@ namespace HaCS
             } 
             if(resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Incorrect Return type: " + Exptype + ", expected: " + returnType);
                 _types.Put(context, resultingType);
                 return resultingType;

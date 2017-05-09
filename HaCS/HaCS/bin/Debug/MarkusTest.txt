@@ -1,21 +1,7 @@
 int main
 {
+  List<int> list = {1..12};  
+  List<int> listModTwo = {list.where((int x) => x%2 == 0)};
 
-    List<List<char>> nestedCharList = {{'a','b','c','a','b','c','a','b','c'},{'d','e','f','d','e'},{'g','h','i','g','h','i'}};
-    
-    List<List<List<char>>> nestedCharList2 = {{{'l','m','n'},{'d','u'},{'f','m'}}};
-    
-    List<List<char>> nestedCharList3 = {nestedCharList.where((List<char> x) => x.length() >= 6)};
-    
-    List<int> numbers = {1,2,3,4,5,6,7,8,9,1,2,2,3,20,55,27,12};
-    
-    int average = numbers.reduce((int x) => (x+x)/numbers.length());
-    List<char> string = {nestedCharList[1]};  //Det her virker nok ikke, skal man kunne?  
-
-    WriteLine(nestedCharList2); 
-    WriteLine(average);
-    WriteLine(nestedCharList3);
-    
-    return 1;
-
+  WriteLine(listModTwo);
 }

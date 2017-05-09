@@ -25,16 +25,28 @@ namespace HaCS
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             HaCSParser parser = new HaCSParser(tokens);
             IParseTree tree = parser.program();
-            ParseTreeWalker walker = new ParseTreeWalker();
-            SymbolTable.DefPhase Def = new SymbolTable.DefPhase();
-            walker.Walk(Def, tree);
-            SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
-            walker.Walk(Ref, tree);
-            TypeCheck typechecker = new TypeCheck(Def.Scopes);
-            typechecker.Visit(tree);
-            //CodeGen codeGen = new CodeGen();
-            //codeGen.Visit(tree);
-            Console.WriteLine("Compile complete");
+            if(parser.NumberOfSyntaxErrors == 0)
+            {
+                ParseTreeWalker walker = new ParseTreeWalker();
+                SymbolTable.DefPhase Def = new SymbolTable.DefPhase();
+                walker.Walk(Def, tree);
+                SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);
+                walker.Walk(Ref, tree);
+                if(Ref.ErrorCounter == 0)
+                {
+                    TypeCheck typechecker = new TypeCheck(Def.Scopes);
+                    typechecker.Visit(tree);
+                    if(typechecker.ErrorCounter == 0)
+                    {
+                        //CodeGen codeGen = new CodeGen();
+                        //codeGen.Visit(tree);
+                        Console.WriteLine("Compile complete");
+                    }
+                }
+                
+            }
+            
+            
 
             //Console.WriteLine("Test"+Environment.NewLine + codeGen.cFunctionCode + Environment.NewLine + codeGen.cCode);
             //File.WriteAllText(@"C:\Users\Dank\Google Drev\P4\GOLD\GOLDParser\ccode.c", codeGen.cFunctionCode.ToString() + codeGen.cCode.ToString());
