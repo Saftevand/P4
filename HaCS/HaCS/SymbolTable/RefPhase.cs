@@ -11,9 +11,11 @@ namespace HaCS.SymbolTable
 {
     public class RefPhase : HaCSBaseListener 
     {
+        #region Variables
         private GlobalScope _global;
         private ParseTreeProperty<IScope> _scopes;
         private IScope _currentScope;
+        #endregion
 
         public RefPhase(GlobalScope global, ParseTreeProperty<IScope> scopes)
         {
@@ -21,6 +23,7 @@ namespace HaCS.SymbolTable
             this._scopes = scopes;
         }
 
+        #region Methods
         public override void EnterProgram( HaCSParser.ProgramContext context)
         {
             _currentScope = _global;
@@ -82,7 +85,7 @@ namespace HaCS.SymbolTable
                 Console.WriteLine(name + " is a variable not a function");
             }
         }
-
+        #endregion
 
     }
 }

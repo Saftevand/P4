@@ -9,9 +9,11 @@ namespace HaCS.SymbolTable
 {
     public abstract class BaseSymbol
     {
+        #region Variables
         private string _name;
         private HaCSType _symbolType;
         private IScope _parentScope;
+        #endregion
 
         public BaseSymbol(string name, HaCSType symbolType, IScope parentScope)
         {
@@ -20,6 +22,7 @@ namespace HaCS.SymbolTable
             this._parentScope = parentScope;
         }
 
+        #region Properties
         public HaCSType SymbolType
         {
             get { return _symbolType; }
@@ -37,6 +40,6 @@ namespace HaCS.SymbolTable
             get { return _name; }
             set { _name = value; }
         }
-
+        #endregion
     }
 }

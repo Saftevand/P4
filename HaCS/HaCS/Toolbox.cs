@@ -12,6 +12,7 @@ namespace HaCS
 {
     public static class Toolbox
     {
+        #region Methods
         public static HaCSType getType(int tokenType)
         {
             switch (tokenType)
@@ -51,11 +52,12 @@ namespace HaCS
                 ITerminalNode node = (ITerminalNode)child;
                 tokens.Add(node);
             }
-        else {
-                // No leaf/terminal node, recursively call this method.
-                inOrderTraversal(tokens, child);
+            else {
+                    // No leaf/terminal node, recursively call this method.
+                    inOrderTraversal(tokens, child);
+                }
             }
         }
+        #endregion
     }
-}
 }

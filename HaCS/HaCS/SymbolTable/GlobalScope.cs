@@ -12,9 +12,11 @@ namespace HaCS.SymbolTable
         {
         }
 
+        #region Properties
         public string GlobalScopeName
         {
             get { return "Global"; }
         }
+        #endregion
     }
 }

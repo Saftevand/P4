@@ -12,17 +12,20 @@ namespace HaCS
 {
     public class TypeCheck : HaCSBaseVisitor<Object>
     {
+        #region Variables
         private ParseTreeProperty<HaCSType> _types = new ParseTreeProperty<HaCSType>();
         private List<HaCSType> _typeListDcl = new List<HaCSType>();
         private List<HaCSType> _typeListValue = new List<HaCSType>();
         private ParseTreeProperty<IScope> _scopes;
         private IScope _currentScope;
+        #endregion
 
         public TypeCheck(ParseTreeProperty<IScope> scopes)
         {
             _scopes = scopes;
         }
 
+        #region Properties
         public ParseTreeProperty<HaCSType> Types
         {
             get { return _types; }
@@ -32,7 +35,7 @@ namespace HaCS
         {
             get { return _scopes; }
         }
-
+        #endregion
 
         #region Scope handling
         public override object VisitFunctionDecl(HaCSParser.FunctionDeclContext context)
@@ -777,6 +780,8 @@ namespace HaCS
         #endregion
         #endregion
 
+        #region Methods
+        #region Private Methods
         private HaCSType TypeCheckPrimitiveDcl(HaCSParser.VarDclContext context)
         {
             HaCSType type1 = (HaCSType)Visit(context.right);
@@ -830,7 +835,9 @@ namespace HaCS
             }
             else return new tINVALID();            
         }
+        #endregion
 
+        #region Public Methods
         public override object VisitIfStmt(HaCSParser.IfStmtContext context)
         {
             HaCSType type1 = (HaCSType)Visit(context.exp1);
@@ -896,6 +903,8 @@ namespace HaCS
             _types.Put(context, resultingType);
             return resultingType;
         }
+        #endregion
+        #endregion
 
     }
 }

@@ -11,11 +11,14 @@ namespace HaCS.SymbolTable
 {
     public class DefPhase : HaCSBaseListener
     {
+        #region Variables
         private ParseTreeProperty<IScope> _scopes = new ParseTreeProperty<IScope>();
         private GlobalScope _global = new GlobalScope(null);
         private tLIST _listType = null;
         private IScope _currentScope;
+        #endregion
 
+        #region Properties
         public ParseTreeProperty<IScope> Scopes
         {
             get { return _scopes; }
@@ -30,7 +33,10 @@ namespace HaCS.SymbolTable
         {
             get { return _global; }
         }
+        #endregion
 
+        #region Methods
+        #region Overriding Methods
         public override void EnterProgram(HaCSParser.ProgramContext context)
         {
             _currentScope = _global;
@@ -118,6 +124,7 @@ namespace HaCS.SymbolTable
             _listType = new tLIST();
             _listType = CreateListType(_listType,context.listType());
         }
+        #endregion
 
         public void DefineVariable(HaCSParser.TypeContext context, string name)
         {
@@ -157,7 +164,7 @@ namespace HaCS.SymbolTable
             }
             return listType;
         }
-
+        #endregion
 
     }
 }

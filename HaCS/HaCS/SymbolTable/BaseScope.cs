@@ -8,14 +8,17 @@ namespace HaCS.SymbolTable
 {
     public abstract class BaseScope : IScope
     {
+        #region Variables
         private IScope _enclosingScope;
         private Dictionary<string, BaseSymbol> _symbols = new Dictionary<string, BaseSymbol>();
+        #endregion
 
         public BaseScope(IScope enclosingScope)
         {
             this._enclosingScope = enclosingScope;
         }
 
+        #region Properties
         public Dictionary<string, BaseSymbol> Symbols
         {
             get { return _symbols; }
@@ -34,7 +37,9 @@ namespace HaCS.SymbolTable
         {
             get{return _enclosingScope;}
         }
+        #endregion
 
+        #region Methods
         public void Define(BaseSymbol sym)
         {
             _symbols.Add(sym.Name, sym);
@@ -51,5 +56,6 @@ namespace HaCS.SymbolTable
             else if (_enclosingScope != null) return _enclosingScope.Resolve(name);
             else return null;
         }
+        #endregion
     }
 }

@@ -12,6 +12,7 @@ namespace HaCS
 {
     class CodeGen : HaCSBaseVisitor<Object>
     {
+        #region Variables
         public StringBuilder cCode = new StringBuilder();
         public StringBuilder cFunctionCode = new StringBuilder();
         public StringBuilder cPrototype = new StringBuilder();
@@ -23,11 +24,15 @@ namespace HaCS
         private ParseTreeProperty<HaCSType> _typeProperty;
         private int varCount;
         private int funcCount;
+        #endregion
+
         public CodeGen(ParseTreeProperty<HaCSType> typeProperty)
         {
             _typeProperty = typeProperty;
         }
 
+        #region Methods
+        #region Overriding Methods
         public override object VisitTerminal(ITerminalNode node)
         {
             //cCode.Append(node.Symbol.Text + " ");
@@ -556,6 +561,7 @@ namespace HaCS
 
             return code;
         }
+        #endregion
 
         private void printList(List<string> list)
         {
@@ -591,6 +597,6 @@ namespace HaCS
             }
             return type;
         }
-
+        #endregion
     }
 }

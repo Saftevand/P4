@@ -9,13 +9,15 @@ namespace HaCS.SymbolTable
 {
     public class FunctionSymbol : BaseSymbol, IScope
     {
-
+        #region Variables
         private Dictionary<string, BaseSymbol> _symbols = new Dictionary<string, BaseSymbol>();
+        #endregion
 
         public FunctionSymbol(string name, HaCSType symbolType, IScope parentScope) : base(name,symbolType,parentScope)
         {
         }
 
+        #region Properties
         public IScope EnclosingScope
         {
             get { return ParentScope;}
@@ -25,7 +27,9 @@ namespace HaCS.SymbolTable
         {
             get { return Name;}
         }
+        #endregion
 
+        #region Methods
         public void Define(BaseSymbol sym)
         {
             _symbols.Add(sym.Name, sym);
@@ -47,5 +51,6 @@ namespace HaCS.SymbolTable
         {
             get { return _symbols; }
         }
+        #endregion
     }
 }
