@@ -91,3 +91,15 @@ C:\Users\Patrick\Documents\P4\HaCS\HaCS\obj\Debug\HaCS.csproj.Antlr4GeneratedCod
 C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\bin\Debug\HaCS.exe.config
 C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCS.exe
 C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCS.pdb
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\bin\Debug\HaCS.exe
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\bin\Debug\HaCS.pdb
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\bin\Debug\Antlr4.Runtime.dll
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\bin\Debug\Antlr4.Runtime.xml
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCS.csprojResolveAssemblyReference.cache
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCSLexer.cs
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCSParser.cs
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCSListener.cs
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCSBaseListener.cs
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCSVisitor.cs
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCSBaseVisitor.cs
+C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\obj\Debug\HaCS.csproj.Antlr4GeneratedCodeFileListAbsolute.txt

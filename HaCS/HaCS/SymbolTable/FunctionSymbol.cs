@@ -7,9 +7,9 @@ using HaCS.Types;
 
 namespace HaCS.SymbolTable
 {
-    public class FunctionSymbol : BaseSymbol, IScope
-    {
-
+    public class FunctionSymbol : BaseSymbol, IScope                                        //Inherits from the BaseSymbol and implements the IScope interface
+    {                                                                                       //Hereby a FunctionSymbol will be a scope itself, which can contain symbols.
+                                                                                            //Further explanation can be found in BaseSymbol and IScope
         private Dictionary<string, BaseSymbol> _symbols = new Dictionary<string, BaseSymbol>();
 
         public FunctionSymbol(string name, HaCSType symbolType, IScope parentScope) : base(name,symbolType,parentScope)

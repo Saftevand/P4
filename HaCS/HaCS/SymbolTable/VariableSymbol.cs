@@ -7,7 +7,7 @@ using HaCS.Types;
 
 namespace HaCS.SymbolTable
 {
-    public class VariableSymbol : BaseSymbol
+    public class VariableSymbol : BaseSymbol                                                //Inherits from BaseSymbol. A variable symbol is used for primitive and constructor types. 
     {
         public VariableSymbol(string name, HaCSType symbolType, IScope parentScope) : base(name,symbolType,parentScope)
         {

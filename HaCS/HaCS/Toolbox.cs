@@ -12,7 +12,7 @@ namespace HaCS
 {
     public static class Toolbox
     {
-        public static HaCSType getType(int tokenType)
+        public static HaCSType getType(int tokenType)                                       //Method used for getting the HaCSType corresponding to the int determined by ANTLR4
         {
             switch (tokenType)
             {
@@ -29,7 +29,7 @@ namespace HaCS
             }
         }
 
-        public static List<ITerminalNode> getFlatTokenList(IParseTree tree)
+        public static List<ITerminalNode> getFlatTokenList(IParseTree tree)                 //Returns the tokens within the given context as a List<ITerminalNode> by usingInorderTraversal 
         {
             List<ITerminalNode> tokens = new List<ITerminalNode>();
             inOrderTraversal(tokens, tree);

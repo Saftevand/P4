@@ -15,10 +15,10 @@ namespace HaCS.SymbolTable
     */
     public class DefPhase : HaCSBaseListener
     {
-        private ParseTreeProperty<IScope> _scopes = new ParseTreeProperty<IScope>();            //The parsetreeproperty on which the declared scopes are added
+        private ParseTreeProperty<IScope> _scopes = new ParseTreeProperty<IScope>();        //The parsetreeproperty on which the declared scopes are added
         private GlobalScope _global = new GlobalScope(null);                                   
-        private tLIST _listType = null;                                                         //A reference used for holding the type of a list at declaration 
-        private IScope _currentScope;                                                           //A reference to the current scope
+        private tLIST _listType = null;                                                     //A reference used for holding the type of a list at declaration 
+        private IScope _currentScope;                                                       //A reference to the current scope
 
         public ParseTreeProperty<IScope> Scopes
         {
