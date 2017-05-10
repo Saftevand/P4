@@ -11,7 +11,7 @@ using HaCS.Types;
 
 namespace HaCS
 {
-    class CodeGen : HaCSBaseVisitor<Object>
+    public class CodeGen : HaCSBaseVisitor<Object>
     {
         public StringBuilder cCode = new StringBuilder();
         public StringBuilder cFunctionCode = new StringBuilder();
@@ -322,23 +322,13 @@ namespace HaCS
             return base.VisitCompileUnit(context);
         }
 
-        private T FindLastContext<T>(RuleContext context) where T : RuleContext
-        {
-            if (context is T)
-            {
-                return context as T;
-            }
-            if (context.parent != null) return FindLastContext<T>(context.parent);
-            else return null;
-        }
-
         public override object VisitReturnStmt([NotNull] HaCSParser.ReturnStmtContext context)
         {
             string Identifier;
             string exp = Visit(context.expression()).ToString();
-            if ((FindLastContext<HaCSParser.LambdaExpContext>(context)) != null)
+            if ((Toolbox.FindLastContext<HaCSParser.LambdaExpContext>(context)) != null)
             {
-                Identifier = FindLastContext<HaCSParser.ListDclContext>(context).IDENTIFIER().GetText();
+                Identifier = Toolbox.FindLastContext<HaCSParser.ListDclContext>(context).IDENTIFIER().GetText();
                 return Identifier + "[i] = " + exp + ";" + Environment.NewLine;
             }
             return context.RETURN().ToString() + " " + exp + ";" + Environment.NewLine;

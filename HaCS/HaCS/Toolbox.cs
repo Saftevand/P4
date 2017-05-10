@@ -36,7 +36,6 @@ namespace HaCS
             return tokens;
         }
 
-
         private static void inOrderTraversal(List<ITerminalNode> tokens, IParseTree parent)
         {
             // Iterate over all child nodes of `parent`.
@@ -57,5 +56,15 @@ namespace HaCS
             }
         }
     }
-}
+
+        public static T FindLastContext<T>(RuleContext context) where T : RuleContext
+        {
+            if (context is T)
+            {
+                return context as T;
+            }
+            if (context.parent != null) return FindLastContext<T>(context.parent);
+            else return null;
+        }
+    }
 }
