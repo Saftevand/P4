@@ -7,13 +7,13 @@ using HaCS.Types;
 
 namespace HaCS.SymbolTable
 {
-    public abstract class BaseSymbol
+    public abstract class BaseSymbol                                                        //The abstract class BaseSymbol contains fields and methods that are common for functions, primitive types and constructor types.
     {
         private string _name;
         private HaCSType _symbolType;
         private IScope _parentScope;
 
-        public BaseSymbol(string name, HaCSType symbolType, IScope parentScope)
+        public BaseSymbol(string name, HaCSType symbolType, IScope parentScope)             //When creating a new symbol, the name/identifier, the type of symbol and the scope from where it was made is needed.
         {
             this._name = name;
             this._symbolType = symbolType;

@@ -9,9 +9,9 @@ using Antlr4.Runtime;
 
 namespace HaCS.SymbolTable
 {
-    public class RefPhase : HaCSBaseListener 
-    {
-        private GlobalScope _global;
+    public class RefPhase : HaCSBaseListener                                                //RefPhase inherits from HaCSBaseListener and overwrites methods where the scope should change
+    {                                                                                       //Common for the Enter methods is that the current scope is set to being the scope of the context. 
+        private GlobalScope _global;                                                        //For Exit methods the current scope it set to being the enclosing scope of the context's scope.
         private ParseTreeProperty<IScope> _scopes;
         private IScope _currentScope;
         private int _errorCounter = 0;
@@ -61,8 +61,8 @@ namespace HaCS.SymbolTable
             _currentScope = _currentScope.EnclosingScope;
         }
 
-        public override void ExitVar(HaCSParser.VarContext context)
-        {
+        public override void ExitVar(HaCSParser.VarContext context)                         //When a variable is used it is checked whether it exists in the current scope.
+        {                                                                                   //If the variabe doesn't exist in the current scope an error will be printed.
             string name = context.IDENTIFIER().GetText();
             BaseSymbol var = _currentScope.Resolve(name);
             if(var == null)
@@ -77,7 +77,7 @@ namespace HaCS.SymbolTable
             }
         }
 
-        public override void ExitFunc(HaCSParser.FuncContext context)
+        public override void ExitFunc(HaCSParser.FuncContext context)                   //Same as above, but for functions
         {
             string name = context.IDENTIFIER().GetText();
             BaseSymbol func = _currentScope.Resolve(name);

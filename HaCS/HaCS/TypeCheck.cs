@@ -12,27 +12,36 @@ namespace HaCS
 {
     public class TypeCheck : HaCSBaseVisitor<Object>
     {
+        #region Variables
         private ParseTreeProperty<HaCSType> _types = new ParseTreeProperty<HaCSType>();
         private List<HaCSType> _typeListDcl = new List<HaCSType>();
         private List<HaCSType> _typeListValue = new List<HaCSType>();
         private ParseTreeProperty<IScope> _scopes;
         private IScope _currentScope;
         private int _errorCounter = 0;
+        #endregion
 
         public TypeCheck(ParseTreeProperty<IScope> scopes)
         {
             _scopes = scopes;
         }
 
-        public int ErrorCounter
-        {
-            get { return _errorCounter; }
-        }
-
+        #region Properties
         public ParseTreeProperty<HaCSType> Types
         {
             get { return _types; }
         }
+
+        public ParseTreeProperty<IScope> Scopes
+        {
+            get { return _scopes; }
+        }
+        public int ErrorCounter
+        {
+            get { return _errorCounter; }
+        }
+        #endregion
+
         #region Scope handling
         public override object VisitFunctionDecl(HaCSParser.FunctionDeclContext context)
         {
@@ -201,22 +210,24 @@ namespace HaCS
         {
             string name = context.IDENTIFIER().GetText();
             FunctionSymbol sym = (FunctionSymbol)_currentScope.Resolve(name);
+            bool correctFuncCall = true;
             int i = 0;
             foreach (var item in sym.Symbols)
             {
-                if (item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i])))
+                if (!item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i])))
                 {
-                    _types.Put(context, item.Value.SymbolType);
-                }
-                else
-                {
+                    correctFuncCall = false;
                     _errorCounter++;
                     Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected " + item.Value.SymbolType + ", but got " + (HaCSType)Visit(context.expression()[i]));
                 }
                 i++;
             }
-            
-            return sym.SymbolType;
+            if(correctFuncCall){
+                _types.Put(context, sym.SymbolType);
+                return sym.SymbolType;
+            }
+            _types.Put(context, new tINVALID());
+            return new tINVALID();
         }
 
         public override object VisitAnd(HaCSParser.AndContext context)
@@ -329,7 +340,7 @@ namespace HaCS
         {
             if (type is tBOOL)
             {
-                HaCSParser.VarContext VarParent = FindLastVarContext(context);
+                HaCSParser.VarContext VarParent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);
                 tLIST listType = (tLIST)_currentScope.Resolve(VarParent.IDENTIFIER().GetText()).SymbolType;
                 _types.Put(context, listType.InnerType);
                 return listType.InnerType;
@@ -389,7 +400,7 @@ namespace HaCS
                 if (context.expression() != null)
                 {
                     HaCSType expType = (HaCSType)Visit(context.expression());
-                    HaCSParser.VarContext varParent = FindLastVarContext(context);
+                    HaCSParser.VarContext varParent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);
                     tLIST listType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType;
                     HaCSType result = _determineType(listType.InnerType, expType);
                     _types.Put(context, result);
@@ -405,7 +416,7 @@ namespace HaCS
                     }
                     returnTypes.Add((HaCSType)Visit(context.body().returnStmt()));
                     HaCSType bodyType = (HaCSType)Visit(context.body().returnStmt());
-                    HaCSParser.VarContext varParent = FindLastVarContext(context);
+                    HaCSParser.VarContext varParent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);
                     tLIST listType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType;
                     HaCSType result = null;
                     foreach (HaCSType type in returnTypes)
@@ -423,34 +434,6 @@ namespace HaCS
                     return result;
                 }
             }
-        }
-
-        private HaCSParser.VarContext FindLastVarContext(RuleContext context)
-        {
-            if (context is HaCSParser.VarContext)
-            {
-                return (HaCSParser.VarContext)context;
-            }
-            else return FindLastVarContext(context.parent);
-        }
-
-        private RuleContext FindLastFuncDclContext(RuleContext context)
-        {
-            if (context is HaCSParser.FunctionDeclContext || context is HaCSParser.MainContext)
-            {
-                return context;
-            }
-            else return FindLastFuncDclContext(context.parent);
-        }
-
-        private HaCSParser.LambdaExpContext FindLastLambdaContext(RuleContext context)
-        {
-            if (context is HaCSParser.LambdaExpContext)
-            {
-                return context as HaCSParser.LambdaExpContext;
-            }
-            if (context.parent != null) return FindLastLambdaContext(context.parent);
-            else return null;
         }
 
         #region List and Var dcl
@@ -797,6 +780,8 @@ namespace HaCS
         #endregion
         #endregion
 
+        #region Methods
+        #region Private Methods
         private HaCSType TypeCheckPrimitiveDcl(HaCSParser.VarDclContext context)
         {
             HaCSType type1 = (HaCSType)Visit(context.right);
@@ -852,7 +837,9 @@ namespace HaCS
             }
             else return new tINVALID();            
         }
+        #endregion
 
+        #region Public Methods
         public override object VisitIfStmt(HaCSParser.IfStmtContext context)
         {
             HaCSType type1 = (HaCSType)Visit(context.exp1);
@@ -890,20 +877,20 @@ namespace HaCS
 
         public override object VisitReturnStmt( HaCSParser.ReturnStmtContext context)
         {
-            HaCSParser.LambdaExpContext lambdaContext = FindLastLambdaContext(context);
+            HaCSParser.LambdaExpContext lambdaContext = Toolbox.FindLastContext<HaCSParser.LambdaExpContext>(context);
             HaCSType returnType = null;
             HaCSType Exptype = (HaCSType)Visit(context.expression());
             HaCSType resultingType = null;
             if (lambdaContext != null)
             {
-                HaCSParser.VarContext parent = FindLastVarContext(context);
+                HaCSParser.VarContext parent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);
                 tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
                 returnType = type.InnerType;
                 resultingType = _determineType(returnType, Exptype);
             }
             else
             {
-                RuleContext parentContext = FindLastFuncDclContext(context);
+                RuleContext parentContext = Toolbox.FindLastContext<HaCSParser.FuncContext>(context);
                 if (parentContext is HaCSParser.FunctionDeclContext)
                 {
                     returnType = _currentScope.Resolve((parentContext as HaCSParser.FunctionDeclContext).IDENTIFIER().GetText()).SymbolType;
@@ -921,6 +908,8 @@ namespace HaCS
             _types.Put(context, resultingType);
             return resultingType;
         }
+        #endregion
+        #endregion
 
     }
 }

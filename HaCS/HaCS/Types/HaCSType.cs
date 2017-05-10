@@ -8,6 +8,7 @@ namespace HaCS.Types
 {
     public abstract class HaCSType
     {
+        #region Methods
         public override bool Equals(object obj)
         {
             HaCSType type = (HaCSType)obj;
@@ -35,6 +36,10 @@ namespace HaCS.Types
             {
                 return (this as tLIST).InnerType.Equals((type as tLIST).InnerType);
             }
+            else if(type is tINVALID && this is tINVALID)
+            {
+                return true;
+            }
             else return false;
         }
 
@@ -42,5 +47,6 @@ namespace HaCS.Types
         {
             return base.ToString().Remove(0,12);
         }
+        #endregion
     }
 }

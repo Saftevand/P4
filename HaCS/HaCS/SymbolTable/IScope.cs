@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace HaCS.SymbolTable
 {
-    public interface IScope
+    public interface IScope                                                                 //IScope contains fields describing the name of the scope, it's enclosing scope and two functions Define and Resolve. 
     {
         string ScopeName { get; }
         IScope EnclosingScope { get; }
         void Define(BaseSymbol sym);
-        BaseSymbol Resolve(string name);
+        BaseSymbol Resolve(string name);       
     }
 }
