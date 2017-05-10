@@ -18,6 +18,7 @@ namespace HaCS
         private List<HaCSType> _typeListDcl = new List<HaCSType>();                         
         private List<HaCSType> _typeListValue = new List<HaCSType>();
         private IScope _currentScope;
+        private int _errorCounter = 0;
         #endregion
 
         public TypeCheck(ParseTreeProperty<IScope> scopes)
@@ -34,6 +35,10 @@ namespace HaCS
         public ParseTreeProperty<IScope> Scopes
         {
             get { return _scopes; }
+        }
+        public int ErrorCounter
+        {
+            get { return _errorCounter; }
         }
         #endregion
 
@@ -76,19 +81,20 @@ namespace HaCS
 
         public override object VisitExponent(HaCSParser.ExponentContext context)            //When a exponent expression is encounterered the expression of the context is visited and type promotion might occur.
         {
-            HaCSType type2 = (HaCSType)Visit(context.right);                                //The right side of the context - for instance 3+5^2   the expression 2 is visited
-            HaCSType type1 = (HaCSType)Visit(context.left);                                 //The left side of the context - for instance 3+5^2   the expression 3+5 is visited
-            HaCSType type3 = _determineType(type1, type2);                                  //The types of the left and right-hand side are compared to check if the types can be evaluated.
-            if (type3 is tINVALID)                                                          //Type promotion will happen between int and float. tINVALID is returned if the two types can't be evaluated.
-            {                                                                               
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
-                _types.Put(context, type3);                                                 //The type determined by _determineType is added to the parsetreeproperty - tINVALID in this case
-            }
-            else
-            {
-                _types.Put(context, type3);                                                 //The type determined by _determineType is added to the parsetreeproperty
-            }
-            return type3;
+                HaCSType type2 = (HaCSType)Visit(context.right);                                 //The right side of the context - for instance 3+5^2   the expression 2 is visited
+                HaCSType type1 = (HaCSType)Visit(context.left);                                 //The left side of the context - for instance 3+5^2   the expression 3+5 is visited
+                HaCSType type3 = _determineType(type1, type2);                                  //The types of the left and right-hand side are compared to check if the types can be evaluated.
+                if (type3 is tINVALID || type3 is tCHAR || type3 is tBOOL || type3 is tLIST)  //Type promotion will happen between int and float. tINVALID is returned if the two types can't be evaluated.
+                {
+                _errorCounter++;
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected INT or FLOAT, but got " + type1 + " and " + type2);
+                _types.Put(context, new tINVALID());                
+                }
+                else
+                {
+                    _types.Put(context, type3);                                                 //The type determined by _determineType is added to the parsetreeproperty
+                }
+                return type3;
 
         }
 
@@ -102,6 +108,7 @@ namespace HaCS
             }
             else if(context.listOpp() != null)                                              //If the context contains a list operation, but the context isn't a list an error will given. 
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + ": Use of list operator on " + type + ", expected type: " + new tLIST());
                 type = new tINVALID();
             }
@@ -115,10 +122,13 @@ namespace HaCS
             HaCSType type1 = (HaCSType)Visit(context.left);                                 //The left side of the context - for instance (5+2*2+4) the expression 5+2 is visited
             HaCSType type2 = (HaCSType)Visit(context.right);                                //The right side of the context - for instance (5+2*2+4) the expression 2+4 is visited
             HaCSType type3 = _determineType(type1, type2);                                  //The types of the left and right-hand side are compared to check if the types can be evaluated.
-            if (type3 is tINVALID)                                                          //Type promotion will happen between int and float. tINVALID is returned if the two types can't be evaluated.
+                                                                                            //Type promotion will happen between int and float. tINVALID is returned if the two types can't be evaluated.
+            if (type3 is tINVALID || type3 is tCHAR || type3 is tBOOL || type3 is tLIST)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
-                _types.Put(context, type3);                                                 //The type determined by _determineType is added to the parsetreeproperty
+
+                _types.Put(context, new tINVALID());                                        //If the type is not an int or float tINVALID is added to the parsetreeproperty
             }
             else
             {
@@ -132,10 +142,11 @@ namespace HaCS
             HaCSType type1 = (HaCSType)Visit(context.left);
             HaCSType type2 = (HaCSType)Visit(context.right);
             HaCSType type3 = _determineType(type1, type2);
-            if (type3 is tINVALID)
+            if (type3 is tINVALID || type3 is tCHAR || type3 is tBOOL || type3 is tLIST)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
-                _types.Put(context, type3);
+                _types.Put(context, new tINVALID());
             }
             else
             {
@@ -149,11 +160,12 @@ namespace HaCS
             HaCSType type1 = (HaCSType)Visit(context.left);
             HaCSType type2 = (HaCSType)Visit(context.right);
             HaCSType type3 = _determineType(type1, type2);
-            if (type3 is tINVALID)
+            if (type3 is tINVALID || type3 is tLIST)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
-                _types.Put(context, type3);
-                return type3;
+                _types.Put(context, new tINVALID());
+                return new tINVALID();
             }
             else
             {
@@ -169,6 +181,7 @@ namespace HaCS
             HaCSType resultingType = _determineType(type1, type2);
             if(resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected similar types on each side of equality sign, but got " + type1 + " and " + type2);
                 _types.Put(context, new tINVALID());
                 return new tINVALID();
@@ -184,6 +197,7 @@ namespace HaCS
             HaCSType type3 = _determineType(type1, type2);
             if (type3 is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected int or float, but got " + type1 + " and " + type2);
                 return type3;
             }
@@ -198,21 +212,24 @@ namespace HaCS
         {
             string name = context.IDENTIFIER().GetText();                                   //The identifier of the function
             FunctionSymbol sym = (FunctionSymbol)_currentScope.Resolve(name);               //Lookup in the current scope to find the function corresponding to the identifier
+            bool correctFuncCall = true;
             int i = 0;
-            foreach (var item in sym.Symbols)                                              //Iteration through all symbols(functions and variables) declared within the function
+            foreach (var item in sym.Symbols)                                               //Iteration through all symbols(functions and variables) declared within the function
             {
-                if (item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i]))) //Checks whether the types of the actual parameters corresponds to the formal parameters.
-                {
-                    _types.Put(context, item.Value.SymbolType);                             //The type of the symbol is added to the parsetreeproperty
-                }
-                else                                                                        //Gives error if actual and formal parameters don't correspond.
-                {
+                if (!item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i])))//Checks whether the types of the actual parameters corresponds to the formal parameters.
+                {                                                                           //Gives error if the types actual and formal parameters don't correspond.
+                    correctFuncCall = false;                                                //Sets flag to false
+                    _errorCounter++;
                     Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected " + item.Value.SymbolType + ", but got " + (HaCSType)Visit(context.expression()[i]));
                 }
                 i++;
             }
-            
-            return sym.SymbolType;                                                          //Returns the type of the function - The function's return type
+            if(correctFuncCall){                                                            //If no error with the parameters
+                _types.Put(context, sym.SymbolType);                                        //The type of the function is added to the parsetreeproperty
+                return sym.SymbolType;                                                      //Returns the type of the function - The function's return type
+            }
+            _types.Put(context, new tINVALID());
+            return new tINVALID();
         }
 
         public override object VisitAnd(HaCSParser.AndContext context)                      //Same procedure, but when encountering (&&) expressions
@@ -227,6 +244,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1 + " and " + type2);
                 return new tINVALID();
             }
@@ -244,6 +262,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1 + " and " + type2);
                 return new tINVALID();
             }
@@ -263,10 +282,10 @@ namespace HaCS
             bool terminalChecker = true;                                                    //Used as a flag to test whether all parameters in the lambda expression are used.
             if(context.lambdaBody().expression() != null)                                   //If the lambdabody(the left-hand side of the '=>') is an expression...
             {
-                foreach (ITerminalNode terminal in context.IDENTIFIER())                    //It is checked whether all the identifiers of the parameters are used in the expression 
-                {
-                    List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().expression()); //getFlatTokenList returns a list containing the tokens from the expression
-                    if (tokenList.Find(x => x.Symbol.Text == terminal.Symbol.Text) == null)                      //If an parameter is not to be found in the list of tokens, the flag is set to false 
+                List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().expression());    //getFlatTokenList returns a list containing the tokens from the expression
+                    foreach (ITerminalNode terminal in context.IDENTIFIER())                //It is checked whether all the identifiers of the parameters are used in the expression 
+                    {
+                    if (tokenList.Find(x => x.Symbol.Text == terminal.Symbol.Text) == null) //If an parameter is not to be found in the list of tokens, the flag is set to false
                     {
                         terminalChecker = false;
                     }
@@ -285,13 +304,12 @@ namespace HaCS
             }
             if(terminalChecker == false)                                                   //If the flag is false, an error is given, that not all parameters were used
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: missing identifier(s) in lambda expression");
-                _types.Put(context, new tINVALID());                                      //The type is added to the parsetreeproperty
-                _currentScope = _currentScope.EnclosingScope;                             //The scope is set back to the lambdabody's enclosing scope
-                return new tINVALID();                                                    //The type tINVALID is returned since not all parameters were used
-            }
-            
-            return Visit(context.lambdaBody());                                             //The type of the lambdabody is returned (left-hand side of '=>') by visiting the lambdaBody
+                _types.Put(context, new tINVALID());                                    //The type is added to the parsetreeproperty
+        }
+            return Visit(context.lambdaBody());                                         //The type of the lambdabody is returned (left-hand side of '=>') by visiting the lambdaBody
+
         }
 
         public override object VisitElement(HaCSParser.ElementContext context)              //When encountering an Element expression - (list[2])
@@ -303,11 +321,12 @@ namespace HaCS
                 _types.Put(context, (type2 as tLIST).InnerType);                            //Adds the type of the innermost list to the parsetreeproperty - for instance List<List<int>>
                 return (type2 as tLIST).InnerType;                                          //Returns the type of the innermost list
             }
-            else                                                                            //If it's not a list or the expression within'[]' doesn't evaluate to an integer, an error is given 
-            {                                                                               //tINVALID is added to the parsetreeproperty and the tINVALID is returned 
-                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected tINT as index of tLIST, but got " + type1 + " as index of " + type2);
-                _types.Put(context,new tINVALID());
-                return new tINVALID();
+            else                                                                            //If it's not a list or the expression within'[]' doesn't evaluate to an integer, an error is given
+            {
+                _errorCounter++;
+                Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Conflicting types, expected INT as index of LIST, but got " + type1 + " as index of " + type2);
+                _types.Put(context,new tINVALID());                                        //tINVALID is added to the parsetreeproperty and the tINVALID is returned
+                    return new tINVALID();
             }
         }
 
@@ -319,7 +338,6 @@ namespace HaCS
             _types.Put(context, resultingType);                                             //The type is added to the parsetreeproperty
             return resultingType;                                                           //Returns the type of Range
         }
-
 
         public override object VisitLambdaBody(HaCSParser.LambdaBodyContext context)        //When encountering a lambdaBody - right handside of ('=>')
         {
@@ -349,8 +367,9 @@ namespace HaCS
                 if (context.expression() != null)                                           //The lambdaBody contains an expression
                 {
                     HaCSType expType = (HaCSType)Visit(context.expression());               //Gets the type the expression evaluates to
-                    HaCSParser.VarContext varParent = FindLastVarContext(context);          //Gets the variable(list) on which the list operation is used on
-                    tLIST listType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType;  //
+                    HaCSParser.VarContext varParent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);  //Gets the variable(list) on which the list operation is used on
+                    tLIST listType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType;
+
                     HaCSType result = _determineType(listType.InnerType, expType);
                     _types.Put(context, result);
                     _currentScope = _currentScope.EnclosingScope;
@@ -365,7 +384,7 @@ namespace HaCS
                     }
                     returnTypes.Add((HaCSType)Visit(context.body().returnStmt()));
                     HaCSType bodyType = (HaCSType)Visit(context.body().returnStmt());
-                    HaCSParser.VarContext varParent = FindLastVarContext(context);
+                    HaCSParser.VarContext varParent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);
                     tLIST listType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType;
                     HaCSType result = null;
                     foreach (HaCSType type in returnTypes)
@@ -401,6 +420,7 @@ namespace HaCS
                     _typeListValue.Add(valueType);
                     if (!dclType.Equals(valueType) && !dclType.InnerType.Equals(valueType) && _typeListValue[_typeListDcl.Count-1] is tLIST)
                     {
+                        _errorCounter++;
                         Console.WriteLine("Error at line: " + context.Start.Line + ": conflicting types, expected " + dclType + ", but got " + valueType);
                         correctListDcl = false;
                     }
@@ -500,6 +520,7 @@ namespace HaCS
 
             if(resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + " ,but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
@@ -520,6 +541,7 @@ namespace HaCS
 
             if (resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + ", but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
@@ -554,6 +576,7 @@ namespace HaCS
             HaCSType lambdaExp = (HaCSType)Visit(context.lambdaExp());
             if(lambdaExp is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Map is done on type: " +  lambdaExp + ", expected type: " + type.InnerType);
                 _types.Put(context, lambdaExp);
                 return lambdaExp;
@@ -572,6 +595,7 @@ namespace HaCS
             HaCSType lambdaExp = (HaCSType)Visit(context.lambdaExp());
             if (lambdaExp is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Map is done on type: " + lambdaExp + ", expected type: " + type.InnerType);
                 _types.Put(context, lambdaExp);
                 return lambdaExp;
@@ -590,6 +614,7 @@ namespace HaCS
             HaCSType expType = (HaCSType)Visit(context.expression());
             if (!type.InnerType.Equals(expType))
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error:" + type + ",cannot Contain type: " + type.InnerType);
                 _types.Put(context, new tINVALID());
                 return new tINVALID();
@@ -620,6 +645,7 @@ namespace HaCS
             {
                 foreach (HaCSType invalidType in invalidTypes)
                 {
+                    _errorCounter++;
                     Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Unable to Include type: " + invalidType + ", in type: " + type.InnerType);
                 }
                 _types.Put(context, new tINVALID());
@@ -646,6 +672,7 @@ namespace HaCS
             {
                 foreach (HaCSType invalidType in invalidTypes)
                 {
+                    _errorCounter++;
                     Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Unable to Exclude type: " + invalidType + ", in type: " + type.InnerType);
                 }
                 _types.Put(context, new tINVALID());
@@ -670,6 +697,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Must provide ExcludeAt with type: tINT, ONLY");
                 _types.Put(context, new tINVALID());
                 return new tINVALID();
@@ -692,6 +720,7 @@ namespace HaCS
 
             if (resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected: " + type.InnerType + ", but got: " + expType);
                 _types.Put(context, resultingType);
                 return resultingType;
@@ -737,6 +766,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: conflicting types, expected similar types, but got " + type1 + " and " + type2);
                 return new tINVALID();
             }
@@ -757,6 +787,7 @@ namespace HaCS
             }
             if (typeError)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + ": Inconsistent list declaration, value does not match declaration");
             }
             return result;
@@ -849,7 +880,8 @@ namespace HaCS
                 return type1;
             }
             else
-            {                
+            {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1);
                 return new tINVALID();
             }
@@ -866,6 +898,7 @@ namespace HaCS
             }
             else
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected bool, but got " + type1);
                 return new tINVALID();
             }
@@ -874,20 +907,20 @@ namespace HaCS
 
         public override object VisitReturnStmt( HaCSParser.ReturnStmtContext context)
         {
-            HaCSParser.LambdaExpContext lambdaContext = FindLastLambdaContext(context);
+            HaCSParser.LambdaExpContext lambdaContext = Toolbox.FindLastContext<HaCSParser.LambdaExpContext>(context);
             HaCSType returnType = null;
             HaCSType Exptype = (HaCSType)Visit(context.expression());
             HaCSType resultingType = null;
             if (lambdaContext != null)
             {
-                HaCSParser.VarContext parent = FindLastVarContext(context);
+                HaCSParser.VarContext parent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);
                 tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
                 returnType = type.InnerType;
                 resultingType = _determineType(returnType, Exptype);
             }
             else
             {
-                RuleContext parentContext = FindLastFuncDclContext(context);
+                RuleContext parentContext = Toolbox.FindLastContext<HaCSParser.FuncContext>(context);
                 if (parentContext is HaCSParser.FunctionDeclContext)
                 {
                     returnType = _currentScope.Resolve((parentContext as HaCSParser.FunctionDeclContext).IDENTIFIER().GetText()).SymbolType;
@@ -897,6 +930,7 @@ namespace HaCS
             } 
             if(resultingType is tINVALID)
             {
+                _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Incorrect Return type: " + Exptype + ", expected: " + returnType);
                 _types.Put(context, resultingType);
                 return resultingType;

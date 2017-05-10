@@ -14,11 +14,17 @@ namespace HaCS.SymbolTable
         private GlobalScope _global;                                                        //For Exit methods the current scope it set to being the enclosing scope of the context's scope.
         private ParseTreeProperty<IScope> _scopes;
         private IScope _currentScope;
+        private int _errorCounter = 0;
 
         public RefPhase(GlobalScope global, ParseTreeProperty<IScope> scopes)
         {
             this._global = global;
             this._scopes = scopes;
+        }
+
+        public int ErrorCounter
+        {
+            get { return _errorCounter; }
         }
 
         public override void EnterProgram( HaCSParser.ProgramContext context)
@@ -62,10 +68,12 @@ namespace HaCS.SymbolTable
             if(var == null)
             {
                 Console.WriteLine(name + " variable not declared at line:" + context.start.Line);
+                _errorCounter++;
             }
             else if (var is FunctionSymbol)
             {
                 Console.WriteLine(name + " is a function not a variable");
+                _errorCounter++;
             }
         }
 
@@ -76,10 +84,12 @@ namespace HaCS.SymbolTable
             if(func == null)
             {
                 Console.WriteLine(name + " variable not declared at line:" + context.start.Line);
+                _errorCounter++;
             }
             else if (func is VariableSymbol)
             {
                 Console.WriteLine(name + " is a variable not a function");
+                _errorCounter++;
             }
         }
 
