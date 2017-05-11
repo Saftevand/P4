@@ -434,9 +434,9 @@ namespace HaCS
                 returnType = type.InnerType;                                                                                //The type of elements the innermost list contains
                 resultingType = _determineType(returnType, Exptype);                                                        //Determines whether the expression in the return statement corresponds to the type of elements the innermost list has
             }
-            else                                                                                                            //Checks whether 
+            else                                                                                                            //Enters else, as the return must be wihtin a function
             {
-                RuleContext parentContext = Toolbox.FindLastContext<HaCSParser.FuncContext>(context);                       //Gets the last declared function and checks whether the expression of the returnstms corresponds to the type of the function
+                RuleContext parentContext = Toolbox.FindLastContext<HaCSParser.FunctionDeclContext>(context);                       //Gets the last declared function and checks whether the expression of the returnstms corresponds to the type of the function
                 if (parentContext is HaCSParser.FunctionDeclContext)
                 {
                     returnType = _currentScope.Resolve((parentContext as HaCSParser.FunctionDeclContext).IDENTIFIER().GetText()).SymbolType;
