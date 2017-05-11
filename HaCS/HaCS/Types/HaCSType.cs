@@ -9,7 +9,7 @@ namespace HaCS.Types
     public abstract class HaCSType
     {
         #region Methods
-        public override bool Equals(object obj)
+        public override bool Equals(object obj)                                             //Simple Equal method to compare HaCS types
         {
             HaCSType type = (HaCSType)obj;
             if(type == null)
@@ -32,7 +32,7 @@ namespace HaCS.Types
             {
                 return true;
             }
-            else if(type is tLIST && this is tLIST)
+            else if(type is tLIST && this is tLIST)                                         //Ensures that the level of nested lists corresponds and the innermost list contains elements of the same type. 
             {
                 return (this as tLIST).InnerType.Equals((type as tLIST).InnerType);
             }

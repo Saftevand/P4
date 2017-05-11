@@ -55,7 +55,6 @@ listDcls :  expression (DELIMITER expression)*
     |   left=expression (ADD|SUB) right=expression								#Arith1
     |   left=expression (LE | GE | GT | LT) right=expression					#Compare
     |   left=expression (EQ | NEQ) right=expression								#Equality
-    |	left=expression PIPE IDENTIFIER LTMINUS right=expression				#Pipe
 	|   left=expression AND right=expression									#And
     |   left=expression OR right=expression										#Or
 	|	IDENTIFIER LPAREN exp=expression (DELIMITER expList=expression)* RPAREN	#Func							
@@ -81,7 +80,6 @@ listDcls :  expression (DELIMITER expression)*
 	|	EXCLUDE LPAREN expression (DELIMITER expression)* RPAREN	#Exclude
 	|	EXCLUDEAT LPAREN expression (DELIMITER expression)* RPAREN	#ExcludeAt
 	|	LENGTH LPAREN RPAREN										#Length
-	|	FOLD LPAREN (ADD|SUB|MUL) RPAREN							#Fold
 	|	INDEXOF LPAREN lambdaExp RPAREN								#IndexOf;
 
  type : primitiveType
@@ -116,7 +114,6 @@ FIRST : 'first';
 LAST : 'last';
 MAP : 'map';
 REDUCE : 'reduce';
-FOLD : 'fold';
 INDEXOF : 'indexOf';
 CONTAINS: 'contains';
 WRITELINE : 'WriteLine';
@@ -133,7 +130,6 @@ ADD : '+';
 SUB : '-';
 AND : '&&';
 OR	: '||';
-PIPE: '|';
 EQ	: '==';
 NEQ	: '!=';
 GT  : '>' ;

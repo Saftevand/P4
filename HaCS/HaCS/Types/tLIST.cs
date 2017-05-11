@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HaCS.Types
 {
-    public class tLIST : HaCSType
+    public class tLIST : HaCSType                                                           //The tLIST type can contains a variable _innerType which is used as a reference to the list or type of elemenents it might contain  
     {
         #region Variables
         private HaCSType _innerType = null;
@@ -21,7 +21,7 @@ namespace HaCS.Types
         #endregion
 
         #region Methods
-        public HaCSType LastType()
+        public HaCSType LastType()                                                          //Does recursively go through the innerType, hereby all the possible nested lists and returns the variable with the type of the innermost list's elements
         {
             if(_innerType is tLIST)
             {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
+// Generated from C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -156,21 +156,6 @@ public partial class HaCSBaseListener : IHaCSListener {
 	public virtual void ExitElement([NotNull] HaCSParser.ElementContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by the <c>Pipe</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPipe([NotNull] HaCSParser.PipeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>Pipe</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPipe([NotNull] HaCSParser.PipeContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by the <c>Range</c>
 	/// labeled alternative in <see cref="HaCSParser.expression"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -276,19 +261,19 @@ public partial class HaCSBaseListener : IHaCSListener {
 	public virtual void ExitLambda([NotNull] HaCSParser.LambdaContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by the <c>Fold</c>
+	/// Enter a parse tree produced by the <c>Last</c>
 	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterFold([NotNull] HaCSParser.FoldContext context) { }
+	public virtual void EnterLast([NotNull] HaCSParser.LastContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by the <c>Fold</c>
+	/// Exit a parse tree produced by the <c>Last</c>
 	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitFold([NotNull] HaCSParser.FoldContext context) { }
+	public virtual void ExitLast([NotNull] HaCSParser.LastContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by the <c>Exclude</c>
@@ -306,66 +291,6 @@ public partial class HaCSBaseListener : IHaCSListener {
 	public virtual void ExitExclude([NotNull] HaCSParser.ExcludeContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by the <c>IndexOf</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterIndexOf([NotNull] HaCSParser.IndexOfContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>IndexOf</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitIndexOf([NotNull] HaCSParser.IndexOfContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by the <c>Include</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterInclude([NotNull] HaCSParser.IncludeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>Include</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitInclude([NotNull] HaCSParser.IncludeContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by the <c>Reduce</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterReduce([NotNull] HaCSParser.ReduceContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>Reduce</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitReduce([NotNull] HaCSParser.ReduceContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by the <c>Last</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterLast([NotNull] HaCSParser.LastContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>Last</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitLast([NotNull] HaCSParser.LastContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by the <c>Length</c>
 	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -379,6 +304,21 @@ public partial class HaCSBaseListener : IHaCSListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitLength([NotNull] HaCSParser.LengthContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by the <c>IndexOf</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterIndexOf([NotNull] HaCSParser.IndexOfContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>IndexOf</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitIndexOf([NotNull] HaCSParser.IndexOfContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by the <c>Find</c>
@@ -409,6 +349,21 @@ public partial class HaCSBaseListener : IHaCSListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitContains([NotNull] HaCSParser.ContainsContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by the <c>Include</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterInclude([NotNull] HaCSParser.IncludeContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>Include</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitInclude([NotNull] HaCSParser.IncludeContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by the <c>First</c>
@@ -454,6 +409,21 @@ public partial class HaCSBaseListener : IHaCSListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitMap([NotNull] HaCSParser.MapContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by the <c>Reduce</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterReduce([NotNull] HaCSParser.ReduceContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>Reduce</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitReduce([NotNull] HaCSParser.ReduceContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExcludeAt</c>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\GryPetersen\Documents\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
+// Generated from C:\Users\Lasse\Documents\GitHub\P4\HaCS\HaCS\HaCS.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -136,19 +136,6 @@ public interface IHaCSListener : IParseTreeListener {
 	void ExitElement([NotNull] HaCSParser.ElementContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by the <c>Pipe</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterPipe([NotNull] HaCSParser.PipeContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>Pipe</c>
-	/// labeled alternative in <see cref="HaCSParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitPipe([NotNull] HaCSParser.PipeContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by the <c>Range</c>
 	/// labeled alternative in <see cref="HaCSParser.expression"/>.
 	/// </summary>
@@ -240,17 +227,17 @@ public interface IHaCSListener : IParseTreeListener {
 	void ExitLambda([NotNull] HaCSParser.LambdaContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by the <c>Fold</c>
+	/// Enter a parse tree produced by the <c>Last</c>
 	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterFold([NotNull] HaCSParser.FoldContext context);
+	void EnterLast([NotNull] HaCSParser.LastContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>Fold</c>
+	/// Exit a parse tree produced by the <c>Last</c>
 	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitFold([NotNull] HaCSParser.FoldContext context);
+	void ExitLast([NotNull] HaCSParser.LastContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by the <c>Exclude</c>
@@ -266,58 +253,6 @@ public interface IHaCSListener : IParseTreeListener {
 	void ExitExclude([NotNull] HaCSParser.ExcludeContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by the <c>IndexOf</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterIndexOf([NotNull] HaCSParser.IndexOfContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>IndexOf</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitIndexOf([NotNull] HaCSParser.IndexOfContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by the <c>Include</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterInclude([NotNull] HaCSParser.IncludeContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>Include</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitInclude([NotNull] HaCSParser.IncludeContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by the <c>Reduce</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterReduce([NotNull] HaCSParser.ReduceContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>Reduce</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitReduce([NotNull] HaCSParser.ReduceContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by the <c>Last</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterLast([NotNull] HaCSParser.LastContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>Last</c>
-	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitLast([NotNull] HaCSParser.LastContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by the <c>Length</c>
 	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
 	/// </summary>
@@ -329,6 +264,19 @@ public interface IHaCSListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitLength([NotNull] HaCSParser.LengthContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by the <c>IndexOf</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterIndexOf([NotNull] HaCSParser.IndexOfContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>IndexOf</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitIndexOf([NotNull] HaCSParser.IndexOfContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by the <c>Find</c>
@@ -355,6 +303,19 @@ public interface IHaCSListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitContains([NotNull] HaCSParser.ContainsContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by the <c>Include</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterInclude([NotNull] HaCSParser.IncludeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>Include</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitInclude([NotNull] HaCSParser.IncludeContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by the <c>First</c>
@@ -394,6 +355,19 @@ public interface IHaCSListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitMap([NotNull] HaCSParser.MapContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by the <c>Reduce</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterReduce([NotNull] HaCSParser.ReduceContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>Reduce</c>
+	/// labeled alternative in <see cref="HaCSParser.listOpp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitReduce([NotNull] HaCSParser.ReduceContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by the <c>ExcludeAt</c>
