@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using HaCS.Types;
+using Antlr4.Runtime;
 
 namespace HaCS.SymbolTable
 {
@@ -19,6 +20,7 @@ namespace HaCS.SymbolTable
         private GlobalScope _global = new GlobalScope(null);                                   
         private tLIST _listType = null;                                                     //A reference used for holding the type of a list at declaration 
         private IScope _currentScope;                                                       //A reference to the current scope
+        private int _errorCounter = 0;
 
         public ParseTreeProperty<IScope> Scopes
         {
@@ -28,6 +30,11 @@ namespace HaCS.SymbolTable
         public GlobalScope Global
         {
             get { return _global; }
+        }
+
+        public int ErrorCounter
+        {
+            get { return _errorCounter; }
         }
 
         public override void EnterProgram(HaCSParser.ProgramContext context)
@@ -60,7 +67,7 @@ namespace HaCS.SymbolTable
                 type = CreateListType(_listType, context.type().listType());                //If it's type List, it will determine the type within the List through recursive use of CreateListType        
             }
             FunctionSymbol function = new FunctionSymbol(name, type, _currentScope);        //A new function is declared based on the name of the function, its return type and the scope from where it was declared.
-            _currentScope.Define(function);                                                 //The new function is added to the current scope. The function can then be resolved by its identifier.
+            DefineBuffer(function);                                                 //The new function is added to the current scope. The function can then be resolved by its identifier.
             _scopes.Put(context, function);                                                 //The function which acts like a scope is added to the parsetreeproperty
             _currentScope = function;                                                       //The current scope is set to be the scope of the function.
         }
@@ -128,7 +135,7 @@ namespace HaCS.SymbolTable
             {
                 _listType = CreateListType(_listType, context.listType());                  //The type of the inner list is determined
                 VariableSymbol varSym = new VariableSymbol(name, _listType, _currentScope); //A new variable is created using the name, type of list, and the current scope.
-                _currentScope.Define(varSym);                                               //The variable is added to the current scope.
+                DefineBuffer(varSym);                                               //The variable is added to the current scope.
             }       
         }
 
@@ -137,13 +144,13 @@ namespace HaCS.SymbolTable
             int typeTokenType = context.Start.Type;                                      //Gets the int corresponding to the type(ANTLR4)
             HaCSType type = Toolbox.getType(typeTokenType);                              //Gets HaCS type corresponding to the int determined by ANTLR4
             VariableSymbol varSym = new VariableSymbol(name, type, _currentScope);       //A new variable is declared based on the name of the variable, its type and the scope from where it was declared.  
-            _currentScope.Define(varSym);                                                //The variable is added to the current scope
+            DefineBuffer(varSym);                                                //The variable is added to the current scope
         }
 
         public void DefineVariable(HaCSParser.ListDclContext context)
         {
             VariableSymbol varSym = new VariableSymbol(context.IDENTIFIER().GetText(), _listType, _currentScope);   //List is declared 
-            _currentScope.Define(varSym);                                                                           //The List is added to the current scope
+            DefineBuffer(varSym);                                                                           //The List is added to the current scope
         }
 
         private tLIST CreateListType(tLIST listType, HaCSParser.ListTypeContext context) 
@@ -155,6 +162,16 @@ namespace HaCS.SymbolTable
                CreateListType(listType.InnerType as tLIST, context.type().listType());      //If the type the list contains is a tList is will call itself recursively 
             }
             return listType;                                                                //Returns he type the inner most list contains.
+        }
+
+        private void DefineBuffer(BaseSymbol sym)
+        {
+            if (_currentScope.Symbols.ContainsKey(sym.Name))
+            {
+                _errorCounter++;
+                Console.WriteLine("Error: " + sym.Name + " already exists in this scope");
+            }
+            else _currentScope.Define(sym);
         }
 
 

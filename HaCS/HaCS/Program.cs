@@ -10,9 +10,9 @@ using Antlr4.Runtime.Tree;
 
 namespace HaCS
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static int Main(string[] args)
         {
             StreamReader inputStream;
             if (args.Count() == 0)
@@ -30,20 +30,25 @@ namespace HaCS
                 ParseTreeWalker walker = new ParseTreeWalker();                                 //A walker is initialised which can walk/traverse in a way specified by its input.
                 SymbolTable.DefPhase Def = new SymbolTable.DefPhase();                          //The DefPhase which contains methods for declaring scopes and variables
                 walker.Walk(Def, tree);                                                         //The walker traverses the parsetree using the methods from the defPhase and annotates the parsetree through the use of parsetreeproperties.
-                SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);    //The refPhase uses the parsetreeproperties and checks whether symbols are available from where they are tried to be used. 
-                walker.Walk(Ref, tree);                                                         //The walker traverses the parsetree using the methods from the refPhase and reports errors if any.
-                if (Ref.ErrorCounter == 0)
+                if(Def.ErrorCounter == 0)
                 {
-                    TypeCheck typechecker = new TypeCheck(Def.Scopes);
-                    typechecker.Visit(tree);
-                    if(typechecker.ErrorCounter == 0)
+                    SymbolTable.RefPhase Ref = new SymbolTable.RefPhase(Def.Global, Def.Scopes);    //The refPhase uses the parsetreeproperties and checks whether symbols are available from where they are tried to be used. 
+                    walker.Walk(Ref, tree);                                                         //The walker traverses the parsetree using the methods from the refPhase and reports errors if any.
+                    if (Ref.ErrorCounter == 0)
                     {
-                        CodeGen codeGen = new CodeGen(typechecker.Types);
-                        codeGen.Visit(tree);
-                        Console.WriteLine("Compile complete");
+                        TypeCheck typechecker = new TypeCheck(Def.Scopes);
+                        typechecker.Visit(tree);
+                        if (typechecker.ErrorCounter == 0)
+                        {
+                            CodeGen codeGen = new CodeGen(typechecker.Types);
+                            codeGen.Visit(tree);
+                            Console.WriteLine("Compile complete");
+                            return 1;
+                        }
                     }
-                } 
+                }  
             }
+            return 0;
             Console.ReadKey();
         }
 

@@ -66,5 +66,15 @@ namespace HaCS
             if (context.parent != null) return FindLastContext<T>(context.parent);
             else return null;
         }
+
+        public static T FindLastContext<T>(RuleContext context, string identifier) where T : RuleContext
+        {
+            if (context is T && context.GetText().Contains(identifier))
+            {
+                return context as T;
+            }
+            if (context.parent != null) return FindLastContext<T>(context.parent, identifier);
+            else return null;
+        }
     }
 }

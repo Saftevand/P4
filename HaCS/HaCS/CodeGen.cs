@@ -448,6 +448,11 @@ namespace HaCS
             return name;
         }
 
+        public override object VisitFind([NotNull] HaCSParser.FindContext context)
+        {
+            return context.GetText();
+        }
+
         public override object VisitExclude([NotNull] HaCSParser.ExcludeContext context)
         {
             string name = context.Parent.GetChild(0).GetText();
