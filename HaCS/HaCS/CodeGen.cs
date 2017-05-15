@@ -485,12 +485,22 @@ namespace HaCS
         {
             string name = context.Parent.GetChild(0).GetText();
             name += "[" + Identifier[name] + "];";
-
             return name;
         }
 
         public override object VisitFind([NotNull] HaCSParser.FindContext context)
         {
+            string name = FindLastIdentifier(context).ToString();
+            string nameType = TypeIdentifier[name];
+            string sizeCalc = "strlen";
+            if (nameType.Contains("int"))
+            {
+                sizeCalc = "sizeof";
+            }
+            string exp = Visit(context.lambdaExp()).ToString();
+            exp = exp.Replace(context.lambdaExp().GetChild(2).GetText(), name + "[i]");
+
+            cFunctionCode.Append(nameType + " func" + ++funcCount + "(" + nameType + " " + name + "){" + "int i; for(i = 0; i < " + sizeCalc + "(" + name + "); i++){if(" + exp + "){return "+ name + "[i];}}}");
             return context.GetText();
         }
 
