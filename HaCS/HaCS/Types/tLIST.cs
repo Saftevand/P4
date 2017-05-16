@@ -30,6 +30,15 @@ namespace HaCS.Types
             else return _innerType;
         }
 
+        public void inputTypeRecursively(HaCSType inputType)
+        {
+            if (_innerType == null)
+            {
+                _innerType = inputType;
+            }
+            else if(_innerType is tLIST) (_innerType as tLIST).inputTypeRecursively(inputType);
+        }
+
         public override string ToString()
         {
             return base.ToString() + "<" + InnerType.ToString() + ">";

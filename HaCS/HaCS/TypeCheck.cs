@@ -15,10 +15,9 @@ namespace HaCS
         #region Variables
         private ParseTreeProperty<HaCSType> _types = new ParseTreeProperty<HaCSType>();     //A parsetreeproperty used to annotate the nodes of the parsetree with their corresponding type.
         private ParseTreeProperty<IScope> _scopes;                                          //A parsetreeproperty used to annotate the nodes of the parsetree with their corresponding scope.
-        private List<HaCSType> _typeListDcl = new List<HaCSType>();                         
-        private List<HaCSType> _typeListValue = new List<HaCSType>();
         private IScope _currentScope;
         private int _errorCounter = 0;
+        private tLIST createdType = null;
         #endregion
 
         public TypeCheck(ParseTreeProperty<IScope> scopes)
@@ -198,12 +197,22 @@ namespace HaCS
             int i = 0;
             foreach (var item in sym.Symbols)                                               //Iteration through all symbols(functions and variables) declared within the function
             {
-                if (!item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i])))//Checks whether the types of the actual parameters corresponds to the formal parameters.
-                {                                                                           //Gives error if the types actual and formal parameters don't correspond.
-                    correctFuncCall = false;                                                //Sets flag to false
-                    _errorCounter++;
-                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected " + item.Value.SymbolType + ", but got " + (HaCSType)Visit(context.expression()[i]));
+                if(i < context.expression().Count())
+                {
+                    if (!item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i])))//Checks whether the types of the actual parameters corresponds to the formal parameters.
+                    {                                                                           //Gives error if the types actual and formal parameters don't correspond.
+                        correctFuncCall = false;                                                //Sets flag to false
+                        _errorCounter++;
+                        Console.WriteLine("Error at line: " + context.Start.Line + " - Error: expected " + item.Value.SymbolType + ", but got " + (HaCSType)Visit(context.expression()[i]));
+                    }
                 }
+                else
+                {
+                    correctFuncCall = false;
+                    _errorCounter++;
+                    Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Missing input:" + item.Value.SymbolType);
+                }
+               
                 i++;
             }
             if(correctFuncCall){                                                            //If no error with the parameters
@@ -275,9 +284,9 @@ namespace HaCS
             }
             else
             {
+                List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().body());
                 foreach (ITerminalNode terminal in context.IDENTIFIER())                    //Same as above, but just for a body instead of an expression
                 {
-                    List<ITerminalNode> tokenList = Toolbox.getFlatTokenList(context.lambdaBody().body());
                     if (tokenList.Find(x => x.Symbol.Text == terminal.Symbol.Text) == null)
                     {
                         terminalChecker = false;
@@ -364,14 +373,21 @@ namespace HaCS
                     {
                         returnTypes.Add((HaCSType)Visit(stmt.ifStmt().body().returnStmt()));                    //Adds the return type of the statement to the list of return types
                     }
-                    returnTypes.Add((HaCSType)Visit(context.body().returnStmt()));                              //Adds the body's return type to the list
-                    HaCSType bodyType = (HaCSType)Visit(context.body().returnStmt());                           
+                    returnTypes.Add((HaCSType)Visit(context.body().returnStmt()));                              //Adds the body's return type to the list                         
                     HaCSParser.VarContext varParent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);
-                    tLIST listType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType; //Gets the list on which the list operation is performed on
+                    HaCSType expectedType = null;
                     HaCSType result = null;
+                    if (varParent == null)
+                    {
+                        HaCSParser.VarDclContext varDclParent = Toolbox.FindLastContext<HaCSParser.VarDclContext>(context);
+                        expectedType = _currentScope.Resolve(varDclParent.IDENTIFIER().GetText()).SymbolType;
+                    }
+                    else expectedType = (tLIST)_currentScope.Resolve(varParent.IDENTIFIER().GetText()).SymbolType; //Gets the list on which the list operation is performed on
+
                     foreach (HaCSType type in returnTypes)                                                      //Iterates through the list returntypes which contains all the types the body can return
                     {
-                        result = _determineType(listType.InnerType, type);                                      //Uses determine type to check what the type of the innermost list and the return type evaluates to
+                        if (expectedType is tLIST) result = _determineType((expectedType as tLIST).InnerType, type);             //Uses determine type to check what the type of the innermost list and the return type evaluates to
+                        else result = _determineType(expectedType, type);
                         if (result is tINVALID)                                                                 //If it's tINVALID it will be added to the parsetreeproperty, the scope will be set back to the lambdaExp's scope
                         {
                             _types.Put(context, result);
@@ -429,10 +445,26 @@ namespace HaCS
             HaCSType resultingType = null;
             if (lambdaContext != null)                                                                                      //If a lambdaExpcontext was found 
             {
-                HaCSParser.VarContext parent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);                     //Gets the list on which the list operation was used
-                tLIST type = (tLIST)_currentScope.Resolve(parent.IDENTIFIER().GetText()).SymbolType;
-                returnType = type.InnerType;                                                                                //The type of elements the innermost list contains
-                resultingType = _determineType(returnType, Exptype);                                                        //Determines whether the expression in the return statement corresponds to the type of elements the innermost list has
+                if(lambdaContext.parent is HaCSParser.WhereContext || lambdaContext.parent is HaCSParser.FindContext || lambdaContext.parent is HaCSParser.IndexOfContext)
+                {
+                    resultingType = _determineType(Exptype, new tBOOL());
+                }
+                else
+                {
+                    HaCSParser.VarContext Varparent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);                     //Gets the list on which the list operation was used
+                    if(Varparent == null)
+                    {
+                        HaCSParser.VarDclContext VarDclParent = Toolbox.FindLastContext<HaCSParser.VarDclContext>(context);
+                        returnType = _currentScope.Resolve(VarDclParent.IDENTIFIER().GetText()).SymbolType;
+                    }
+                    else
+                    {
+                        tLIST type = (tLIST)_currentScope.Resolve(Varparent.IDENTIFIER().GetText()).SymbolType;
+                        returnType = type.InnerType;                                                                            //The type of elements the innermost list contains
+                    }
+                                                                                                   
+                    resultingType = _determineType(returnType, Exptype);                                                        //Determines whether the expression in the return statement corresponds to the type of elements the innermost list has
+                }    
             }
             else                                                                                                            //Enters else, as the return must be wihtin a function
             {
@@ -457,31 +489,19 @@ namespace HaCS
 
         #region List and Var dcl
 
-        public override object VisitListDcl(HaCSParser.ListDclContext context)              //When encountering a List declaration List<type> indentifier = {ListDcls}
-        {
-            _typeListDcl.Clear();                                                           //Clears the list containing the left-hand side of the listdcl i.e. List<type> = 
-            _typeListValue.Clear();                                                         //Clears the list containing the right-hand side of the listdcl i.e. = {}
-            HaCSType result = new tLIST();                                                  //Creates an instance of a List
-            _typeListDcl.Add(result);                                                       //Adds it to the listdcl List
-            Visit(context.listType());                                                      //Visits the listType
-            result = CreateListType(result as tLIST, 1);
-            Visit(context.listDcls());
-            return result;
-        }
-
         public override object VisitListDcls(HaCSParser.ListDclsContext context)            //When encountering listDcl : listType IDENTIFIER ASSIGN LCURLBRACKET listDcls RCURLBRACKET;
         {
-            _typeListValue.Add(new tLIST());                                                //Adds a tList type to the ListValue list
-            tLIST dclType = (tLIST)_typeListDcl.First();                                    //A reference to the first element from the list ListDcl (the outermost list on the left side ie List<List<int>> ..)
+            HaCSParser.ListDclContext dclParent = Toolbox.FindLastContext<HaCSParser.ListDclContext>(context);
+            tLIST dclType = (tLIST)_currentScope.Resolve(dclParent.IDENTIFIER().GetText()).SymbolType;
             bool correctListDcl = true;                                                     //A flag used for indicating whether the list is initialised correctly
             HaCSType valueType;                                                             //A reference to the type of the expression on the right side of the listdcl - List<type> = {expression}
             if (context.expression().Count() != 0)                                          //If there is atleast one expression at the right side
             {
                 foreach (HaCSParser.ExpressionContext exp in context.expression())          //For each expression
                 {
-                    valueType = (HaCSType)Visit(exp);                                       //The type the expression avaluates to is added to the ListValue list
-                    _typeListValue.Add(valueType); 
-                    if (!dclType.Equals(valueType) && !dclType.InnerType.Equals(valueType) && _typeListValue[_typeListDcl.Count-1] is tLIST)
+                    valueType = (HaCSType)Visit(exp);                                       //The type the expression evaluates to is added to the valueType
+                    createdType.inputTypeRecursively(valueType);
+                    if (!dclType.Equals(valueType) && !dclType.InnerType.Equals(valueType) && !dclType.Equals(createdType))
                     {
                         //If certain requirements aren't met, an error is given
                         //The type of the first element of the ListDcl(the declared type e.g. List<List<int>> numbers = ... ) must match the type of the right side of the dcl.
@@ -496,6 +516,7 @@ namespace HaCS
             }
             else                                                                            //If there are no errors in the declarion and initialisation
             {
+                createdType.inputTypeRecursively(new tLIST());
                 foreach (HaCSParser.ListDclsContext listdcl in context.listDcls())          //Iterates through the listDcls(the right-hand side of =)
                 {
                     if (Visit(listdcl) is tINVALID)                                         //Evaluates whether the listdcl is tINVALID
@@ -516,47 +537,12 @@ namespace HaCS
             }
         }
 
-        public override object VisitListType(HaCSParser.ListTypeContext context)            //When encountering listType : LIST LT type GT;
-        {
-            HaCSType result = (HaCSType)Visit(context.type());                              //The type within the list is determined  - List<type>
-            return result;                                                                  
-        }
-
-        public override object VisitType(HaCSParser.TypeContext context)                    //When encountering type : primitiveType | listType;
-        {
-            HaCSType type;                                                                  //A reference to a HaCSType
-            if (context.listType() == null)                                                 //If the type is not a list  
-            {
-                type = Toolbox.getType(context.primitiveType().Start.Type);                 //The primitive type is added to the ListDcl list
-                _typeListDcl.Add(type);
-            }
-            else                                                                            //If it's not a primitive type
-            {
-                type = Toolbox.getType(context.listType().Start.Type);                      //Gets the corresponding type to the int determined by ANTLR
-                _typeListDcl.Add(type);                                                     //Adds the type to the ListDcl list
-                VisitChildren(context);                                                     //Visits the children of the type. The method is hereby used recursively 
-            }
-            return type;                                                                    //The type of the list is returned
-        }
-
-        private tLIST CreateListType(tLIST listType, int typeCounter)                       //Used for creating lists and nested lists by a recursive use of the method
-        {
-            listType.InnerType = _typeListDcl[typeCounter];                                 //The innertype of the list is set to the type of the element at index counter from ListDcl list 
-            
-            if(typeCounter < _typeListDcl.Count && _typeListDcl[typeCounter] is tLIST)      //If the counter is within the bounds of the listDcl list and element at index counter from ListDcl is of type list
-            {                                                                               //The counter is incremented and the method calls itself with the innerlist and the counter 
-                typeCounter++;                                                              //Hereby the first element of the ListDcl will eventually contain the whole list
-                CreateListType(listType.InnerType as tLIST,typeCounter);   
-            }
-            return listType;                                                                //The type of the list is returned
-        }
-
         public override object VisitVarDcl(HaCSParser.VarDclContext context)                //When encountering Variable declarations
         {                                                                                   //varDcl : left=primitiveType IDENTIFIER ASSIGN right=expression | listDcl;
             HaCSType resultType;
             if (context.right == null)                                                      //If the right side is not a expression, it's a list
             {
-                resultType = TypeCheckListDcl(context);                                     //The type of the list is returned by the method TypeCheckListDcl
+                resultType = TypeCheckListDcl(context.listDcl());                           //The type of the list is returned by the method TypeCheckListDcl
             }
             else
             {
@@ -814,20 +800,13 @@ namespace HaCS
             }
         }       
 
-        private HaCSType TypeCheckListDcl(HaCSParser.VarDclContext context)                 //Checks whether the type of each level of the left-handside of the list declaration corresponds to the corresponding leve at the right-hand side
+        private HaCSType TypeCheckListDcl(HaCSParser.ListDclContext context)                 //Checks whether the type of each level of the left-handside of the list declaration corresponds to the corresponding leve at the right-hand side
         {
-            HaCSType result = (HaCSType)Visit(context.listDcl());                           //Gets the type of the declared list
-            int i = 0;
-            bool typeError = false;
-            foreach (HaCSType type in _typeListDcl.Where(x => x is tLIST))                  //Iterates through the ListDcl list
-            {
-                if (_typeListValue[i].GetType() != type.GetType())                          //Checks whether the type of each level of the left-handside of the list declaration corresponds to the corresponding leve at the right-hand side
-                {                                                                           //If not an error is given
-                    typeError = true;
-                }
-                i++;
-            }
-            if (typeError)
+            createdType = new tLIST();
+            HaCSType dclType = _currentScope.Resolve(context.IDENTIFIER().GetText()).SymbolType;                           //Gets the type of the declared list
+            HaCSType valueType = (HaCSType)Visit(context.listDcls());
+            HaCSType result = _determineType(dclType, valueType);
+            if (result is tINVALID)
             {
                 _errorCounter++;
                 Console.WriteLine("Error at line: " + context.Start.Line + ": Inconsistent list declaration, value does not match declaration");
@@ -880,7 +859,7 @@ namespace HaCS
         {
             if (type is tBOOL)                                                              //Here the type is the type the expression of the lambda body evaluates to
             {                                                                               //If it's bool, the type the list contains elementents of in the innermost list is found from the current scope
-                HaCSParser.VarContext VarParent = FindLastVarContext(context);              //The type is added to parsetreeproperty and returned
+                HaCSParser.VarContext VarParent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);              //The type is added to parsetreeproperty and returned
                 tLIST listType = (tLIST)_currentScope.Resolve(VarParent.IDENTIFIER().GetText()).SymbolType;
                 _types.Put(context, listType.InnerType);
                 return listType.InnerType;
@@ -904,8 +883,8 @@ namespace HaCS
                     return new tINVALID();
                 }
             }
-            HaCSParser.VarContext grandGrandGrandParent = (HaCSParser.VarContext)context.parent.parent.parent.parent;
-            tLIST listType = (tLIST)_currentScope.Resolve(grandGrandGrandParent.IDENTIFIER().GetText()).SymbolType;
+            HaCSParser.VarContext VarParent = Toolbox.FindLastContext<HaCSParser.VarContext>(context);
+            tLIST listType = (tLIST)_currentScope.Resolve(VarParent.IDENTIFIER().GetText()).SymbolType;
             _types.Put(context, listType.InnerType);
             return listType.InnerType;
         }

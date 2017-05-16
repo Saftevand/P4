@@ -67,7 +67,7 @@ namespace HaCS.SymbolTable
             BaseSymbol var = _currentScope.Resolve(name);
             if(var == null)
             {
-                Console.WriteLine(name + " variable not declared at line:" + context.start.Line);
+                Console.WriteLine("Error: " + name + " variable not declared at line:" + context.start.Line);
                 _errorCounter++;
             }
             else if (var is FunctionSymbol)
@@ -83,7 +83,7 @@ namespace HaCS.SymbolTable
             BaseSymbol func = _currentScope.Resolve(name);
             if(func == null)
             {
-                Console.WriteLine(name + " variable not declared at line:" + context.start.Line);
+                Console.WriteLine("Error: " + name + " function not declared at line:" + context.start.Line);
                 _errorCounter++;
             }
             else if (func is VariableSymbol)

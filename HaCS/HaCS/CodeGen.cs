@@ -476,6 +476,22 @@ namespace HaCS
             return "else" + Visit(context.body());
         }
 
+        public override object VisitFind([NotNull] HaCSParser.FindContext context)
+        {
+            string name = FindLastIdentifier(context).ToString();
+            string nameType = TypeIdentifier[name];
+            string sizeCalc = "strlen";
+            if (nameType.Contains("int"))
+            {
+                sizeCalc = "sizeof";
+            }
+            string exp = Visit(context.lambdaExp()).ToString();
+            exp = exp.Replace(context.lambdaExp().GetChild(2).GetText(), name + "[i]");
+
+            cFunctionCode.Append(nameType + " func" + ++funcCount + "(" + nameType + " " + name + "){" + "int i; for(i = 0; i < " + sizeCalc + "(" + name + "); i++){if(" + exp + "){return " + name + "[i];}}}");
+            return context.GetText();
+        }
+
         public override object VisitFirst([NotNull] HaCSParser.FirstContext context)
         {
             return context.Parent.GetChild(0) + "[0];";
@@ -769,6 +785,5 @@ namespace HaCS
             }
             return FindIdentifier(context.Parent as HaCSParser.ListDclsContext);
         }
-
     }
 }

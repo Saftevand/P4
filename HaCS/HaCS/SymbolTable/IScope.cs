@@ -10,6 +10,7 @@ namespace HaCS.SymbolTable
     {
         string ScopeName { get; }
         IScope EnclosingScope { get; }
+        Dictionary<string, BaseSymbol> Symbols { get; }
         void Define(BaseSymbol sym);
         BaseSymbol Resolve(string name);       
     }
