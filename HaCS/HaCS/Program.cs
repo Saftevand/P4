@@ -40,7 +40,11 @@ namespace HaCS
                     {
                         CodeGen codeGen = new CodeGen(typechecker.Types);
                         codeGen.Visit(tree);
+                        System.IO.StreamWriter file = new System.IO.StreamWriter("C:\\Users\\Dank\\Google Drev\\P4\\GOLD\\GOLDParser\\ccode.c");
+                        file.WriteLine(codeGen.cPrototype.ToString() + codeGen.cCode.ToString() + codeGen.cFunctionCode.ToString());
+                        file.Close();
                         Console.WriteLine("Compile complete");
+
                     }
                 } 
             }
