@@ -149,6 +149,7 @@ namespace HaCS.SymbolTable
 
         public void DefineVariable(HaCSParser.ListDclContext context)
         {
+            _listType = CreateListType(_listType, context.listType());
             VariableSymbol varSym = new VariableSymbol(context.IDENTIFIER().GetText(), _listType, _currentScope);   //List is declared 
             DefineBuffer(varSym);                                                                           //The List is added to the current scope
         }
