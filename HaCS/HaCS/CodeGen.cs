@@ -167,7 +167,7 @@ namespace HaCS
                 size = sizeCalc + "(" + Pname + "-1)";
             }
 
-            code += "for(i=0;i<" + size + ";i++)";
+            code += "for(i=0;i<" + size + ";i++) {";
             exp = Visit(context.lambdaExp()).ToString();
             exp = exp.Replace(context.lambdaExp().GetChild(2).GetText(), Pname + "[i]");
             if (context.lambdaExp().lambdaBody().body() == null)
@@ -179,7 +179,7 @@ namespace HaCS
                 code += exp;
             }
 
-            code += Environment.NewLine;
+            code += ";}" + Environment.NewLine;
 
             return code;
         }
@@ -191,10 +191,11 @@ namespace HaCS
             string type = Visit(context.listType()).ToString();
             TypeIdentifier.Add(variable, type);
             string exp = Visit(context.listDcls()).ToString();
-            if (!exp.Contains("for"))
+            if (exp.Contains("for") || exp.Contains("malloc"))
             {
-                type = type.Replace("*", "");
+                return type + " " + variable + exp;
             }
+            type = type.Replace("*", "");
             return type + " " + variable + exp;
         }
 
@@ -239,7 +240,10 @@ namespace HaCS
                     code += "{";
                     arrayCount++;
                     code += item.GetText();
-                    code += ", '\\0' },";
+                    if (type.Contains("char"))
+                    {
+                        code += ", '\\0' },";
+                    }
                     if (elements < item.expression().Count())
                     {
                         elements = item.expression().Count();
@@ -250,14 +254,17 @@ namespace HaCS
                 {
                     code += "{";
                     int i;
-                    for (i = 0; i < context.ChildCount - 1; i = i + 2)
+                    for (i = 0; i < context.ChildCount; i++)
                     {
-                        value.Add(context.GetChild(i).GetText() + ", ");
-                        code += context.GetChild(i).GetText() + ", ";
+                        value.Add(context.GetChild(i).GetText());
+                        code += context.GetChild(i).GetText();
                     }
-                    value.Add(context.GetChild(i).GetText());
+                    //value.Add(context.GetChild(i).GetText());
                     IdentifierValue.Add(variable, value);
-                    code += context.GetChild(i).GetText() + ", '\\0'";
+                    if (type.Contains("char"))
+                    {
+                        code += ", '\\0'";
+                    }
                     arrayCount = i / 2 + 2;
                 }
 
@@ -289,7 +296,7 @@ namespace HaCS
             string name = null;
             string identifier = context.Parent.GetChild(0).GetText();
             string assigner = context.Parent.Parent.Parent.GetChild(1).GetText();
-            code = " *" + assigner + " = malloc(strlen(" + identifier + ")";
+            code = " = malloc (strlen(" + identifier + ")";
             str = "strcpy(" + assigner + ", " + identifier + ");" + Environment.NewLine;
             foreach (var item in context.expression())
             {
@@ -319,12 +326,16 @@ namespace HaCS
             {
                 return base.VisitVarDcl(context);
             }
-            return context.GetChild(0).GetText() + " " + context.IDENTIFIER().GetText() + " = " + Visit(context.expression()) + ";";
+            return Visit(context.primitiveType()) + " " + context.IDENTIFIER().GetText() + " = " + Visit(context.expression()) + ";";
         }
 
         public override object VisitPrimitiveType([NotNull] HaCSParser.PrimitiveTypeContext context)
         {
-            return base.VisitPrimitiveType(context);
+            if (context.BOOL_Type() != null)
+            {
+                return "int";
+            }
+            return context.GetChild(0).GetText();
         }
 
         public override object VisitExpression([NotNull] HaCSParser.ExpressionContext context)
@@ -391,9 +402,12 @@ namespace HaCS
             if (_typeProperty.Get(context.expression(0)) is tINT)
             {
                 iRange_to = Convert.ToInt32(range_to);
-                for (int i = Convert.ToInt32(range_from); i <= iRange_to; i++)
+                int i = Convert.ToInt32(range_from);
+                cList.Add(i.ToString());
+                i++;
+                for (; i <= iRange_to; i++)
                 {
-                    cList.Add(i + ", ");
+                    cList.Add("," + i);
                 }
                 iRange_to = Convert.ToInt32(range_to);
             }
@@ -407,8 +421,8 @@ namespace HaCS
                     iRange_to++;
                 }
                 iRange_to++;
+                cList.Add("'\\0'");
             }
-            cList.Add("'\\0'");
             cList.Add("}");
             return iRange_to + 1;
         }
@@ -450,6 +464,17 @@ namespace HaCS
 
         public override object VisitLit([NotNull] HaCSParser.LitContext context)
         {
+            if (context.BOOL() != null)
+            {
+                if (context.BOOL().GetText() == "true")
+                {
+                    return "1";
+                }
+                if (context.BOOL().GetText() == "false")
+                {
+                    return "0";
+                }
+            }
             return context.GetChild(0).GetText();
         }
 
@@ -585,7 +610,7 @@ namespace HaCS
             exp = exp.Replace(context.lambdaExp().GetChild(2).GetText(), context.Parent.GetChild(0) + "[i]");
 
             size = sizeCalc + "(" + nested + Pname + ")";
-            code += " = (" + nameType + ")malloc(sizeof(" + Pname + "));" + Environment.NewLine;
+            code += " = (" + nameType + ")malloc (sizeof(" + Pname + "));" + Environment.NewLine;
             //code += listAllocation(name);
 
             code += "int " + ++indexer + " = 0; for(i=0;i<" + size + ";i++) { if(" + exp + "){" + name + "[" + indexer + "++] = " + Pname + "[i];" + "} }";
@@ -709,8 +734,19 @@ namespace HaCS
             if (TypeIdentifier.ContainsKey(name))
             {
                 type = TypeIdentifier[name];
+                int count = type.Count(x => x == '*');
+                if (type.Contains("char"))
+                {
+                    return code;
+                }
+
+                if (count < 2)
+                {
+                    return "for(i=0;i < sizeof(" + name + "-1);i++){printf(" + '"' + "%" + printType + "\\n" + '"' + "," + name + "[i]);}";
+                }
+
                 string nest = null;
-                for (int i = 1; i < type.Count(x => x == '*'); i++)
+                for (int i = 1; i < count; i++)
                 {
                     nest += "*";
                 }
