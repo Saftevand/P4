@@ -503,7 +503,7 @@ namespace HaCS
 
         public override object VisitFind([NotNull] HaCSParser.FindContext context)
         {
-            string name = FindLastIdentifier(context).ToString();
+            string name = FindLastIdentifier(context).IDENTIFIER().GetText();
             string nameType = TypeIdentifier[name];
             string sizeCalc = "strlen";
             if (nameType.Contains("int"))

@@ -32,15 +32,38 @@ namespace HaCS.SymbolTable
             sym.ParentScope = this;
         }
 
-        public BaseSymbol Resolve(string name)
+        public BaseSymbol Resolve(string name, bool resolveVar = true)                                             //Lookups the dictionary and returns the symbol with the identifier matching the input.
         {
-            if (_symbols.ContainsKey(name))
+            if (resolveVar)
             {
-                BaseSymbol sym = _symbols[name];
-                return sym;
+                if (_symbols.ContainsKey(name))
+                {
+                    if (_symbols[name] is VariableSymbol)
+                    {
+                        BaseSymbol sym = _symbols[name];
+                        return sym;
+                    }
+                    else if (ParentScope != null) return ParentScope.Resolve(name);
+                    else return null;
+                }
+                else if (ParentScope != null) return ParentScope.Resolve(name);        //If the symbol isn't in the scope, it will recursively look up the enclosing scope to find it.
+                else return null;
             }
-            else if (ParentScope != null) return ParentScope.Resolve(name);
-            else return null;
+            else
+            {
+                if (_symbols.ContainsKey(name))
+                {
+                    if (_symbols[name] is FunctionSymbol)
+                    {
+                        BaseSymbol sym = _symbols[name];
+                        return sym;
+                    }
+                    else if (ParentScope != null) return ParentScope.Resolve(name, false);
+                    else return null;
+                }
+                else if (ParentScope != null) return ParentScope.Resolve(name, false);        //If the symbol isn't in the scope, it will recursively look up the enclosing scope to find it.
+                else return null;
+            }
         }
 
         public Dictionary<string, BaseSymbol> Symbols

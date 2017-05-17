@@ -70,25 +70,15 @@ namespace HaCS.SymbolTable
                 Console.WriteLine("Error: " + name + " variable not declared at line:" + context.start.Line);
                 _errorCounter++;
             }
-            else if (var is FunctionSymbol)
-            {
-                Console.WriteLine(name + " is a function not a variable");
-                _errorCounter++;
-            }
         }
 
         public override void ExitFunc(HaCSParser.FuncContext context)                   //Same as above, but for functions
         {
             string name = context.IDENTIFIER().GetText();
-            BaseSymbol func = _currentScope.Resolve(name);
+            BaseSymbol func = _currentScope.Resolve(name,false);
             if(func == null)
             {
                 Console.WriteLine("Error: " + name + " function not declared at line:" + context.start.Line);
-                _errorCounter++;
-            }
-            else if (func is VariableSymbol)
-            {
-                Console.WriteLine(name + " is a variable not a function");
                 _errorCounter++;
             }
         }

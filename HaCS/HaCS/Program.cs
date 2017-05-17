@@ -12,7 +12,7 @@ namespace HaCS
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             StreamReader inputStream;
             if (args.Count() == 0)
@@ -46,10 +46,13 @@ namespace HaCS
                             file.WriteLine(codeGen.cPrototype.ToString() + codeGen.cCode.ToString() + codeGen.cFunctionCode.ToString());
                             file.Close();
                             Console.WriteLine("Compile complete");
+                            return 1;
+                            
                         }
                     }
                 }  
             }
+            return 0;
             Console.ReadKey();
         }
 

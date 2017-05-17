@@ -1,0 +1,16 @@
+Paths,Assertion
+C:\Users\GryPetersen\Desktop\UnitTest\DecWithoutAssign.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\FuncCallWithManyParams.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\FuncCallWithWrongType.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\FunctionCallWithFewParameters.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\FunctionOverload.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\IfWithoutReturn.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\LambdaWithBody.txt,1
+C:\Users\GryPetersen\Desktop\UnitTest\NegateTest.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\NestedLambda.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\NestedListOperations.txt,1
+C:\Users\GryPetersen\Desktop\UnitTest\ReturnRange.txt,1
+C:\Users\GryPetersen\Desktop\UnitTest\ReturnTypeError.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\SimpleWhereAndMap.txt,1
+C:\Users\GryPetersen\Desktop\UnitTest\UndeclaredFuncCall.txt,0
+C:\Users\GryPetersen\Desktop\UnitTest\VarFuncConfusion.txt,1
