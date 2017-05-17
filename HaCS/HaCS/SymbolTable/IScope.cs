@@ -12,6 +12,6 @@ namespace HaCS.SymbolTable
         IScope EnclosingScope { get; }
         Dictionary<string, BaseSymbol> Symbols { get; }
         void Define(BaseSymbol sym);
-        BaseSymbol Resolve(string name);       
+        BaseSymbol Resolve(string name, bool resolveVarSymbol = true);       
     }
 }

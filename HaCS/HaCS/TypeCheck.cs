@@ -46,7 +46,7 @@ namespace HaCS
         {
             _currentScope = _scopes.Get(context);
             string name = context.IDENTIFIER().GetText();
-            HaCSType type = _currentScope.Resolve(name).SymbolType;
+            HaCSType type = _currentScope.Resolve(name,false).SymbolType;
             _types.Put(context, type);
             _currentScope = _currentScope.EnclosingScope;
             Visit(context.body());
@@ -192,14 +192,21 @@ namespace HaCS
         public override object VisitFunc(HaCSParser.FuncContext context)                    //When encountering a function call - a lot like when encountering a variable
         {
             string name = context.IDENTIFIER().GetText();                                   //The identifier of the function
-            FunctionSymbol sym = (FunctionSymbol)_currentScope.Resolve(name);               //Lookup in the current scope to find the function corresponding to the identifier
+            FunctionSymbol sym = (FunctionSymbol)_currentScope.Resolve(name,false);               //Lookup in the current scope to find the function corresponding to the identifier
             bool correctFuncCall = true;
             int i = 0;
             foreach (var item in sym.Symbols)                                               //Iteration through all symbols(functions and variables) declared within the function
             {
                 if(i < context.expression().Count())
                 {
-                    if (!item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i])))//Checks whether the types of the actual parameters corresponds to the formal parameters.
+                    if(sym.Symbols.Count < context.expression().Count())
+                    {
+                        correctFuncCall = false;
+                        _errorCounter++;
+                        Console.WriteLine("Error at line: " + context.Start.Line + " - Error: Too many inputs.");
+                        break;
+                    }
+                    else if (!item.Value.SymbolType.Equals((HaCSType)Visit(context.expression()[i])))//Checks whether the types of the actual parameters corresponds to the formal parameters.
                     {                                                                           //Gives error if the types actual and formal parameters don't correspond.
                         correctFuncCall = false;                                                //Sets flag to false
                         _errorCounter++;
@@ -325,9 +332,19 @@ namespace HaCS
         {
             HaCSType type1 = (HaCSType)Visit(context.left);                                 //Gets the type of the expression on the left-hand side of '..'
             HaCSType type2 = (HaCSType)Visit(context.right);                                //Gets the type of the expression on the right-hand side of '..'
+            tLIST listType = new tLIST();
             HaCSType resultingType = _determineType(type1, type2);                          //Determines the type the left and right-hand evaluates to. Type promotion might happen
-            _types.Put(context, resultingType);                                             //The type is added to the parsetreeproperty
-            return resultingType;                                                           //Returns the type of Range
+            if(resultingType is tINVALID)
+            {
+                _types.Put(context, resultingType);                                             //The type is added to the parsetreeproperty
+                return resultingType;                                                           //Returns the type of Range
+            }
+            else
+            {
+                listType.InnerType = resultingType;
+                _types.Put(context, listType);                                              //The type is added to the parsetreeproperty
+                return listType;                                                            //Returns the type of Range
+            } 
         }
 
         public override object VisitLambdaBody(HaCSParser.LambdaBodyContext context)        //When encountering a lambdaBody - right handside of ('=>')
@@ -471,7 +488,7 @@ namespace HaCS
                 RuleContext parentContext = Toolbox.FindLastContext<HaCSParser.FunctionDeclContext>(context);                       //Gets the last declared function and checks whether the expression of the returnstms corresponds to the type of the function
                 if (parentContext is HaCSParser.FunctionDeclContext)
                 {
-                    returnType = _currentScope.Resolve((parentContext as HaCSParser.FunctionDeclContext).IDENTIFIER().GetText()).SymbolType;
+                    returnType = _currentScope.Resolve((parentContext as HaCSParser.FunctionDeclContext).IDENTIFIER().GetText(),false).SymbolType;
                 }
                 else returnType = new tINT();                                                                               //Exception when it comes to the 'main' which must return an int
                 resultingType = _determineType(returnType, Exptype);
@@ -485,6 +502,18 @@ namespace HaCS
             }
             _types.Put(context, resultingType);
             return resultingType;
+        }
+
+        public override object VisitNegate( HaCSParser.NegateContext context)
+        {
+            HaCSType expType = (HaCSType)Visit(context.expression());
+            if(expType is tBOOL)
+            {
+                _types.Put(context, expType);
+                return expType;
+            }
+            _types.Put(context, new tINVALID());
+            return new tINVALID();
         }
 
         #region List and Var dcl
