@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HaCS.Types;
+using System.ComponentModel;
 
 namespace HaCS.SymbolTable
 {
-    public abstract class BaseSymbol                                                        //The abstract class BaseSymbol contains fields and methods that are common for functions, primitive types and constructor types.
+    public abstract class BaseSymbol                                                     //The abstract class BaseSymbol contains fields and methods that are common for functions, primitive types and constructor types.
     {
+
         private string _name;
         private HaCSType _symbolType;
         private IScope _parentScope;

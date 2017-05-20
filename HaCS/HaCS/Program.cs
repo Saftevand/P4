@@ -12,7 +12,7 @@ namespace HaCS
 {
     public class Program
     {
-        public static int Main(string[] args)
+        public static void Main(string[] args)
         {
             StreamReader inputStream;
             if (args.Count() == 0)
@@ -42,17 +42,14 @@ namespace HaCS
                         {
                             CodeGen codeGen = new CodeGen(typechecker.Types);
                             codeGen.Visit(tree);
-                            System.IO.StreamWriter file = new System.IO.StreamWriter("C:\\Users\\Dank\\Google Drev\\P4\\GOLD\\GOLDParser\\ccode.c");
+                            System.IO.StreamWriter file = new System.IO.StreamWriter("C:\\Users\\GryPetersen\\Desktop\\ccode.c");
                             file.WriteLine(codeGen.cPrototype.ToString() + codeGen.cCode.ToString() + codeGen.cFunctionCode.ToString());
                             file.Close();
                             Console.WriteLine("Compile complete");
-                            return 1;
-                            
                         }
                     }
                 }  
             }
-            return 0;
             Console.ReadKey();
         }
 

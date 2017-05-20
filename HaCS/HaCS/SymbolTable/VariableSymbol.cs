@@ -11,7 +11,7 @@ namespace HaCS.SymbolTable
     {
         public VariableSymbol(string name, HaCSType symbolType, IScope parentScope) : base(name,symbolType,parentScope)
         {
-
+            
         }
     }
 }

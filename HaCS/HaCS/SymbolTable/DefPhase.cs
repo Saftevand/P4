@@ -122,7 +122,6 @@ namespace HaCS.SymbolTable
         public override void EnterListDcl(HaCSParser.ListDclContext context)                //Declaration of Lists
         {
             _listType = new tLIST();                                                        //A new list is declared
-            _listType = CreateListType(_listType,context.listType());                       //The CreateListType method is used for declaring lists with the tLIST and listType contex.
         }
 
         public void DefineVariable(HaCSParser.TypeContext context, string name)             //Variable is declared as either primitive or list type.
@@ -133,6 +132,7 @@ namespace HaCS.SymbolTable
             }
             else
             {
+                _listType = new tLIST();
                 _listType = CreateListType(_listType, context.listType());                  //The type of the inner list is determined
                 VariableSymbol varSym = new VariableSymbol(name, _listType, _currentScope); //A new variable is created using the name, type of list, and the current scope.
                 DefineBuffer(varSym);                                               //The variable is added to the current scope.
@@ -149,6 +149,7 @@ namespace HaCS.SymbolTable
 
         public void DefineVariable(HaCSParser.ListDclContext context)
         {
+            _listType = new tLIST();
             _listType = CreateListType(_listType, context.listType());
             VariableSymbol varSym = new VariableSymbol(context.IDENTIFIER().GetText(), _listType, _currentScope);   //List is declared 
             DefineBuffer(varSym);                                                                           //The List is added to the current scope

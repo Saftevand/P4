@@ -334,10 +334,10 @@ namespace HaCS
             HaCSType type2 = (HaCSType)Visit(context.right);                                //Gets the type of the expression on the right-hand side of '..'
             tLIST listType = new tLIST();
             HaCSType resultingType = _determineType(type1, type2);                          //Determines the type the left and right-hand evaluates to. Type promotion might happen
-            if(resultingType is tINVALID)
+            if(resultingType is tINVALID || resultingType is tLIST || resultingType is tBOOL || resultingType is tFLOAT)
             {
-                _types.Put(context, resultingType);                                             //The type is added to the parsetreeproperty
-                return resultingType;                                                           //Returns the type of Range
+                _types.Put(context, new tINVALID());                                             //The type is added to the parsetreeproperty
+                return new tINVALID();                                                           //Returns the type of Range
             }
             else
             {
